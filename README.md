@@ -1,2 +1,2 @@
 # IC-Bytetable
-IC-Bytetable - GPC2 Script Helper Tool for interactive configuration
+IC-Bytetable - GPC2 (Titan Two) Script Helper Tool for interactive configuration
