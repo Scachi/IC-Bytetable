@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>IC-Bytetable</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/T2/00_AutoIT/IC-Bytetable/icon.ico</normaloff>:/T2/00_AutoIT/IC-Bytetable/icon.ico</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>400</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionOpenFile"/>
+    <addaction name="actionReadClipboard"/>
+    <addaction name="actionReload"/>
+    <addaction name="actionRecent"/>
+    <addaction name="separator"/>
+    <addaction name="actionExportCSV"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Help"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpenFile"/>
+   <addaction name="actionReadClipboard"/>
+   <addaction name="actionReload"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="sizeGripEnabled">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <action name="actionReload">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/view-refresh.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/view-refresh.ico</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Reload</string>
+   </property>
+   <property name="toolTip">
+    <string>Reload from last source</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionRecent">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-open-recent.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-open-recent.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Re&amp;cent</string>
+   </property>
+  </action>
+  <action name="actionOpenFile">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-open-2.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-open-2.ico</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;File</string>
+   </property>
+   <property name="iconText">
+    <string>File</string>
+   </property>
+   <property name="toolTip">
+    <string>Read IC from file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionReadClipboard">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-import-2.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-import-2.ico</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Clipboard</string>
+   </property>
+   <property name="iconText">
+    <string>Clipboard</string>
+   </property>
+   <property name="toolTip">
+    <string>Read IC from clipboard</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/help-about.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/help-about.ico</iconset>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionExportCSV">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-export-4.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-export-4.ico</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Export CSV</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/application-exit.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/application-exit.ico</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>
