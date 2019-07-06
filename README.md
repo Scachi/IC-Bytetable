@@ -1,4 +1,5 @@
-# Not working yet - QT rewrite of my autoit script : https://github.com/J2Kbr/GtunerIV/issues/171
+# Not working yet
+QT rewrite of my autoit scripthttps://github.com/J2Kbr/GtunerIV/issues/171
 
 # IC-Bytetable
 IC-Bytetable - GPC2 (Titan Two) Script Helper Tool for interactive configuration
