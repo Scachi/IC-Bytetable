@@ -4,6 +4,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QCoreApplication::setOrganizationName("Scachi");
+    QCoreApplication::setApplicationName("IC-Bytetable");
     MainWindow w;
     w.show();
 

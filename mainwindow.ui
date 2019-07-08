@@ -31,10 +31,24 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <widget class="QMenu" name="menuRe_cent">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Re&amp;cent</string>
+     </property>
+     <addaction name="actionRecent_File1"/>
+     <addaction name="actionRecent_File2"/>
+     <addaction name="actionRecent_File3"/>
+     <addaction name="actionRecent_File4"/>
+     <addaction name="actionRecent_File5"/>
+     <addaction name="actionRecent_File6"/>
+    </widget>
     <addaction name="actionOpenFile"/>
     <addaction name="actionReadClipboard"/>
     <addaction name="actionReload"/>
-    <addaction name="actionRecent"/>
+    <addaction name="menuRe_cent"/>
     <addaction name="separator"/>
     <addaction name="actionExportCSV"/>
     <addaction name="separator"/>
@@ -68,6 +82,7 @@
    <addaction name="actionOpenFile"/>
    <addaction name="actionReadClipboard"/>
    <addaction name="actionReload"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="sizeGripEnabled">
@@ -87,15 +102,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
-   </property>
-  </action>
-  <action name="actionRecent">
-   <property name="icon">
-    <iconset resource="resource.qrc">
-     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-open-recent.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-open-recent.ico</iconset>
-   </property>
-   <property name="text">
-    <string>Re&amp;cent</string>
    </property>
   </action>
   <action name="actionOpenFile">
@@ -156,6 +162,57 @@
    </property>
    <property name="text">
     <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="actionRecent_File1">
+   <property name="text">
+    <string>Recent_File1</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionRecent_File2">
+   <property name="text">
+    <string>Recent_File2</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecent_File3">
+   <property name="text">
+    <string>Recent_File3</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecent_File4">
+   <property name="text">
+    <string>Recent_File4</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecent_File5">
+   <property name="text">
+    <string>Recent_File5</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecent_File6">
+   <property name="text">
+    <string>Recent_File6</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
  </widget>
