@@ -88,7 +88,7 @@ void MainWindow::addRecentFile(QString s) {
 
 void MainWindow::showRecentFiles() {
 
-    qDebug() << "showdRecentFiles() found recent files : " << RecentFilesList.count();
+    qDebug() << "showRecentFiles() found recent files : " << RecentFilesList.count();
 
     if (RecentFilesList.count()<1) ui->menuRe_cent->menuAction()->setEnabled(false);
     else ui->menuRe_cent->menuAction()->setEnabled(true);
@@ -98,6 +98,8 @@ void MainWindow::showRecentFiles() {
          //qDebug() << "recent " << action->text() << " ... " << RecentFilesList.count();
          if (irfl < RecentFilesList.count()) {
             action->setText(QString::number(irfl) + ": " + RecentFilesList[irfl]);
+            action->setData(RecentFilesList[irfl]);
+
             QFile inputFile(RecentFilesList[irfl]);
             action->setVisible(true);
             if (inputFile.exists()) action->setEnabled(true);
@@ -109,33 +111,7 @@ void MainWindow::showRecentFiles() {
          }
          irfl++;
     }
-
-    /*
-    for (int i=0; i < ui->menuRe_cent->actions().count(); i++) {
-        //if (i<RecentFilesList.count()) {
-            qDebug() << "show recent";
-        //}
-    }*/
-
-    /*
-    for (int i = 0; i < MaxRecentFiles; ++i) {
-
-        //recentFileActs[i] =
-        //recentFileActs[i]->setVisible(false);
-    }
-    */
-    //ui->menuRe_cent->menuAction()->setEnabled(true);
 }
-
-/*
-bool MainWindow::hasRecentFiles()
-{
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
-    const int count = settings.beginReadArray(recentFilesKey());
-    settings.endArray();
-    return count > 0;
-}
-*/
 
 
 void MainWindow::on_actionExit_triggered()
@@ -154,4 +130,47 @@ void MainWindow::on_actionAbout_triggered()
                 FOR A PARTICULAR PURPOSE.").arg(QCoreApplication::applicationVersion())
                 );
 
+}
+
+void MainWindow::on_actionRecent_File1_triggered()
+{
+    QAction *a = qobject_cast<QAction*>(sender());
+    if (a->isEnabled()) readSource(a->data().toString());
+    addRecentFile(a->data().toString());
+}
+
+
+void MainWindow::on_actionRecent_File2_triggered()
+{
+    QAction *a = qobject_cast<QAction*>(sender());
+    if (a->isEnabled()) readSource(a->data().toString());
+    addRecentFile(a->data().toString());
+}
+
+void MainWindow::on_actionRecent_File3_triggered()
+{
+    QAction *a = qobject_cast<QAction*>(sender());
+    if (a->isEnabled()) readSource(a->data().toString());
+    addRecentFile(a->data().toString());
+}
+
+void MainWindow::on_actionRecent_File4_triggered()
+{
+    QAction *a = qobject_cast<QAction*>(sender());
+    if (a->isEnabled()) readSource(a->data().toString());
+    addRecentFile(a->data().toString());
+}
+
+void MainWindow::on_actionRecent_File5_triggered()
+{
+    QAction *a = qobject_cast<QAction*>(sender());
+    if (a->isEnabled()) readSource(a->data().toString());
+    addRecentFile(a->data().toString());
+}
+
+void MainWindow::on_actionRecent_File6_triggered()
+{
+    QAction *a = qobject_cast<QAction*>(sender());
+    if (a->isEnabled()) readSource(a->data().toString());
+    addRecentFile(a->data().toString());
 }

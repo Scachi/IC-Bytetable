@@ -25,13 +25,22 @@ private slots:
 
     void on_actionAbout_triggered();
 
+    void on_actionRecent_File1_triggered();
+
+    void on_actionRecent_File2_triggered();
+
+    void on_actionRecent_File3_triggered();
+
+    void on_actionRecent_File4_triggered();
+
+    void on_actionRecent_File5_triggered();
+
+    void on_actionRecent_File6_triggered();
+
 private:
     Ui::MainWindow *ui;
-    enum { MaxRecentFiles = 5 };
+    enum { MaxRecentFiles = 6 };
     QStringList RecentFilesList;
-    //QMenu* menu_File;
-    //QMenu* menuRe_cent;
-
 
 
 public:
@@ -40,12 +49,12 @@ public:
         qDebug() << "*g = new GPC(s) : " << s.toUtf8();
     }
 
+
 private:
     void readRecentFiles();
     void writeRecentFiles();
     void addRecentFile(QString s);
     void showRecentFiles();
-    //bool hasRecentFiles();
 };
 
 #endif // MAINWINDOW_H
