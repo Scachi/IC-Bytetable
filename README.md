@@ -1,8 +1,8 @@
 # Not working yet
-QT rewrite of my autoit scripthttps://github.com/J2Kbr/GtunerIV/issues/171
+QT rewrite of my autoit script -> https://github.com/J2Kbr/GtunerIV/issues/171
 
 # IC-Bytetable
-IC-Bytetable - GPC2 (Titan Two) Script Helper Tool for interactive configuration
+IC-Bytetable - GPC2 (Titan Two) Script Helper Tool for interactive configurations
 
 This tool helps Titan Two script creators:
 - to keep track of the used pmem byteoffsets of their GUI
