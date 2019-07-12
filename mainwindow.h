@@ -49,18 +49,20 @@ private:
 
 public:
     void readSource(QString s) {
+        enableReloadBtn();
         GPCFilePath=s;
         GPC *g = new GPC(s);
         qDebug() << "*g = new GPC(s) : " << s.toUtf8();
     }
+    void enableReloadBtn();
 
 
 private:
-    void readRecentFiles();
     void writeRecentFiles();
+    void readRecentFiles();
     void addRecentFile(QString s);
-    void showRecentFiles();
     void addRecentFileTrigger(QAction *a);
+    void showRecentFiles();
 };
 
 #endif // MAINWINDOW_H

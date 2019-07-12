@@ -41,6 +41,10 @@ void MainWindow::on_actionOpenFile_triggered()
     }
 }
 
+void MainWindow::enableReloadBtn() {
+    if (!ui->actionReload->isEnabled()) ui->actionReload->setEnabled(true);
+}
+
 void MainWindow::on_actionReadClipboard_triggered()
 {
     readSource("clipboard");

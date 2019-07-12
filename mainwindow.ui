@@ -94,6 +94,9 @@
    </property>
   </widget>
   <action name="actionReload">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/resources/view-refresh.ico</normaloff>:/resources/view-refresh.ico</iconset>
