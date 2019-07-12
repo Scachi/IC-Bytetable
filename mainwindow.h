@@ -37,14 +37,19 @@ private slots:
 
     void on_actionRecent_File6_triggered();
 
+    void on_actionReload_triggered();
+
 private:
     Ui::MainWindow *ui;
     enum { MaxRecentFiles = 6 };
     QStringList RecentFilesList;
+    QString GPCFilePath;
+
 
 
 public:
     void readSource(QString s) {
+        GPCFilePath=s;
         GPC *g = new GPC(s);
         qDebug() << "*g = new GPC(s) : " << s.toUtf8();
     }
@@ -55,6 +60,7 @@ private:
     void writeRecentFiles();
     void addRecentFile(QString s);
     void showRecentFiles();
+    void addRecentFileTrigger(QAction *a);
 };
 
 #endif // MAINWINDOW_H

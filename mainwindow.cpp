@@ -97,7 +97,7 @@ void MainWindow::showRecentFiles() {
     foreach (QAction *action, ui->menuRe_cent->actions()) {
          //qDebug() << "recent " << action->text() << " ... " << RecentFilesList.count();
          if (irfl < RecentFilesList.count()) {
-            action->setText(QString::number(irfl) + ": " + RecentFilesList[irfl]);
+            action->setText(QString::number(irfl+1) + ": " + RecentFilesList[irfl]);
             action->setData(RecentFilesList[irfl]);
 
             QFile inputFile(RecentFilesList[irfl]);
@@ -132,45 +132,43 @@ void MainWindow::on_actionAbout_triggered()
 
 }
 
-void MainWindow::on_actionRecent_File1_triggered()
-{
-    QAction *a = qobject_cast<QAction*>(sender());
+void MainWindow::addRecentFileTrigger(QAction *a) {
     if (a->isEnabled()) readSource(a->data().toString());
     addRecentFile(a->data().toString());
 }
 
 
+void MainWindow::on_actionRecent_File1_triggered()
+{
+    addRecentFileTrigger(qobject_cast<QAction*>(sender()));
+}
+
 void MainWindow::on_actionRecent_File2_triggered()
 {
-    QAction *a = qobject_cast<QAction*>(sender());
-    if (a->isEnabled()) readSource(a->data().toString());
-    addRecentFile(a->data().toString());
+    addRecentFileTrigger(qobject_cast<QAction*>(sender()));
 }
 
 void MainWindow::on_actionRecent_File3_triggered()
 {
-    QAction *a = qobject_cast<QAction*>(sender());
-    if (a->isEnabled()) readSource(a->data().toString());
-    addRecentFile(a->data().toString());
+    addRecentFileTrigger(qobject_cast<QAction*>(sender()));
 }
 
 void MainWindow::on_actionRecent_File4_triggered()
 {
-    QAction *a = qobject_cast<QAction*>(sender());
-    if (a->isEnabled()) readSource(a->data().toString());
-    addRecentFile(a->data().toString());
+    addRecentFileTrigger(qobject_cast<QAction*>(sender()));
 }
 
 void MainWindow::on_actionRecent_File5_triggered()
 {
-    QAction *a = qobject_cast<QAction*>(sender());
-    if (a->isEnabled()) readSource(a->data().toString());
-    addRecentFile(a->data().toString());
+    addRecentFileTrigger(qobject_cast<QAction*>(sender()));
 }
 
 void MainWindow::on_actionRecent_File6_triggered()
 {
-    QAction *a = qobject_cast<QAction*>(sender());
-    if (a->isEnabled()) readSource(a->data().toString());
-    addRecentFile(a->data().toString());
+    addRecentFileTrigger(qobject_cast<QAction*>(sender()));
+}
+
+void MainWindow::on_actionReload_triggered()
+{
+    readSource(GPCFilePath);
 }

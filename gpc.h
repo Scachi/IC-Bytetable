@@ -8,12 +8,14 @@
 class GPC
 {
 private:
-    QString     gpcFilePath;
-    QStringList includeList;
-    QStringList includeListDone;
+    QString     gpcFilePath;        // the file that was initially opened
 
+    QStringList includeList;        // list of found include files
+    QStringList includeListDone;    // include files that are already parsed
+
+    // lists containing all the keywords and their values found in the parsed files
+    QStringList icCommentList;      // OWN:single line only, line has to be directly above the [Name] and has to start with //
     QStringList icFileList;
-    QStringList icRawList;
     QStringList icLineNo;
     QStringList icNameList;
     QStringList icShortdescList;
@@ -28,9 +30,12 @@ private:
     QStringList icQontrolTypeList;
     QStringList icItemList;
     QStringList icMinValList;
-    QStringList icMaxList;
+    QStringList icMaxValList;
     QStringList icStepList;
     QStringList icDecimalsList;
+    QStringList icVariableTypeList; // for future usage - creation of ICs: vartype=
+    QStringList icVariableNameList; // for future usage - creation of ICs: varname=
+
 
 public:
     GPC(QString s) {
@@ -39,6 +44,8 @@ public:
         //icNameList = r->getICNames();
         qDebug() << "*r = new GPCReader(s) : " << s.toUtf8();
         */
+        gpcFilePath=s;
+
         GPCReader r = GPCReader(s);
         //icNameList = r->getICNames();
         qDebug() << "r = GPCReader(s) : " << s.toUtf8();

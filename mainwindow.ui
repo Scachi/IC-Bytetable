@@ -14,7 +14,7 @@
    <string>IC-Bytetable</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resource.qrc">
+   <iconset>
     <normaloff>:/T2/00_AutoIT/IC-Bytetable/icon.ico</normaloff>:/T2/00_AutoIT/IC-Bytetable/icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget"/>
@@ -40,7 +40,7 @@
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
-       <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-open-recent.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-open-recent.ico</iconset>
+       <normaloff>:/resources/document-open-recent.ico</normaloff>:/resources/document-open-recent.ico</iconset>
      </property>
      <addaction name="actionRecent_File1"/>
      <addaction name="actionRecent_File2"/>
@@ -96,7 +96,7 @@
   <action name="actionReload">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/view-refresh.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/view-refresh.ico</iconset>
+     <normaloff>:/resources/view-refresh.ico</normaloff>:/resources/view-refresh.ico</iconset>
    </property>
    <property name="text">
     <string>&amp;Reload</string>
@@ -111,7 +111,7 @@
   <action name="actionOpenFile">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-open-2.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-open-2.ico</iconset>
+     <normaloff>:/resources/document-open-2.ico</normaloff>:/resources/document-open-2.ico</iconset>
    </property>
    <property name="text">
     <string>&amp;File</string>
@@ -129,7 +129,7 @@
   <action name="actionReadClipboard">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-import-2.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-import-2.ico</iconset>
+     <normaloff>:/resources/document-import-2.ico</normaloff>:/resources/document-import-2.ico</iconset>
    </property>
    <property name="text">
     <string>&amp;Clipboard</string>
@@ -144,7 +144,7 @@
   <action name="actionAbout">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/help-about.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/help-about.ico</iconset>
+     <normaloff>:/resources/help-about.ico</normaloff>:/resources/help-about.ico</iconset>
    </property>
    <property name="text">
     <string>About</string>
@@ -153,7 +153,7 @@
   <action name="actionExportCSV">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-export-4.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/document-export-4.ico</iconset>
+     <normaloff>:/resources/document-export-4.ico</normaloff>:/resources/document-export-4.ico</iconset>
    </property>
    <property name="text">
     <string>&amp;Export CSV</string>
@@ -162,7 +162,7 @@
   <action name="actionExit">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/application-exit.ico</normaloff>:/open_icon_library-win-0.11/icons/48x48/actions/application-exit.ico</iconset>
+     <normaloff>:/resources/application-exit.ico</normaloff>:/resources/application-exit.ico</iconset>
    </property>
    <property name="text">
     <string>&amp;Quit</string>
@@ -170,13 +170,13 @@
   </action>
   <action name="actionRecent_File1">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Recent_File1</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>

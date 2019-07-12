@@ -1,12 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file>../open_icon_library-win-0.11/icons/48x48/actions/document-open-2.ico</file>
-        <file>../open_icon_library-win-0.11/icons/48x48/actions/document-open-recent.ico</file>
-        <file>../open_icon_library-win-0.11/icons/48x48/actions/application-exit.ico</file>
-        <file>../open_icon_library-win-0.11/icons/48x48/actions/help-about.ico</file>
-        <file>../open_icon_library-win-0.11/icons/48x48/actions/view-refresh.ico</file>
-        <file>../open_icon_library-win-0.11/icons/48x48/actions/document-export-4.ico</file>
-        <file>../open_icon_library-win-0.11/icons/48x48/actions/document-import-2.ico</file>
-        <file>../../T2/00_AutoIT/IC-Bytetable/icon.ico</file>
+        <file>resources/application-exit.ico</file>
+        <file>resources/document-export-4.ico</file>
+        <file>resources/document-import-2.ico</file>
+        <file>resources/document-open-2.ico</file>
+        <file>resources/document-open-recent.ico</file>
+        <file>resources/help-about.ico</file>
+        <file>resources/icon.ico</file>
+        <file>resources/view-refresh.ico</file>
     </qresource>
 </RCC>

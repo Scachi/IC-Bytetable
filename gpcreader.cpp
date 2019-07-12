@@ -12,6 +12,7 @@ void GPCReader::readFile() {
     QTextStream in(&inputFile);
     QString line;
     // loop through all lines
+    //icRawList.clear();
     while (!in.atEnd()) {
         icRawList.append(in.readLine());
         //qDebug() << "line: " << line.toUtf8();
