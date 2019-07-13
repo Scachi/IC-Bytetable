@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QScrollArea>
+#include <QLabel>
 #include "gpc.h"
 
 namespace Ui {
@@ -44,17 +46,20 @@ private:
     enum { MaxRecentFiles = 6 };
     QStringList RecentFilesList;
     QString GPCFilePath;
-
+    QLabel *StatusBarLabel;
 
 
 public:
     void readSource(QString s) {
         enableReloadBtn();
+        showMessageStatusBar(s);
         GPCFilePath=s;
         GPC *g = new GPC(s);
         qDebug() << "*g = new GPC(s) : " << s.toUtf8();
     }
     void enableReloadBtn();
+    void modifyStatusBar();
+    void showMessageStatusBar(QString msg);
 
 
 private:

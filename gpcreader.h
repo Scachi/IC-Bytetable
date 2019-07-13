@@ -12,8 +12,9 @@ private:
     QStringList includeList;        // list of found #include lines
     QStringList includeListDone;    // list of #include lines/files processed
 
-    QStringList icFileList;         // file that contained the current parsed keywords
     QStringList icRawList;          // list containing current gpcFilePath complete files content
+    QStringList icCommentList;      // OWN:single line only, line has to be directly above the [Name] and has to start with //
+    QStringList icFileList;         // file that contained the current parsed keywords
     QStringList icLineNo;           // line no in files where the keyword was found
     QStringList icNameList;         // keywords found
     QStringList icShortdescList;    // multiline shortdesc will have the line breaks replaced by some special char
@@ -43,10 +44,11 @@ public:
         parseRawList();
     }
 
-    QStringList getICFileList()             {   return icFileList;              }
     QStringList getIncludeList()            {   return includeList;             }
     QStringList getIncludeListDone()        {   return includeListDone;         }
+    QStringList getICFileList()             {   return icFileList;              }
     QStringList getICLineNo()               {   return icLineNo;                }
+    QStringList getICCommentList()          {   return icCommentList;           }
     QStringList getICNameList()             {   return icNameList;              }
     QStringList getICShortdescList()        {   return icShortdescList;         }
     QStringList getICByteOffsetList()       {   return icByteOffsetList;        }

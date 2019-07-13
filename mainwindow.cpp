@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     readRecentFiles();
+    modifyStatusBar();
     //qDebug() << " recentfilelist count: " << RecentFilesList.count();
 }
 
@@ -25,29 +26,20 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_actionOpenFile_triggered()
-{
-    QString scriptFileName =  QFileDialog::getOpenFileName(
-              this,
-              "Open Document",
-              QDir::currentPath(),
-              "Script files (*.gpc *.gph);;All files (*.*)");
-
-    if( !scriptFileName.isNull() )
-    {
-      qDebug() << "selected file path : " << scriptFileName.toUtf8();
-      readSource(scriptFileName);
-      addRecentFile(scriptFileName);
-    }
-}
 
 void MainWindow::enableReloadBtn() {
     if (!ui->actionReload->isEnabled()) ui->actionReload->setEnabled(true);
 }
 
-void MainWindow::on_actionReadClipboard_triggered()
-{
-    readSource("clipboard");
+void MainWindow::modifyStatusBar() {
+    StatusBarLabel = new QLabel;
+    StatusBarLabel->setAlignment(Qt::AlignRight);
+    statusBar()->addPermanentWidget(StatusBarLabel);
+    statusBar()->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+}
+
+void MainWindow::showMessageStatusBar(QString msg) {
+    StatusBarLabel->setText(msg);
 }
 
 static inline QString recentFilesKey() { return QStringLiteral("recentFileList"); }
@@ -117,6 +109,27 @@ void MainWindow::showRecentFiles() {
     }
 }
 
+
+void MainWindow::on_actionOpenFile_triggered()
+{
+    QString scriptFileName =  QFileDialog::getOpenFileName(
+              this,
+              "Open Document",
+              QDir::currentPath(),
+              "Script files (*.gpc *.gph);;All files (*.*)");
+
+    if( !scriptFileName.isNull() )
+    {
+      qDebug() << "selected file path : " << scriptFileName.toUtf8();
+      readSource(scriptFileName);
+      addRecentFile(scriptFileName);
+    }
+}
+
+void MainWindow::on_actionReadClipboard_triggered()
+{
+    readSource("clipboard");
+}
 
 void MainWindow::on_actionExit_triggered()
 {

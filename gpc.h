@@ -9,14 +9,13 @@ class GPC
 {
 private:
     QString     gpcFilePath;        // the file that was initially opened
-
     QStringList includeList;        // list of found include files
     QStringList includeListDone;    // include files that are already parsed
 
     // lists containing all the keywords and their values found in the parsed files
-    QStringList icCommentList;      // OWN:single line only, line has to be directly above the [Name] and has to start with //
     QStringList icFileList;
     QStringList icLineNo;
+    QStringList icCommentList;      // OWN:single line only, line has to be directly above the [Name] and has to start with //
     QStringList icNameList;
     QStringList icShortdescList;
     QStringList icByteOffsetList;

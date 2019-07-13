@@ -33,7 +33,7 @@ void GPCReader::parseRawList() {
 
     // loop through all lines, check each line for data and push to each QList<QString> ic'listname'
     for (int i = 0; i < icRawList.size(); ++i) {
-             qDebug() << icRawList.at(i).toLocal8Bit().constData();
+        qDebug() << icRawList.at(i).toLocal8Bit().constData();
     }
 
 }
