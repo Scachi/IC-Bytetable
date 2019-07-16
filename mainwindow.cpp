@@ -17,8 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     readRecentFiles();
-    modifyStatusBar();
-    //qDebug() << " recentfilelist count: " << RecentFilesList.count();
+    modifyStatusBar(); // set resizing policy
 }
 
 MainWindow::~MainWindow()
@@ -26,12 +25,22 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// reads initially selected file (by filedialog, commandline, clipboard-btn, reload-btn)
+void MainWindow::readSource(QString sFilePath) {
+    //ToDo: error checking ? file is found ? file can be read ?
+    //ToDo: how to handle cliboard read #include files, GPCSelectedDir is emtpy then, ..where to search for ? ask the user to select directory or "skip" ?
+    enableReloadBtn();
+    showMessageStatusBar(sFilePath);
+    GPCSelectedDir=QFileInfo(sFilePath).absolutePath().append("/");
+    GPCSelectFilePath=sFilePath;
+    gpc = new GPC(GPCSelectedDir,GPCSelectFilePath);
+}
 
 void MainWindow::enableReloadBtn() {
     if (!ui->actionReload->isEnabled()) ui->actionReload->setEnabled(true);
 }
 
-void MainWindow::modifyStatusBar() {
+void MainWindow::modifyStatusBar() { // set resizing policy of statusBar
     StatusBarLabel = new QLabel;
     StatusBarLabel->setAlignment(Qt::AlignRight);
     statusBar()->addPermanentWidget(StatusBarLabel);
@@ -55,7 +64,7 @@ void MainWindow::readRecentFiles()
         RecentFilesList.append(settings.value(fileKey()).toString());
     }
     settings.endArray();
-    qDebug() << "readRecentFiles() found recent files : " << count;
+    //qDebug() << "readRecentFiles() found recent files : " << count;
     showRecentFiles();
 }
 
@@ -84,7 +93,7 @@ void MainWindow::addRecentFile(QString s) {
 
 void MainWindow::showRecentFiles() {
 
-    qDebug() << "showRecentFiles() found recent files : " << RecentFilesList.count();
+    //qDebug() << "showRecentFiles() found recent files : " << RecentFilesList.count();
 
     if (RecentFilesList.count()<1) ui->menuRe_cent->menuAction()->setEnabled(false);
     else ui->menuRe_cent->menuAction()->setEnabled(true);
@@ -112,15 +121,18 @@ void MainWindow::showRecentFiles() {
 
 void MainWindow::on_actionOpenFile_triggered()
 {
+    qDebug() << "GPCSelectedDir: " << GPCSelectedDir;
+    QDir curPath=QDir::currentPath();
+    if (GPCSelectedDir.length()>0) curPath.setPath(GPCSelectedDir);
     QString scriptFileName =  QFileDialog::getOpenFileName(
               this,
               "Open Document",
-              QDir::currentPath(),
+                curPath.path(),
               "Script files (*.gpc *.gph);;All files (*.*)");
 
     if( !scriptFileName.isNull() )
     {
-      qDebug() << "selected file path : " << scriptFileName.toUtf8();
+      //qDebug() << "selected file path : " << scriptFileName.toUtf8();
       readSource(scriptFileName);
       addRecentFile(scriptFileName);
     }
@@ -139,14 +151,21 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::about(this, tr("About IC-Bytetable"),
-             tr("IC-Bytetable\n"
-                "Version: %1"
-                "\n\nThe program is provided AS IS with NO WARRANTY OF ANY KIND \
-                INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY, AND FITNESS \
-                FOR A PARTICULAR PURPOSE.").arg(QCoreApplication::applicationVersion())
-                );
-
+    QMessageBox msgBox;
+        msgBox.setWindowIcon(QPixmap(":/resources/icon.ico"));
+        msgBox.setWindowTitle(tr("About IC-Bytetable"));
+        msgBox.setIconPixmap(QPixmap(":/resources/icon.ico"));
+        msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
+        //msgBox.setText("<a href='http://google.com/'>Google</a>");
+        msgBox.setText(tr("IC-Bytetable, Version: %1<br><br>"
+           "-= by %2 =-  <a href='https://github.com/Scachi'>https://github.com/Scachi</a><br>"
+           "<br>A special shout out to consoletuner.com<br>"
+           "<br>The program is provided AS IS with NO WARRANTY OF ANY KIND \
+           INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY, AND FITNESS \
+           FOR A PARTICULAR PURPOSE.").arg(QCoreApplication::applicationVersion()).arg(QCoreApplication::organizationName())
+           );
+        msgBox.setStandardButtons(QMessageBox::Close);
+        msgBox.exec();
 }
 
 void MainWindow::addRecentFileTrigger(QAction *a) {
@@ -187,5 +206,5 @@ void MainWindow::on_actionRecent_File6_triggered()
 
 void MainWindow::on_actionReload_triggered()
 {
-    readSource(GPCFilePath);
+    readSource(GPCSelectFilePath);
 }

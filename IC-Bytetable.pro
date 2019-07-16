@@ -45,3 +45,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resource.qrc
+
+DISTFILES += \
+    resources/ic_info.xml
+
+RC_FILE = IC-Bt.rc

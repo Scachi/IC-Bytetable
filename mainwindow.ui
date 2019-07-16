@@ -14,8 +14,8 @@
    <string>IC-Bytetable</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/T2/00_AutoIT/IC-Bytetable/icon.ico</normaloff>:/T2/00_AutoIT/IC-Bytetable/icon.ico</iconset>
+   <iconset resource="resource.qrc">
+    <normaloff>:/resources/icon.ico</normaloff>:/resources/icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">

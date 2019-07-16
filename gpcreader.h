@@ -8,71 +8,88 @@
 class GPCReader
 {
 private:
-    QString     gpcFilePath;        // current file processed
-    QStringList includeList;        // list of found #include lines
-    QStringList includeListDone;    // list of #include lines/files processed
+    QString     GPCSelectedDir;     // the path part of the file that was initially opened
+    QString     GPCSelectedFilePath;// selected filename from filedialog or recent file list
 
-    QStringList icRawList;          // list containing current gpcFilePath complete files content
-    QStringList icCommentList;      // OWN:single line only, line has to be directly above the [Name] and has to start with //
-    QStringList icFileList;         // file that contained the current parsed keywords
-    QStringList icLineNo;           // line no in files where the keyword was found
-    QStringList icNameList;         // keywords found
-    QStringList icShortdescList;    // multiline shortdesc will have the line breaks replaced by some special char
-    QStringList icByteOffsetList;   // ... and so on ...
-    QStringList icByteOffsetHexList;
-    QStringList icBitSizeList;
-    QStringList icBitOffsetList;
-    QStringList icDefaultValueList;
-    QStringList icDefaultValueHexList;
-    QStringList icNewValueList;
-    QStringList icNewValueHexList;
-    QStringList icQontrolTypeList;
-    QStringList icItemList;         // multiple items will be merged into a single entry by adding some specialchar as a delimiter
-    QStringList icMinValList;
-    QStringList icMaxValList;
-    QStringList icStepList;
-    QStringList icDecimalsList;
-    QStringList icVariableTypeList; // for future usage - creation of ICs: vartype=
-    QStringList icVariableNameList; // for future usage - creation of ICs: varname=
+    QString     GPCCurrentFilePath; // current file processed
+    QStringList GPCPathList;        // pathes to search files in
+    qint32      GPCICBegin;         // line containing <cfgdesc>
+    qint32      GPCICEnd;           // line containing </cfgdesc>
+    QStringList IncludeList;        // list of found #include lines
+    QStringList IncludeListDone;    // list of #include lines/files processed
+
+    QStringList GPCRawList;         // list containing current GPCFilePath complete files content
+
+    QStringList ICRawList;          // list containing current GPCFilePath ic filecontent
+    QStringList ICCommentList;      // OWN for notes: single line only, line has to be directly above the [Name] and has to start with //
+    QStringList ICFileList;         // file that contained the current parsed keywords
+    QStringList ICLineNo;           // line no in files where the keyword was found
+    QStringList ICNameList;         // keywords found
+    QStringList ICShortdescList;    // multiline shortdesc will have the line breaks replaced by some special char
+    QStringList ICByteOffsetList;   // ... and so on ...
+    QStringList ICByteOffsetHexList;
+    QStringList ICBitSizeList;
+    QStringList ICBitOffsetList;
+    QStringList ICDefaultValueList;
+    QStringList ICDefaultValueHexList;
+    QStringList ICNewValueList;
+    QStringList ICNewValueHexList;
+    QStringList ICQontrolTypeList;
+    QStringList ICItemList;         // multiple items will be merged into a single entry by adding some specialchar as a delimiter
+    QStringList ICMinValList;
+    QStringList ICMaxValList;
+    QStringList ICStepList;
+    QStringList ICDecimalsList;
+    QStringList ICVariableTypeList; // for future usage - creation of ICs: vartype=
+    QStringList ICVariableNameList; // for future usage - creation of ICs: varname=
 
 
 public:
-    GPCReader(QString s) {
-        gpcFilePath = s;
-        if (s=="clipboard") readClipboard();
-        else readFile();
-        parseRawList();
+    GPCReader(QString sDir, QString sFilePath) {
+        GPCSelectedDir = sDir;
+        GPCSelectedFilePath = sFilePath;
+        GPCCurrentFilePath = "";
+        //qDebug() << " Sdir / sfilepath: " << sDir << " / " << sFilePath;
+        parse();
     }
 
-    QStringList getIncludeList()            {   return includeList;             }
-    QStringList getIncludeListDone()        {   return includeListDone;         }
-    QStringList getICFileList()             {   return icFileList;              }
-    QStringList getICLineNo()               {   return icLineNo;                }
-    QStringList getICCommentList()          {   return icCommentList;           }
-    QStringList getICNameList()             {   return icNameList;              }
-    QStringList getICShortdescList()        {   return icShortdescList;         }
-    QStringList getICByteOffsetList()       {   return icByteOffsetList;        }
-    QStringList getICByteOffsetHexList()    {   return icByteOffsetHexList;     }
-    QStringList getICBitSizeList()          {   return icBitSizeList;           }
-    QStringList getICBitOffsetList()        {   return icBitOffsetList;         }
-    QStringList getICDefaultValueList()     {   return icDefaultValueList;      }
-    QStringList getICDefaultValueHexList()  {   return icDefaultValueHexList;   }
-    QStringList getICNewValueList()         {   return icNewValueList;          }
-    QStringList getICNewValueHexList()      {   return icNewValueHexList;       }
-    QStringList getICQontrolTypeList()      {   return icQontrolTypeList;       }
-    QStringList getICItemList()             {   return icItemList;              }
-    QStringList getICMinValList()           {   return icMinValList;            }
-    QStringList getICMaxValList()           {   return icMaxValList;            }
-    QStringList getICStepList()             {   return icStepList;              }
-    QStringList getICDecimalsList()         {   return icDecimalsList;          }
-    QStringList getICVariableNameList()     {   return icVariableNameList;      }
-    QStringList getICVariableTypeList()     {   return icVariableTypeList;      }
+    QStringList getIncludeList()            {   return IncludeList;             }
+    QStringList getIncludeListDone()        {   return IncludeListDone;         }
+    QStringList getICFileList()             {   return ICFileList;              }
+    QStringList getICLineNo()               {   return ICLineNo;                }
+    QStringList getICCommentList()          {   return ICCommentList;           }
+    QStringList getICNameList()             {   return ICNameList;              }
+    QStringList getICShortdescList()        {   return ICShortdescList;         }
+    QStringList getICByteOffsetList()       {   return ICByteOffsetList;        }
+    QStringList getICByteOffsetHexList()    {   return ICByteOffsetHexList;     }
+    QStringList getICBitSizeList()          {   return ICBitSizeList;           }
+    QStringList getICBitOffsetList()        {   return ICBitOffsetList;         }
+    QStringList getICDefaultValueList()     {   return ICDefaultValueList;      }
+    QStringList getICDefaultValueHexList()  {   return ICDefaultValueHexList;   }
+    QStringList getICNewValueList()         {   return ICNewValueList;          }
+    QStringList getICNewValueHexList()      {   return ICNewValueHexList;       }
+    QStringList getICQontrolTypeList()      {   return ICQontrolTypeList;       }
+    QStringList getICItemList()             {   return ICItemList;              }
+    QStringList getICMinValList()           {   return ICMinValList;            }
+    QStringList getICMaxValList()           {   return ICMaxValList;            }
+    QStringList getICStepList()             {   return ICStepList;              }
+    QStringList getICDecimalsList()         {   return ICDecimalsList;          }
+    QStringList getICVariableNameList()     {   return ICVariableNameList;      }
+    QStringList getICVariableTypeList()     {   return ICVariableTypeList;      }
 
 
 private:
-    void readFile();
+    QString locateFile(QString path);
+    void addPath(QFile file);
+    void addPath(QString path);
+    void readFile(QString path="");
     void readClipboard();
-    void parseRawList();
+    void parse();
+    void parseGPCRawList();
+    bool gpcRawHasIC();
+    void parseICRawList();
+
+    void findHeaderFiles(QStringList source);
 
 };
 

@@ -8,47 +8,45 @@
 class GPC
 {
 private:
-    QString     gpcFilePath;        // the file that was initially opened
-    QStringList includeList;        // list of found include files
-    QStringList includeListDone;    // include files that are already parsed
+    QString     GPCSelectedDir;        // the path part of the file that was initially opened
+    QString     GPCSelectedFilePath;   // the file that was initially opened
+
+    QStringList GPCIncludeList;        // list of found include files
+    QStringList GPCIncludeListDone;    // include files that are already parsed
 
     // lists containing all the keywords and their values found in the parsed files
-    QStringList icFileList;
-    QStringList icLineNo;
-    QStringList icCommentList;      // OWN:single line only, line has to be directly above the [Name] and has to start with //
-    QStringList icNameList;
-    QStringList icShortdescList;
-    QStringList icByteOffsetList;
-    QStringList icByteOffsetHexList;
-    QStringList icBitSizeList;
-    QStringList icBitOffsetList;
-    QStringList icDefaultValueList;
-    QStringList icDefaultValueHexList;
-    QStringList icNewValueList;
-    QStringList icNewValueHexList;
-    QStringList icQontrolTypeList;
-    QStringList icItemList;
-    QStringList icMinValList;
-    QStringList icMaxValList;
-    QStringList icStepList;
-    QStringList icDecimalsList;
-    QStringList icVariableTypeList; // for future usage - creation of ICs: vartype=
-    QStringList icVariableNameList; // for future usage - creation of ICs: varname=
+    QStringList ICFileList;
+    QStringList ICLineNo;
+    QStringList ICCommentList;      // OWN:single line only, line has to be directly above the [Name] and has to start with //
+    QStringList ICNameList;
+    QStringList ICShortdescList;
+    QStringList ICByteOffsetList;
+    QStringList ICByteOffsetHexList;
+    QStringList ICBitSizeList;
+    QStringList ICBitOffsetList;
+    QStringList ICDefaultValueList;
+    QStringList ICDefaultValueHexList;
+    QStringList ICNewValueList;
+    QStringList ICNewValueHexList;
+    QStringList ICQontrolTypeList;
+    QStringList ICItemList;
+    QStringList ICMinValList;
+    QStringList ICMaxValList;
+    QStringList ICStepList;
+    QStringList ICDecimalsList;
+    QStringList ICVariableTypeList; // for future usage - creation of ICs: vartype=
+    QStringList ICVariableNameList; // for future usage - creation of ICs: varname=
 
 
 public:
-    GPC(QString s) {
-        /*
-        GPCReader *r = new GPCReader(s);
+    GPC(QString sDir, QString sFilePath) {
+        GPCSelectedDir=sDir;
+        GPCSelectedFilePath=sFilePath;
+        GPCReader r = GPCReader(sDir,sFilePath);
         //icNameList = r->getICNames();
-        qDebug() << "*r = new GPCReader(s) : " << s.toUtf8();
-        */
-        gpcFilePath=s;
-
-        GPCReader r = GPCReader(s);
-        //icNameList = r->getICNames();
-        qDebug() << "r = GPCReader(s) : " << s.toUtf8();
+        //qDebug() << "r = GPCReader(s) : " << s.toUtf8();
     }
+
 };
 
 #endif // GPC_H

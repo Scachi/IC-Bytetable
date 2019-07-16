@@ -45,27 +45,21 @@ private:
     Ui::MainWindow *ui;
     enum { MaxRecentFiles = 6 };
     QStringList RecentFilesList;
-    QString GPCFilePath;
+    QString GPCSelectedDir;      // the path part of the file that was initially opened
+    QString GPCSelectFilePath;   // selected filename from filedialog or recent file list
     QLabel *StatusBarLabel;
 
-
 public:
-    void readSource(QString s) {
-        enableReloadBtn();
-        showMessageStatusBar(s);
-        GPCFilePath=s;
-        GPC *g = new GPC(s);
-        qDebug() << "*g = new GPC(s) : " << s.toUtf8();
-    }
+    GPC *gpc=nullptr;
+    void readSource(QString sFilePath);
+    void addRecentFile(QString s);
     void enableReloadBtn();
-    void modifyStatusBar();
     void showMessageStatusBar(QString msg);
 
-
 private:
+    void modifyStatusBar();
     void writeRecentFiles();
     void readRecentFiles();
-    void addRecentFile(QString s);
     void addRecentFileTrigger(QAction *a);
     void showRecentFiles();
 };

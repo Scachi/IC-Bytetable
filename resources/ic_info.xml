@@ -1,0 +1,145 @@
+<!-- File ic_list.xml-->
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<!-- ################### keywords ################### -->
+<xs:element name="standard" use="required">
+  <xs:complexType>
+    <xs:sequence>
+        <xs:element name="title"        type="xs:string" use="required"/>
+        <xs:element name="group"        type="xs:string" minOccurs="0"/>
+        <xs:element name="groupcol"     type="xs:string" minOccurs="0"/>
+        <xs:element name="color"        type="xs:string" minOccurs="0"/>
+        <xs:element name="shortdesc"    type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="byteoffset"   type="xs:string" use="required"/>
+<xs:element name="bitoffset"    type="xs:string" use="required"/>
+<xs:element name="bitsize"      type="xs:string" use="required"/>
+<xs:element name="control"      type="xs:string" use="required"/>
+<xs:element name="default"      type="xs:string" use="required"/>
+<xs:element name="decimals"     type="xs:string" use="required"/>
+<xs:element name="item"         type="xs:string" maxOccurs="unbounded" use="required"/>
+
+<xs:element name="limits" use="required">
+  <xs:complexType>
+    <xs:sequence>
+        <xs:element name="minimum" type="xs:string" use="required"/>
+        <xs:element name="maximum" type="xs:string" use="required"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:element>
+<xs:element name="step" type="xs:string" use="required"/>
+
+
+<!-- ################### controls and their keywords ################### -->
+<xs:element name="info">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element ref="standard"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:element>
+
+</xs:schema>
+
+
+<!-- info,config,space,checkbox,radiobox,combobox,spinbox,spinboxf,slider,dial -->
+<!--
+<IC>
+    <CONTROLS>
+        <control name="info">
+            <key minOccurs="0">group</key>
+            <key minOccurs="0">shortdesc</key>
+        </control>
+    </CONTROLS>
+
+    <KEYS>
+        <key name="group">
+        </key>
+        <key name="groupcol">
+        </key>
+        <key name="color">
+        </key>
+        <key name="shortdesc">
+        </key>
+        <key name="control">
+        </key>
+        <key name="byteoffset">
+        </key>
+        <key name="bitsize">
+        </key>
+        <key name="bitoffset">
+        </key>
+        <key name="default">
+        </key>
+        <key name="item">
+        </key>
+        <key name="minimum">
+        </key>
+        <key name="maximum">
+        </key>
+        <key name="step">
+        </key>
+        <key name="decimals">
+        </key>
+    </KEYS>
+-->
+
+<!--
+    <DATATYPES>
+-->
+        <!-- #### SIGNED #### -->
+<!--
+        <type ID="CHAR">
+            <min>-128</min>
+            <max>127</max>
+        </type>
+
+        <type ID="INT8">
+            <min>-128</min>
+            <max>127</max>
+        </type>
+        <type ID="INT">
+            <min>-32768</min>
+            <max>32768</max>
+        </type>
+        <type ID="INT16">
+            <min>-32768</min>
+            <max>32768</max>
+        </type>
+        <type ID="INT32">
+            <min>-2147483648</min>
+            <max>2147483648</max>
+        </type>
+
+        <type ID="FIX32">
+            <min>-32768.000000</min>
+            <max>32767.999985</max>
+        </type>
+-->
+        <!-- #### UNSIGNED #### -->
+<!--
+        <type ID="BOOL">
+            <min>0</min>
+            <max>255</max>
+        </type>
+        <type ID="UINT8">
+            <min>0</min>
+            <max>255</max>
+        </type>
+        <type ID="UINT16">
+            <min>0</min>
+            <max>65535</max>
+        </type>
+        <type ID="UINT32">
+            <min>0</min>
+            <max>4294967295</max>
+        </type>
+    </DATATYPES>
+
+</IC>
+-->
