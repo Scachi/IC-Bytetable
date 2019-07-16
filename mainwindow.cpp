@@ -26,7 +26,9 @@ MainWindow::~MainWindow()
 }
 
 // reads initially selected file (by filedialog, commandline, clipboard-btn, reload-btn)
+// ToDo: always read from filenames using / as path separator ?
 void MainWindow::readSource(QString sFilePath) {
+    //sFilePath = sFilePath.replace("\\","/");
     //ToDo: error checking ? file is found ? file can be read ?
     //ToDo: how to handle cliboard read #include files, GPCSelectedDir is emtpy then, ..where to search for ? ask the user to select directory or "skip" ?
     enableReloadBtn();
@@ -82,7 +84,7 @@ void MainWindow::writeRecentFiles()
 }
 
 void MainWindow::addRecentFile(QString s) {
-    RecentFilesList.prepend(s);
+    RecentFilesList.prepend(s.replace("\\","/"));
     RecentFilesList.removeDuplicates();
     if (RecentFilesList.count()>MaxRecentFiles) {
         RecentFilesList=RecentFilesList.mid(-1,MaxRecentFiles);
@@ -92,9 +94,6 @@ void MainWindow::addRecentFile(QString s) {
 }
 
 void MainWindow::showRecentFiles() {
-
-    //qDebug() << "showRecentFiles() found recent files : " << RecentFilesList.count();
-
     if (RecentFilesList.count()<1) ui->menuRe_cent->menuAction()->setEnabled(false);
     else ui->menuRe_cent->menuAction()->setEnabled(true);
 
