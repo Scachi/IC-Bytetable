@@ -35,7 +35,7 @@ private:
     QStringList ICNewValueList;
     QStringList ICNewValueHexList;
     QStringList ICQontrolTypeList;
-    QStringList ICItemList;         // multiple items will be merged into a single entry by adding some specialchar as a delimiter
+    QStringList ICItemList;         // multiple items will be merged into a single entry by adding some special char as a delimiter
     QStringList ICMinValList;
     QStringList ICMaxValList;
     QStringList ICStepList;

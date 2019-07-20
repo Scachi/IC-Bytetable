@@ -15,7 +15,6 @@ int main(int argc, char *argv[])
     w.show();
 
     //ToDo: move the command line argument checking to somewhere else ?
-    //ToDo: add error handling, when file can not be opened / is not found ?
     QCommandLineParser parser;
     parser.setApplicationDescription("Commandline Options");
     parser.addHelpOption();
@@ -23,13 +22,7 @@ int main(int argc, char *argv[])
     parser.addPositionalArgument("/path/to/scriptfile.gpc", QCoreApplication::translate("main", " The .gpc/.gph script file to read."));
     parser.process(a);
     const QStringList args = parser.positionalArguments();
-    if (args.size()>0 && (args[0].endsWith(".gpc") || args[0].endsWith(".gph")) ) {
-        QFile inputFile(args[0]);
-        if (inputFile.exists()) {
-            w.readSource(args[0]);
-            w.addRecentFile(args[0]);
-        }
-    }
+    if (args.size()>0 && (args[0].endsWith(".gpc") || args[0].endsWith(".gph"))) w.readSource(args[0]);
 
     return a.exec();
 }

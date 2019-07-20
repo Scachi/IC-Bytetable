@@ -3,6 +3,7 @@
 #include <QRegExp>
 #include "gpcreader.h"
 
+// tries to open the file : 1. as relative path, 2. as the string is
 QString GPCReader::locateFile(QString path) {
     QString file2open=GPCCurrentFilePath;
     // try the selected files directory first (for relative path)

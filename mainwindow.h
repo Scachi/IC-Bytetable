@@ -41,6 +41,9 @@ private slots:
 
     void on_actionReload_triggered();
 
+
+    void on_actionContextMenuToolbar_triggered();
+
 private:
     Ui::MainWindow *ui;
     enum { MaxRecentFiles = 6 };
@@ -55,6 +58,7 @@ public:
     void addRecentFile(QString s);
     void enableReloadBtn();
     void showMessageStatusBar(QString msg);
+    void msgboxFileNotFound(QString sFilepath);
 
 private:
     void modifyStatusBar();
