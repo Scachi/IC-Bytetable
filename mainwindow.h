@@ -59,6 +59,7 @@ public:
     void enableReloadBtn();
     void showMessageStatusBar(QString msg);
     void msgboxFileNotFound(QString sFilepath);
+    void msgboxICNotFound(QString source);
 
 private:
     void modifyStatusBar();

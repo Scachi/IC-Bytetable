@@ -10,6 +10,7 @@ class GPC
 private:
     QString     GPCSelectedDir;        // the path part of the file that was initially opened
     QString     GPCSelectedFilePath;   // the file that was initially opened
+    bool        GPCICFound;            // true when an IC definition has been found
 
     QStringList GPCIncludeList;        // list of found include files
     QStringList GPCIncludeListDone;    // include files that are already parsed

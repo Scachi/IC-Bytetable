@@ -28,6 +28,7 @@ MainWindow::~MainWindow()
 
 // reads initially selected file (by filedialog, commandline, clipboard-btn, reload-btn)
 void MainWindow::readSource(QString sFilePath) {
+
     sFilePath = sFilePath.replace("\\","/");
     if (QFileInfo(sFilePath).exists() ||
         sFilePath.compare("clipboard")==0) {
@@ -36,6 +37,7 @@ void MainWindow::readSource(QString sFilePath) {
             showMessageStatusBar(sFilePath);
             GPCSelectedDir=QFileInfo(sFilePath).absolutePath().append("/");
             qDebug() << " ScriptsDir: " << GPCSelectedDir;
+            qDebug() << " sFilePath: " << sFilePath;
             GPCSelectFilePath=sFilePath;
             addRecentFile(sFilePath);
             gpc = new GPC(GPCSelectedDir,GPCSelectFilePath);
@@ -58,6 +60,16 @@ void MainWindow::msgboxFileNotFound(QString sFilepath) {
         on_actionOpenFile_triggered();
     }
 }
+
+void MainWindow::msgboxICNotFound(QString source) {
+    QMessageBox::information(this, QCoreApplication::applicationName(),
+                                   tr("No 'Interactive Configuration' found in:\n"
+                                      "  '%1' ").arg(source)
+                                   ,
+                                   QMessageBox::Close);
+}
+
+
 
 void MainWindow::enableReloadBtn() {
     if (!ui->actionReload->isEnabled()) ui->actionReload->setEnabled(true);
@@ -94,23 +106,26 @@ void MainWindow::readRecentFiles()
 void MainWindow::writeRecentFiles()
 {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
-    //static void writeRecentFiles(const QStringList &files, QSettings &settings)
     const int count = RecentFilesList.count();
     settings.beginWriteArray(recentFilesKey());
     for (int i = 0; i < count; ++i) {
         settings.setArrayIndex(i);
         settings.setValue(fileKey(), RecentFilesList.at(i));
+        qDebug() << " Recent file " << i << " : " << RecentFilesList.at(i);
     }
     settings.endArray();
 }
 
 void MainWindow::addRecentFile(QString s) {
+    //qDebug() << " addrecentfile qstring: " << s;
     if (s.compare("clipboard")==0) return; // do no add clipboard to recent file list
     RecentFilesList.prepend(s.replace("\\","/"));
     RecentFilesList.removeDuplicates();
+    //if (RecentFilesList.count()>MaxRecentFiles) qDebug() << "max recentlist reached ";
     if (RecentFilesList.count()>MaxRecentFiles) {
-        RecentFilesList=RecentFilesList.mid(-1,MaxRecentFiles);
+        RecentFilesList=RecentFilesList.mid(0,MaxRecentFiles);
     }
+
     writeRecentFiles();
     showRecentFiles();
 }
@@ -189,7 +204,6 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::addRecentFileTrigger(QAction *a) {
     if (a->isEnabled()) readSource(a->data().toString());
-    addRecentFile(a->data().toString());
 }
 
 

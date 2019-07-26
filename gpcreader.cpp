@@ -1,6 +1,9 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QRegExp>
+#include <QMimeData>
+#include <QRegularExpression>
+#include <QRegularExpressionMatchIterator>
 #include "gpcreader.h"
 
 // tries to open the file : 1. as relative path, 2. as the string is
@@ -47,9 +50,22 @@ void GPCReader::readFile(QString path) {
     inputFile.close();
 }
 
+
 void GPCReader::readClipboard() {
-    QClipboard *clipboard = QGuiApplication::clipboard();
-    GPCRawList.append(clipboard->text());
+    const QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+
+    if (mimeData->hasText()) {
+        GPCRawList.clear();
+        QString sClip=clipboard->text();
+        GPCRawList=sClip.split("\n");
+        /*
+        for (int i = 0; i < GPCRawList.size(); ++i) {
+            qDebug() << "GPCRawList: " << GPCRawList[i];
+        }
+        */
+    }
+
 }
 
 void GPCReader::parse() {
@@ -77,7 +93,6 @@ void GPCReader::parse() {
             }
         }
     }
-
 }
 
 
@@ -100,10 +115,8 @@ void GPCReader::findHeaderFiles(QStringList source) {
     for (int i = 0; i < TMPList.size(); ++i) {
         if (rx.indexIn(TMPList.at(i)) != -1) {
             if (!IncludeList.contains(rx.cap(1)) && !IncludeListDone.contains(rx.cap(1))) IncludeList.append(rx.cap(1));
-
         }
     }
-
 }
 
 bool GPCReader::gpcRawHasIC() {
@@ -113,14 +126,36 @@ bool GPCReader::gpcRawHasIC() {
     GPCICBegin=GPCRawList.indexOf(rx);
     rx.setPattern("</cfgdesc>");
     GPCICEnd=GPCRawList.indexOf(rx);
-    //qDebug() << "Interactive Configuration: begins at line:" << GPCICBegin << " and ends at line:" << GPCICEnd;
+    qDebug() << "Interactive Configuration: begins at line:" << GPCICBegin << " and ends at line:" << GPCICEnd;
     if (GPCICBegin!= -1 && GPCICEnd!= -1) return true;
     return false;
 }
 
 void GPCReader::parseICRawList() {
-    if (!gpcRawHasIC()) return; //ToDo: loop through all files
+    qDebug() << "parseICRawList";
+    if (!gpcRawHasIC()) return;
+    qDebug() << "gpcRawHasIC";
+    GPCICFound=true;
     ICRawList = GPCRawList.mid(GPCICBegin,GPCICBegin+GPCICEnd);
-    //ToDO: parse IC content here
+    //ToDO: parse ICRawList IC content here
+    findICNameLines();
+}
 
+
+void GPCReader::findICNameLines() {
+    qDebug() << "FindICNames";
+
+    QRegularExpression re;
+    QRegularExpressionMatch match;
+    qint32 line;
+    re.setPattern("^\\s*(\\[.*\\])");
+    line=0;
+    while ((line=ICRawList.indexOf(re,line)) > -1) {
+        match=re.match(ICRawList[line]);
+        //qDebug() << "Found Name " << match.captured(0) << " in line: " << line;
+        ICLineNo.append(QString::number(line));
+        match=re.match(ICRawList[line]);
+        ICNameList.append(match.captured(0));
+        line++;
+    }
 }

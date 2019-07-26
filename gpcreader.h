@@ -10,6 +10,7 @@ class GPCReader
 private:
     QString     GPCSelectedDir;     // the path part of the file that was initially opened
     QString     GPCSelectedFilePath;// selected filename from filedialog or recent file list
+    bool        GPCICFound;         // true when an IC definition has been found
 
     QString     GPCCurrentFilePath; // current file processed
     QStringList GPCPathList;        // pathes to search files in
@@ -53,6 +54,7 @@ public:
         parse();
     }
 
+    bool        getICFound()                {   return GPCICFound;              }
     QStringList getIncludeList()            {   return IncludeList;             }
     QStringList getIncludeListDone()        {   return IncludeListDone;         }
     QStringList getICFileList()             {   return ICFileList;              }
@@ -90,6 +92,7 @@ private:
     void parseICRawList();
 
     void findHeaderFiles(QStringList source);
+    void findICNameLines();
 
 };
 
