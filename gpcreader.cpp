@@ -192,10 +192,23 @@ void GPCReader::parseICSection(qint32 line) {
     ICBitSize       =GetVal("^\\s*bitsize\\s*=(.*)");
     ICBitOffset     =GetVal("^\\s*bitoffset\\s*=(.*)");
     ICDefaultVal    =GetVal("^\\s*default\\s*=(.*)");
+    ICDefaultVal.insert(ICDecimals.length() - ICDecimals.toInt()-1,'.'); // insert dot at decimal position
 
     ICByteOffsetHex =QString("%1").arg(ICByteOffset.toInt(), 2, 16, QLatin1Char( '0' ));
-    //ToDo: handle fix32 / fix16
-    ICDefaultValHex =QString("%1").arg(ICDefaultVal.toInt(), ICBitSize.toInt()/4, 16, QLatin1Char( '0' ));
+
+    // handle fix32 / fix16
+    if (ICControl.indexOf("spinboxf") > -1) {
+        qDebug() << "valtohex, string: " << ICDefaultVal;
+        float fconv=ICDefaultVal.toFloat();
+        qDebug() << "valtohex, float: " << fconv;
+        qint32 iconv;
+        if (ICBitSize.contains("16")) iconv = qRound(fconv * 256);
+        else iconv = qRound(fconv * 65536); // bitsize 32 , if (ICBitSize.contains("32"))
+        qDebug() << "valtohex, iconv: " << iconv;
+        ICDefaultValHex =QString("%1").arg(iconv, ICBitSize.toInt()/4, 16, QLatin1Char( '0' ));
+    } else {
+        ICDefaultValHex =QString("%1").arg(ICDefaultVal.toInt(), ICBitSize.toInt()/4, 16, QLatin1Char( '0' ));
+    }
 
     //ICNewVal=
     //ICNewValHex=
