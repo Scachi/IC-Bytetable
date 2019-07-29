@@ -7,9 +7,9 @@
 #include <QFile>
 #include <QTextStream>
 
+#include "gpcreader.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "gpc.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -40,7 +40,11 @@ void MainWindow::readSource(QString sFilePath) {
             qDebug() << " sFilePath: " << sFilePath;
             GPCSelectFilePath=sFilePath;
             addRecentFile(sFilePath);
-            gpc = new GPC(GPCSelectedDir,GPCSelectFilePath);
+            //gpc = new GPC(GPCSelectedDir,GPCSelectFilePath);
+            GPCReader r = GPCReader(GPCSelectedDir,GPCSelectFilePath);
+            //ToDo: parse ic data using/filling ic.h
+
+
     } else {
         // file not found
         msgboxFileNotFound(sFilePath);

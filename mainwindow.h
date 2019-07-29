@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QScrollArea>
 #include <QLabel>
-#include "gpc.h"
 
 namespace Ui {
 class MainWindow;
@@ -53,7 +52,6 @@ private:
     QLabel *StatusBarLabel;
 
 public:
-    GPC *gpc=nullptr;
     void readSource(QString sFilePath);
     void addRecentFile(QString s);
     void enableReloadBtn();

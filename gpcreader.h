@@ -19,31 +19,42 @@ private:
     QStringList IncludeList;        // list of found #include lines
     QStringList IncludeListDone;    // list of #include lines/files processed
 
-    QStringList GPCRawList;         // list containing current GPCFilePath complete files content
+    QStringList GPCRawList;         // current GPCFilePath complete files content
 
-    QStringList ICRawList;          // list containing current GPCFilePath ic filecontent
-    QStringList ICCommentList;      // OWN for notes: single line only, line has to be directly above the [Name] and has to start with //
-    QStringList ICFileList;         // file that contained the current parsed keywords
-    QStringList ICLineNo;           // line no in files where the keyword was found
-    QStringList ICNameList;         // keywords found
-    QStringList ICShortdescList;    // multiline shortdesc will have the line breaks replaced by some special char
-    QStringList ICByteOffsetList;   // ... and so on ...
-    QStringList ICByteOffsetHexList;
-    QStringList ICBitSizeList;
-    QStringList ICBitOffsetList;
-    QStringList ICDefaultValueList;
-    QStringList ICDefaultValueHexList;
-    QStringList ICNewValueList;
-    QStringList ICNewValueHexList;
-    QStringList ICQontrolTypeList;
-    QStringList ICItemList;         // multiple items will be merged into a single entry by adding some special char as a delimiter
-    QStringList ICMinValList;
-    QStringList ICMaxValList;
-    QStringList ICStepList;
-    QStringList ICDecimalsList;
-    QStringList ICVariableTypeList; // for future usage - creation of ICs: vartype=
-    QStringList ICVariableNameList; // for future usage - creation of ICs: varname=
+    QStringList ICRawList;          // current GPCFilePath InteractiveConfiguration filecontent
 
+    QStringList ICRawSection;       // current [somename] raw section
+    QString     ICRawSectionString;
+
+    QString     ICFileName;             // file that contained the current parsed keywords
+
+    QString     ICLine;             // line no in files where the keyword was found
+    QString     ICName;             // keywords found
+    QString     ICControl;
+    QStringList ICItem;             // multiple items will be merged into a single entry by adding some special char as a delimiter
+    QString     ICMinVal;
+    QString     ICMaxVal;
+    QString     ICStep;
+    QString     ICDecimals;
+
+    QString     ICCollapsible;
+    QString     ICGroup;
+    QString     ICGroupCol;
+    QString     ICColor;
+
+    QString     ICVarType;     // for future usage - creation of ICs: vartype=
+    QString     ICVarName;     // for future usage - creation of ICs: varname=
+    QString     ICComment;          // for future usage - creation of ICs: comment=
+
+    QStringList ICShortdesc;        // multiline shortdesc will have the line breaks replaced by some special char
+    QString     ICByteOffset;       // ... and so on ...
+    QString     ICByteOffsetHex;
+    QString     ICBitSize;
+    QString     ICBitOffset;
+    QString     ICDefaultVal;
+    QString     ICDefaultValHex;
+    QString     ICNewVal;
+    QString     ICNewValHex;
 
 public:
     GPCReader(QString sDir, QString sFilePath) {
@@ -53,7 +64,7 @@ public:
         //qDebug() << " Sdir / sfilepath: " << sDir << " / " << sFilePath;
         parse();
     }
-
+/*
     bool        getICFound()                {   return GPCICFound;              }
     QStringList getIncludeList()            {   return IncludeList;             }
     QStringList getIncludeListDone()        {   return IncludeListDone;         }
@@ -78,7 +89,7 @@ public:
     QStringList getICDecimalsList()         {   return ICDecimalsList;          }
     QStringList getICVariableNameList()     {   return ICVariableNameList;      }
     QStringList getICVariableTypeList()     {   return ICVariableTypeList;      }
-
+*/
 
 private:
     QString locateFile(QString path);
@@ -91,8 +102,16 @@ private:
     bool gpcRawHasIC();
     void parseICRawList();
 
+    void parseICSection(qint32 line);
+
     void findHeaderFiles(QStringList source);
     void findICNameLines();
+
+    QStringList GetShortdesc();
+    QString GetVal(QString key, bool trimmed=true);
+    QString GetVal(QStringList source, QString key, bool trimmed=true);
+    QStringList GetList(QString key, bool trimmed=true);
+    QStringList GetList(QStringList source, QString key, bool trimmed=true);
 
 };
 

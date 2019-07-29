@@ -9,31 +9,43 @@ public:
     IC();
 
 private:
-    QString     FileName;   // filename this section was found in
-    QStringList RawData;    // complete raw data of the section
 
-    qint32      Line;       // line number the [section] tag was found in
-    QString     Name;       // name of the [section]
-    QString     Control;
-    QStringList Items;
-    QString     MinVal;
-    QString     MaxVal;
-    QString     Step;
-    QString     Decimals;
+    QStringList ICRawSection; // complete raw data of the section
 
-    QString     VariableDataType; // for future usage - creation of ICs: vartype=
-    QString     VariableName;     // for future usage - creation of ICs: varname=
+    QString     ICFileName;   // filename this section was found in
 
-    QString     Comment;    // OWN for notes: single line only, line has to be directly above the [Name] and has to start with //
-    QStringList Shortdesc;
-    QString     ByteOffset;
-    QString     ByteOffsetHex;
-    QString     BitSize;
-    QString     BitOffset;
-    QString     DefaultVal;
-    QString     DefaultValHex;
-    QString     NewVal;
-    QString     NewValHex;
+    qint32      ICLine;       // line number the [section] tag was found in
+    QString     ICName;       // name of the [section]
+    QString     ICControl;
+    QStringList ICItem;
+    QString     ICMinVal;
+    QString     ICMaxVal;
+    QString     ICStep;
+    QString     ICDecimals;
+
+    QString     ICCollapsible;
+    QString     ICGroup;
+    QString     ICGroupCol;
+    QString     ICColor;
+
+    QString     ICVarType;  // for future usage - creation of ICs: vartype=
+    QString     ICVarName;  // for future usage - creation of ICs: varname=
+    QString     ICComment;  // for future usage - creation of ICs: comment=
+
+    QStringList ICShortdesc;
+    QString     ICByteOffset;
+    QString     ICByteOffsetHex;
+    QString     ICBitSize;
+    QString     ICBitOffset;
+    QString     ICDefaultVal;
+    QString     ICDefaultValHex;
+    QString     ICNewVal;
+    QString     ICNewValHex;
+
+    qint8       Valid; // result of validate
+    QStringList Info;  // information notes
+    QStringList Warn;  // warning notes
+    QStringList Err;   // error notes
 };
 
 #endif // IC_H

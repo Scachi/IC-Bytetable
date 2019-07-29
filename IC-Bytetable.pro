@@ -25,14 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        gpc.cpp \
         gpcreader.cpp \
         ic.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
-        gpc.h \
         gpcreader.h \
         ic.h \
         mainwindow.h
