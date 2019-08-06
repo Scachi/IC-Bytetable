@@ -5,6 +5,8 @@
 #include <QStringList>
 #include <QDebug>
 
+#include "ic.h"
+
 class GPCReader
 {
 private:
@@ -24,11 +26,10 @@ private:
     QStringList ICRawList;          // current GPCFilePath InteractiveConfiguration filecontent
 
     QStringList ICRawSection;       // current [somename] raw section
-    QString     ICRawSectionString;
 
-    QString     ICFileName;             // file that contained the current parsed keywords
+    QString     ICFileName;         // file that contained the current parsed keywords
 
-    QString     ICLine;             // line no in files where the keyword was found
+    QString     ICLineNo;           // line no in files where the keyword was found
     QString     ICName;             // keywords found
     QString     ICControl;
     QStringList ICItem;             // multiple items will be merged into a single entry by adding some special char as a delimiter
@@ -42,8 +43,8 @@ private:
     QString     ICGroupCol;
     QString     ICColor;
 
-    QString     ICVarType;     // for future usage - creation of ICs: vartype=
-    QString     ICVarName;     // for future usage - creation of ICs: varname=
+    QString     ICVarType;          // for future usage - creation of ICs: vartype=
+    QString     ICVarName;          // for future usage - creation of ICs: varname=
     QString     ICComment;          // for future usage - creation of ICs: comment=
 
     QStringList ICShortdesc;        // multiline shortdesc will have the line breaks replaced by some special char
@@ -55,6 +56,8 @@ private:
     QString     ICDefaultValHex;
     QString     ICNewVal;
     QString     ICNewValHex;
+
+    QVector<IC> ICVec;
 
 public:
     GPCReader(QString sDir, QString sFilePath) {
@@ -92,20 +95,21 @@ public:
 */
 
 private:
+    void parse();
+    void readFile(QString path="");
+    void readClipboard();
+
     QString locateFile(QString path);
     void addPath(QFile file);
     void addPath(QString path);
-    void readFile(QString path="");
-    void readClipboard();
-    void parse();
+
+
     void parseGPCRawList();
+    void findHeaderFiles(QStringList source);
+
     bool gpcRawHasIC();
     void parseICRawList();
-
     void parseICSection(qint32 line);
-
-    void findHeaderFiles(QStringList source);
-    void findICNameLines();
 
     QStringList GetShortdesc();
     QString GetVal(QString key, bool trimmed=true);

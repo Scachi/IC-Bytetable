@@ -7,40 +7,48 @@ class IC
 {
 public:
     IC();
+    IC(QStringList SLRawSection, QString SFileName, QString SLineNo, QString SName, QString SControl);
+    IC(QString SFileName, QString SLineNo, QString SName, QString SControl);
+
+    void ICDebug(QVector<IC> ICVec);
+    void ICDebug(QVector<IC> ICVec, QString sLineNo);
+    void ICOut(IC);
+    void ICOut();
 
 private:
 
-    QStringList ICRawSection; // complete raw data of the section
+public:
+    QStringList RawSection; // complete raw data of the section
 
-    QString     ICFileName;   // filename this section was found in
+    QString     FileName;   // filename this section was found in
 
-    qint32      ICLine;       // line number the [section] tag was found in
-    QString     ICName;       // name of the [section]
-    QString     ICControl;
-    QStringList ICItem;
-    QString     ICMinVal;
-    QString     ICMaxVal;
-    QString     ICStep;
-    QString     ICDecimals;
+    QString     LineNo;       // line number the [section] tag was found in
+    QString     Name;       // name of the [section]
+    QString     Control;
+    QStringList Item;
+    QString     MinVal;
+    QString     MaxVal;
+    QString     Step;
+    QString     Decimals;
 
-    QString     ICCollapsible;
-    QString     ICGroup;
-    QString     ICGroupCol;
-    QString     ICColor;
+    QString     Collapsible;
+    QString     Group;
+    QString     GroupCol;
+    QString     Color;
 
-    QString     ICVarType;  // for future usage - creation of ICs: vartype=
-    QString     ICVarName;  // for future usage - creation of ICs: varname=
-    QString     ICComment;  // for future usage - creation of ICs: comment=
+    QString     VarType;  // for future usage - creation of ICs: vartype=
+    QString     VarName;  // for future usage - creation of ICs: varname=
+    QString     Comment;  // for future usage - creation of ICs: comment=
 
-    QStringList ICShortdesc;
-    QString     ICByteOffset;
-    QString     ICByteOffsetHex;
-    QString     ICBitSize;
-    QString     ICBitOffset;
-    QString     ICDefaultVal;
-    QString     ICDefaultValHex;
-    QString     ICNewVal;
-    QString     ICNewValHex;
+    QStringList Shortdesc;
+    QString     ByteOffset;
+    QString     ByteOffsetHex;
+    QString     BitSize;
+    QString     BitOffset;
+    QString     DefaultVal;
+    QString     DefaultValHex;
+    QString     NewVal;
+    QString     NewValHex;
 
     qint8       Valid; // result of validate
     QStringList Info;  // information notes

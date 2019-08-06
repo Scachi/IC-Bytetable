@@ -10,6 +10,7 @@
 #include "gpcreader.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "ic.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -40,9 +41,9 @@ void MainWindow::readSource(QString sFilePath) {
             qDebug() << " sFilePath: " << sFilePath;
             GPCSelectFilePath=sFilePath;
             addRecentFile(sFilePath);
-            //gpc = new GPC(GPCSelectedDir,GPCSelectFilePath);
-            GPCReader r = GPCReader(GPCSelectedDir,GPCSelectFilePath);
+            GPCReader *gpc = new GPCReader(GPCSelectedDir,GPCSelectFilePath);
             //ToDo: parse ic data using/filling ic.h
+
 
 
     } else {

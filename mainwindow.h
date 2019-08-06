@@ -5,6 +5,8 @@
 #include <QScrollArea>
 #include <QLabel>
 
+#include "ic.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -16,6 +18,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    QVector<IC> ICVec;
 
 private slots:
     void on_actionOpenFile_triggered();

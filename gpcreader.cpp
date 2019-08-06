@@ -6,67 +6,6 @@
 
 #include "gpcreader.h"
 
-// tries to open the file : 1. as relative path, 2. as the string is
-QString GPCReader::locateFile(QString path) {
-    QString file2open=GPCCurrentFilePath;
-    // try the selected files directory first (for relative path)
-    if (path.length()>0) file2open.prepend(GPCSelectedDir);
-    QFile inputFile(file2open);
-    if (inputFile.exists()) return file2open;
-    // as fallback try the filename as it was found in the #include string (for absolute path)
-    file2open=GPCCurrentFilePath;
-    return file2open;
-}
-
-void GPCReader::addPath(QFile file) {
-    if (file.exists()) {
-        GPCPathList.append(QFileInfo(file).absolutePath().append("/"));
-        GPCPathList.removeDuplicates();
-    }
-}
-
-void GPCReader::addPath(QString path) {
-    QFile inputFile(path);
-    if (inputFile.exists()) {
-        GPCPathList.append(QFileInfo(GPCCurrentFilePath).absolutePath().append("/"));
-        GPCPathList.removeDuplicates();
-    }
-}
-
-void GPCReader::readFile(QString path) {
-    QString file2open=locateFile(path);
-    QFile inputFile(file2open);
-    if (inputFile.exists()) qDebug() << "Going to read: " << file2open;
-    else qDebug() << "Failed to find: " << file2open;
-    inputFile.open(QIODevice::ReadOnly);    
-    QTextStream in(&inputFile);
-    QString line;
-    // loop through all lines
-    GPCRawList.clear();
-    while (!in.atEnd()) {
-        GPCRawList.append(in.readLine());
-    }
-
-    inputFile.close();
-}
-
-
-void GPCReader::readClipboard() {
-    const QClipboard *clipboard = QApplication::clipboard();
-    const QMimeData *mimeData = clipboard->mimeData();
-
-    if (mimeData->hasText()) {
-        GPCRawList.clear();
-        QString sClip=clipboard->text();
-        GPCRawList=sClip.split("\n");
-        /*
-        for (int i = 0; i < GPCRawList.size(); ++i) {
-            qDebug() << "GPCRawList: " << GPCRawList[i];
-        }
-        */
-    }
-
-}
 
 void GPCReader::parse() {
     if (GPCCurrentFilePath=="") {
@@ -95,6 +34,66 @@ void GPCReader::parse() {
     }
 }
 
+void GPCReader::readFile(QString path) {
+    QString file2open=locateFile(path);
+    QFile inputFile(file2open);
+    if (inputFile.exists()) qDebug() << "Going to read: " << file2open;
+    else qDebug() << "Failed to find: " << file2open;
+    inputFile.open(QIODevice::ReadOnly);
+    QTextStream in(&inputFile);
+    QString line;
+    // loop through all lines
+    GPCRawList.clear();
+    while (!in.atEnd()) {
+        GPCRawList.append(in.readLine());
+    }
+
+    inputFile.close();
+}
+
+
+void GPCReader::readClipboard() {
+    const QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+
+    if (mimeData->hasText()) {
+        GPCRawList.clear();
+        QString sClip=clipboard->text();
+        GPCRawList=sClip.split("\n");
+        /*
+        for (int i = 0; i < GPCRawList.size(); ++i) {
+            qDebug() << "GPCRawList: " << GPCRawList[i];
+        }
+        */
+    }
+}
+
+// tries to open the file : 1. as relative path, 2. as the string is
+QString GPCReader::locateFile(QString path) {
+    QString file2open=GPCCurrentFilePath;
+    // try the selected files directory first (for relative path)
+    if (path.length()>0) file2open.prepend(GPCSelectedDir);
+    QFile inputFile(file2open);
+    if (inputFile.exists()) return file2open;
+    // as fallback try the filename as it was found in the #include string (for absolute path)
+    file2open=GPCCurrentFilePath;
+    return file2open;
+}
+
+void GPCReader::addPath(QFile file) {
+    if (file.exists()) {
+        GPCPathList.append(QFileInfo(file).absolutePath().append("/"));
+        GPCPathList.removeDuplicates();
+    }
+}
+
+void GPCReader::addPath(QString path) {
+    QFile inputFile(path);
+    if (inputFile.exists()) {
+        GPCPathList.append(QFileInfo(GPCCurrentFilePath).absolutePath().append("/"));
+        GPCPathList.removeDuplicates();
+    }
+}
 
 void GPCReader::parseGPCRawList() {
     findHeaderFiles(GPCRawList);
@@ -164,79 +163,72 @@ void GPCReader::parseICRawList() {
 
 // search the section for all keywords and their values
 void GPCReader::parseICSection(qint32 line) {
+
     //ToDo: use a list of linenumbers to check if all "non emtpy lines" got parsed, automark empty one as checked
-    qDebug() << "------- ICRAWSECTION ------";
-    qDebug() << ICRawSection;
+    //qDebug() << "------- ICRAWSECTION ------";
+    //qDebug() << ICRawSection;
     ICFileName=GPCCurrentFilePath;
 
-    ICLine          =QString::number(line);
+    ICLineNo        =QString::number(line);
     ICName          =GetVal("^\\s*(\\[.*\\]).*");
     ICControl       =GetVal("^\\s*control\\s*=(.*)");
-    ICItem          =GetList("^\\s*item\\s*=(.*)");
-    ICMinVal        =GetVal("^\\s*minimum\\s*=(.*)");
-    ICMaxVal        =GetVal("^\\s*maximum\\s*=(.*)");
-    ICStep          =GetVal("^\\s*step\\s*=(.*)");
-    ICDecimals      =GetVal("^\\s*decimals\\s*=(.*)");
 
-    ICCollapsible   =GetVal("^\\s*collapsible\\s*=(.*)");
-    ICGroup         =GetVal("^\\s*group\\s*=(.*)");
-    ICGroupCol      =GetVal("^\\s*groupcol\\s*=(.*)");
-    ICColor         =GetVal("^\\s*color\\s*=(.*)");
+    //qDebug() << ICVec.size();
+    IC newIC = IC(ICRawSection,ICFileName,ICLineNo,ICName,ICControl);
 
-    ICVarType       =GetVal("^\\s*vartype\\s*=(.*)");
-    ICVarName       =GetVal("^\\s*varname\\s*=(.*)");
-    ICComment       =GetVal("^\\s*comment\\s*=(.*)");
+    newIC.Item          =GetList("^\\s*item\\s*=(.*)");
+    newIC.MaxVal        =GetVal("^\\s*maximum\\s*=(.*)");
+    newIC.MinVal        =GetVal("^\\s*minimum\\s*=(.*)");
+    newIC.Step          =GetVal("^\\s*step\\s*=(.*)");
+    newIC.Decimals      =GetVal("^\\s*decimals\\s*=(.*)");
 
-    ICShortdesc     =GetShortdesc();
-    ICByteOffset    =GetVal("^\\s*byteoffset\\s*=(.*)");
-    ICBitSize       =GetVal("^\\s*bitsize\\s*=(.*)");
-    ICBitOffset     =GetVal("^\\s*bitoffset\\s*=(.*)");
-    ICDefaultVal    =GetVal("^\\s*default\\s*=(.*)");
-    ICDefaultVal.insert(ICDecimals.length() - ICDecimals.toInt()-1,'.'); // insert dot at decimal position
 
-    ICByteOffsetHex =QString("%1").arg(ICByteOffset.toInt(), 2, 16, QLatin1Char( '0' ));
+    newIC.Collapsible   =GetVal("^\\s*collapsible\\s*=(.*)");
+    newIC.Group         =GetVal("^\\s*group\\s*=(.*)");
+    newIC.GroupCol      =GetVal("^\\s*groupcol\\s*=(.*)");
+    newIC.Color         =GetVal("^\\s*color\\s*=(.*)");
 
-    // handle fix32 / fix16
-    if (ICControl.indexOf("spinboxf") > -1) {
-        qDebug() << "valtohex, string: " << ICDefaultVal;
+    newIC.VarType       =GetVal("^\\s*vartype\\s*=(.*)");
+    newIC.VarName       =GetVal("^\\s*varname\\s*=(.*)");
+    newIC.Comment       =GetVal("^\\s*comment\\s*=(.*)");
+
+    newIC.Shortdesc     =GetShortdesc();
+    newIC.ByteOffset    =GetVal("^\\s*byteoffset\\s*=(.*)");
+    newIC.BitSize       =GetVal("^\\s*bitsize\\s*=(.*)");
+    newIC.BitOffset     =GetVal("^\\s*bitoffset\\s*=(.*)");
+    newIC.DefaultVal    =GetVal("^\\s*default\\s*=(.*)");
+
+    //ToDo: put hex conversion into own function(s)
+    // insert dot at decimal position
+    if (newIC.Control.indexOf("spinboxf") > -1) {
+        newIC.DefaultVal.insert(newIC.Decimals.length() - newIC.Decimals.toInt()-1,'.');
+        // to hex
+        //qDebug() << "valtohex, string: " << ICDefaultVal;
         float fconv=ICDefaultVal.toFloat();
-        qDebug() << "valtohex, float: " << fconv;
+        //qDebug() << "valtohex, float: " << fconv;
         qint32 iconv;
         if (ICBitSize.contains("16")) iconv = qRound(fconv * 256);
         else iconv = qRound(fconv * 65536); // bitsize 32 , if (ICBitSize.contains("32"))
-        qDebug() << "valtohex, iconv: " << iconv;
+        //qDebug() << "valtohex, iconv: " << iconv;
         ICDefaultValHex =QString("%1").arg(iconv, ICBitSize.toInt()/4, 16, QLatin1Char( '0' ));
     } else {
-        ICDefaultValHex =QString("%1").arg(ICDefaultVal.toInt(), ICBitSize.toInt()/4, 16, QLatin1Char( '0' ));
+        // to hex
+        if (ICDefaultVal.length()>0) ICDefaultValHex =QString("%1").arg(ICDefaultVal.toInt(), ICBitSize.toInt()/4, 16, QLatin1Char( '0' ));
+        else ICDefaultValHex="";
     }
 
+    // byteoffset to hex
+    if (newIC.ByteOffset.length()>0) newIC.ByteOffsetHex =QString("%1").arg(newIC.ByteOffset.toInt(), 2, 16, QLatin1Char( '0' ));
+    else newIC.ByteOffsetHex="";
+
+    newIC.ICOut();
+    ICVec.push_back(newIC);
+    //qDebug() << ICVec.size();
+
+    /*
     //ICNewVal=
     //ICNewValHex=
-
-    qDebug() << "line: "            << ICLine;
-    qDebug() << "name: "            << ICName;
-    qDebug() << "control: "         << ICControl;
-    qDebug() << "item: "            << ICItem;
-    qDebug() << "minval: "          << ICMinVal;
-    qDebug() << "maxval: "          << ICMaxVal;
-    qDebug() << "step: "            << ICStep;
-    qDebug() << "decimals: "        << ICDecimals;
-    qDebug() << "collapsible: "     << ICCollapsible;
-    qDebug() << "group: "           << ICGroup;
-    qDebug() << "groupcol: "        << ICGroupCol;
-    qDebug() << "iccolor: "         << ICColor;
-
-    qDebug() << "icvartype: "       << ICVarType;
-    qDebug() << "icvarname: "       << ICVarName;
-    qDebug() << "iccomment: "       << ICComment;
-
-    qDebug() << "icshortdesc: "     << ICShortdesc;
-    qDebug() << "icbyeteoffset: "   << ICByteOffset;
-    qDebug() << "icbyteoffhex: "    << ICByteOffsetHex;
-    qDebug() << "icbitsize: "       << ICBitSize;
-    qDebug() << "icbitoffset: "     << ICBitOffset;
-    qDebug() << "icdefaultval: "    << ICDefaultVal;
-    qDebug() << "icdefaulthex: "    << ICDefaultValHex;
+    */
 }
 
 QStringList GPCReader::GetShortdesc() {
@@ -244,7 +236,7 @@ QStringList GPCReader::GetShortdesc() {
     QRegularExpression reMS, reME;
     QRegularExpressionMatch match;
     QString keyS = "^\\s*shortdesc\\s*=(.*)";
-    QString keyMS = "^\\s*shortdesc\\s*=\\s*<<<([a-zA-Z]*).*";
+    QString keyMS = "^\\s*shortdesc\\s*=\\s*<<<([a-zA-Z]*).*"; // get the real used MULTILINE tag
     QString keyME;
     qint32 lineMS, lineME;
 
