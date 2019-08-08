@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     parser.addPositionalArgument("/path/to/scriptfile.gpc", QCoreApplication::translate("main", " The .gpc/.gph script file to read."));
     parser.process(a);
     const QStringList args = parser.positionalArguments();
-    if (args.size()>0 && (args[0].endsWith(".gpc") || args[0].endsWith(".gph"))) w.readSource(args[0]);
+    if (args.size() > 0 && (args[0].endsWith(".gpc") || args[0].endsWith(".gph"))) w.readSource(args[0]);
 
     return a.exec();
 }

@@ -7,53 +7,49 @@ class IC
 {
 public:
     IC();
-    IC(QStringList SLRawSection, QString SFileName, QString SLineNo, QString SName, QString SControl);
-    IC(QString SFileName, QString SLineNo, QString SName, QString SControl);
+    IC(QStringList slRawSection, QString sFileName, QString sLineNo, QString sName, QString sControl);
+    IC(QString sFileName, QString sLineNo, QString sName, QString sControl);
 
-    void ICDebug(QVector<IC> ICVec);
-    void ICDebug(QVector<IC> ICVec, QString sLineNo);
-    void ICOut(IC);
-    void ICOut();
+    void debug();
 
-private:
 
 public:
-    QStringList RawSection; // complete raw data of the section
+    QStringList rawSection; // complete raw data of the section
 
-    QString     FileName;   // filename this section was found in
+    QString     fileName;   // filename this section was found in
 
-    QString     LineNo;       // line number the [section] tag was found in
-    QString     Name;       // name of the [section]
-    QString     Control;
-    QStringList Item;
-    QString     MinVal;
-    QString     MaxVal;
-    QString     Step;
-    QString     Decimals;
+    QString     lineNo;       // line number the [section] tag was found in
+    QString     name;       // name of the [section]
+    QString     control;
+    QStringList item;
+    QString     minVal;
+    QString     maxVal;
+    QString     step;
+    QString     decimals;
 
-    QString     Collapsible;
-    QString     Group;
-    QString     GroupCol;
-    QString     Color;
+    QString     collapsible;
+    QString     group;
+    QString     groupCol;
+    QString     color;
 
-    QString     VarType;  // for future usage - creation of ICs: vartype=
-    QString     VarName;  // for future usage - creation of ICs: varname=
-    QString     Comment;  // for future usage - creation of ICs: comment=
+    QString     varType;  // for future usage - creation of ICs: vartype=
+    QString     varName;  // for future usage - creation of ICs: varname=
+    QString     comment;  // for future usage - creation of ICs: comment=
 
-    QStringList Shortdesc;
-    QString     ByteOffset;
-    QString     ByteOffsetHex;
-    QString     BitSize;
-    QString     BitOffset;
-    QString     DefaultVal;
-    QString     DefaultValHex;
-    QString     NewVal;
-    QString     NewValHex;
+    QStringList shortdesc;
+    QString     byteOffset;
+    QString     byteOffsetHex;
+    QString     bitSize;
+    QString     bitOffset;
+    QString     defaultVal;
+    QString     defaultValHex;
+    QString     newVal;
+    QString     newValHex;
 
-    qint8       Valid; // result of validate
-    QStringList Info;  // information notes
-    QStringList Warn;  // warning notes
-    QStringList Err;   // error notes
+    qint8       valid; // result of validate
+    QStringList info;  // information notes
+    QStringList warn;  // warning notes
+    QStringList err;   // error notes
 };
 
 #endif // IC_H

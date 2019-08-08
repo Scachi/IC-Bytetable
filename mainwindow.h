@@ -18,7 +18,6 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    QVector<IC> ICVec;
 
 private slots:
     void on_actionOpenFile_triggered();
@@ -48,11 +47,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    enum { MaxRecentFiles = 6 };
-    QStringList RecentFilesList;
-    QString GPCSelectedDir;      // the path part of the file that was initially opened
-    QString GPCSelectFilePath;   // selected filename from filedialog or recent file list
-    QLabel *StatusBarLabel;
 
 public:
     void readSource(QString sFilePath);
@@ -61,6 +55,14 @@ public:
     void showMessageStatusBar(QString msg);
     void msgboxFileNotFound(QString sFilepath);
     void msgboxICNotFound(QString source);
+    void msgboxICNotFound();
+
+private:
+    enum { MAX_RECENT_FILES = 6 };
+    QStringList recentFilesList;
+    QString     gpcSelectedDir;      // the path part of the file that was initially opened
+    QString     gpcSelectFilePath;   // selected filename from filedialog or recent file list
+    QLabel      *statusBarLabel;
 
 private:
     void modifyStatusBar();

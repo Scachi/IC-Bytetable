@@ -1,80 +1,56 @@
 #include "ic.h"
 #include "gpcreader.h"
 
-IC::IC(QStringList SLRawSection, QString SFileName, QString SLineNo, QString SName, QString SControl)
+IC::IC(QStringList slRawSection, QString sFileName, QString sLineNo, QString sName, QString sControl)
 {
-    RawSection=SLRawSection;
-    FileName=SFileName;
-    LineNo=SLineNo;
-    Name=SName;
-    Control=SControl;
-    Valid=0;
+    rawSection = slRawSection;
+    fileName = sFileName;
+    lineNo = sLineNo;
+    name = sName;
+    control = sControl;
+    valid = 0;
 }
 
-IC::IC(QString SFileName, QString SLineNo, QString SName, QString SControl)
+IC::IC(QString sFileName, QString sLineNo, QString sName, QString sControl)
 {
-    FileName=SFileName;
-    LineNo=SLineNo;
-    Name=SName;
-    Control=SControl;
-    Valid=0;
+    fileName = sFileName;
+    lineNo = sLineNo;
+    name = sName;
+    control = sControl;
+    valid = 0;
 }
 
-// qDebug() complete IC
-void IC::ICDebug(QVector<IC> ICVec) {
-    for(int idx = 0; idx < ICVec.size(); idx++)
-    {
-        ICOut(ICVec[idx]);
-    }
-}
 
-// qDebug() specific IC entry by lineNo
-void IC::ICDebug(QVector<IC> ICVec, QString sLineNo) {
-
-
-    for(int idx = 0; idx < ICVec.size(); idx++)
-    {
-        if( ICVec[idx].LineNo.compare(sLineNo)==0 ) {
-            ICOut(ICVec[idx]);
-        }
-    }
-
-}
-
-void IC::ICOut() {
-    this->ICOut(*this);
-}
-
-void IC::ICOut(IC ic) {
+void IC::debug() {
     qDebug() << "------- ICRAWSECTION ------";
-    qDebug() << ic.RawSection;
-    qDebug() << "line: "        << ic.LineNo;
-    qDebug() << "name: "        << ic.Name;
-    qDebug() << "control: "     << ic.Control;
-    qDebug() << "item: "        << ic.Item;
-    qDebug() << "minval: "      << ic.MinVal;
-    qDebug() << "maxval: "      << ic.MaxVal;
-    qDebug() << "step: "        << ic.Step;
-    qDebug() << "decimals: "    << ic.Decimals;
-    qDebug() << "collapsible: " << ic.Collapsible;
-    qDebug() << "group: "       << ic.Group;
-    qDebug() << "groupcol: "    << ic.GroupCol;
-    qDebug() << "iccolor: "     << ic.Color;
+    qDebug() << this->rawSection;
+    qDebug() << "line: "        << this->lineNo;
+    qDebug() << "name: "        << this->name;
+    qDebug() << "control: "     << this->control;
+    qDebug() << "item: "        << this->item;
+    qDebug() << "minval: "      << this->minVal;
+    qDebug() << "maxval: "      << this->maxVal;
+    qDebug() << "step: "        << this->step;
+    qDebug() << "decimals: "    << this->decimals;
+    qDebug() << "collapsible: " << this->collapsible;
+    qDebug() << "group: "       << this->group;
+    qDebug() << "groupcol: "    << this->groupCol;
+    qDebug() << "iccolor: "     << this->color;
 
-    qDebug() << "vartype: "     << ic.VarType;
-    qDebug() << "varname: "     << ic.VarName;
-    qDebug() << "comment: "     << ic.Comment;
+    qDebug() << "vartype: "     << this->varType;
+    qDebug() << "varname: "     << this->varName;
+    qDebug() << "comment: "     << this->comment;
 
-    qDebug() << "shortdesc: "   << ic.Shortdesc;
-    qDebug() << "byeteoffset: " << ic.ByteOffset;
-    qDebug() << "byteoffhex: "  << ic.ByteOffsetHex;
-    qDebug() << "bitsize: "     << ic.BitSize;
-    qDebug() << "bitoffset: "   << ic.BitOffset;
-    qDebug() << "defaultval: "  << ic.DefaultVal;
-    qDebug() << "defaulthex: "  << ic.DefaultValHex;
+    qDebug() << "shortdesc: "   << this->shortdesc;
+    qDebug() << "byeteoffset: " << this->byteOffset;
+    qDebug() << "byteoffhex: "  << this->byteOffsetHex;
+    qDebug() << "bitsize: "     << this->bitSize;
+    qDebug() << "bitoffset: "   << this->bitOffset;
+    qDebug() << "defaultval: "  << this->defaultVal;
+    qDebug() << "defaulthex: "  << this->defaultValHex;
 
-    qDebug() << "valid: "       << ic.Valid;
-    qDebug() << "info: "        << ic.Info;
-    qDebug() << "warn: "        << ic.Warn;
-    qDebug() << "error: "       << ic.Err;
+    qDebug() << "valid: "       << this->valid;
+    qDebug() << "info: "        << this->info;
+    qDebug() << "warn: "        << this->warn;
+    qDebug() << "error: "       << this->err;
 }

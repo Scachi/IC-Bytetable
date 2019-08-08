@@ -4,29 +4,37 @@
 #include <QRegularExpression>
 #include <QDebug>
 
+#include "ic.h"
+#include "icv.h"
 #include "gpcreader.h"
+#include "mainwindow.h"
 
+bool GPCReader::getGPCICFound() {
+    return gpcICFound;
+}
 
 void GPCReader::parse() {
-    if (GPCCurrentFilePath=="") {
-        GPCCurrentFilePath=GPCSelectedFilePath;
-        if (GPCSelectedFilePath=="clipboard") {
+    if (gpcCurrentFilePath == "") {
+        gpcCurrentFilePath = gpcSelectedFilePath;
+        if (gpcSelectedFilePath == "clipboard")
+        {
             readClipboard();
-        } else {
-            readFile();
-        }
+        } else readFile();
     }
 
     parseGPCRawList();
     parseICRawList();
 
-    while (IncludeList.size()) {
-        for (int i = 0; i < IncludeList.size(); ++i) {
-            if (!IncludeListDone.contains(IncludeList[i])) {
-                IncludeListDone.append(IncludeList[i]);
-                GPCCurrentFilePath=IncludeList[i];
-                IncludeList.removeAt(i);
-                readFile(GPCSelectedDir);
+    while (includeList.size())
+    {
+        for (int i = 0; i < includeList.size(); ++i)
+        {
+            if (!includeListDone.contains(includeList[i]))
+            {
+                includeListDone.append(includeList[i]);
+                gpcCurrentFilePath = includeList[i];
+                includeList.removeAt(i);
+                readFile(gpcSelectedDir);
                 parseGPCRawList();
                 parseICRawList();
             }
@@ -35,19 +43,20 @@ void GPCReader::parse() {
 }
 
 void GPCReader::readFile(QString path) {
-    QString file2open=locateFile(path);
+    QString file2open = locateFile(path);
     QFile inputFile(file2open);
     if (inputFile.exists()) qDebug() << "Going to read: " << file2open;
     else qDebug() << "Failed to find: " << file2open;
+
     inputFile.open(QIODevice::ReadOnly);
     QTextStream in(&inputFile);
     QString line;
     // loop through all lines
-    GPCRawList.clear();
-    while (!in.atEnd()) {
-        GPCRawList.append(in.readLine());
+    gpcRawList.clear();
+    while (!in.atEnd())
+    {
+        gpcRawList.append(in.readLine());
     }
-
     inputFile.close();
 }
 
@@ -56,10 +65,11 @@ void GPCReader::readClipboard() {
     const QClipboard *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData();
 
-    if (mimeData->hasText()) {
-        GPCRawList.clear();
-        QString sClip=clipboard->text();
-        GPCRawList=sClip.split("\n");
+    if (mimeData->hasText())
+    {
+        gpcRawList.clear();
+        QString sClip = clipboard->text();
+        gpcRawList = sClip.split("\n");
         /*
         for (int i = 0; i < GPCRawList.size(); ++i) {
             qDebug() << "GPCRawList: " << GPCRawList[i];
@@ -70,33 +80,35 @@ void GPCReader::readClipboard() {
 
 // tries to open the file : 1. as relative path, 2. as the string is
 QString GPCReader::locateFile(QString path) {
-    QString file2open=GPCCurrentFilePath;
+    QString file2open = gpcCurrentFilePath;
     // try the selected files directory first (for relative path)
-    if (path.length()>0) file2open.prepend(GPCSelectedDir);
+    if (path.length()>0) file2open.prepend(gpcSelectedDir);
     QFile inputFile(file2open);
     if (inputFile.exists()) return file2open;
     // as fallback try the filename as it was found in the #include string (for absolute path)
-    file2open=GPCCurrentFilePath;
+    file2open = gpcCurrentFilePath;
     return file2open;
 }
 
 void GPCReader::addPath(QFile file) {
-    if (file.exists()) {
-        GPCPathList.append(QFileInfo(file).absolutePath().append("/"));
-        GPCPathList.removeDuplicates();
+    if (file.exists())
+    {
+        gpcPathList.append(QFileInfo(file).absolutePath().append("/"));
+        gpcPathList.removeDuplicates();
     }
 }
 
 void GPCReader::addPath(QString path) {
     QFile inputFile(path);
-    if (inputFile.exists()) {
-        GPCPathList.append(QFileInfo(GPCCurrentFilePath).absolutePath().append("/"));
-        GPCPathList.removeDuplicates();
+    if (inputFile.exists())
+    {
+        gpcPathList.append(QFileInfo(gpcCurrentFilePath).absolutePath().append("/"));
+        gpcPathList.removeDuplicates();
     }
 }
 
 void GPCReader::parseGPCRawList() {
-    findHeaderFiles(GPCRawList);
+    findHeaderFiles(gpcRawList);
     //qDebug() << "IncludeList size: " << IncludeList.size();
     /*
     for (int i = 0; i < IncludeList.size(); ++i) {
@@ -108,14 +120,17 @@ void GPCReader::parseGPCRawList() {
 // search for lines: #include "files"
 void GPCReader::findHeaderFiles(QStringList source) {
     QStringList strlst;
-    strlst=GetList(source,"\\s*#include\\s*\"(.*)\".*");
+    strlst = getList(source,"\\s*#include\\s*\"(.*)\".*");
     //qDebug() << "strlst: " << strlst;
     // test if file is already in include list
-    for (int i = 0; i < strlst.size(); ++i) {
+    for (int i = 0; i < strlst.size(); ++i)
+    {
         //qDebug() << "checking: " << strlst.at(i);
-        if (IncludeList.indexOf(strlst.at(i)) == -1 && IncludeListDone.indexOf(strlst.at(i)) == -1) {
+        if (includeList.indexOf(strlst.at(i)) == -1 &&
+            includeListDone.indexOf(strlst.at(i)) == -1)
+        {
             //qDebug() << " Adding to list: " <<
-            IncludeList.append(strlst.at(i));
+            includeList.append(strlst.at(i));
         }
     }
     //qDebug() << "IncludeList: " << IncludeList;
@@ -124,12 +139,13 @@ void GPCReader::findHeaderFiles(QStringList source) {
 bool GPCReader::gpcRawHasIC() {
     QRegularExpression re;
     re.setPattern("<cfgdesc>");
-    GPCICBegin=GPCRawList.indexOf(re);
+    gpcICBegin = gpcRawList.indexOf(re);
     re.setPattern("</cfgdesc>");
-    GPCICEnd=GPCRawList.indexOf(re);
+    gpcICEnd = gpcRawList.indexOf(re);
     //qDebug() << "Interactive Configuration: begins at line:" << GPCICBegin << " and ends at line:" << GPCICEnd;
-    if (GPCICBegin == -1 || GPCICEnd == -1) {
-        qDebug() << "No Interactive Configuration in file " << GPCCurrentFilePath;
+    if (gpcICBegin == -1 || gpcICEnd == -1)
+    {
+        qDebug() << "No Interactive Configuration in file " << gpcCurrentFilePath;
         return false;
     }
     return true;
@@ -138,24 +154,25 @@ bool GPCReader::gpcRawHasIC() {
 void GPCReader::parseICRawList() {
     qDebug() << "parseICRawList";
     if (!gpcRawHasIC()) return;
-    qDebug() << "Interactive Configuration found in file " << GPCCurrentFilePath;
-    GPCICFound=true;
-    ICRawList = GPCRawList.mid(GPCICBegin,GPCICEnd-GPCICBegin);
+    qDebug() << "Interactive Configuration found in file " << gpcCurrentFilePath;
+    gpcICFound = true;
+    icRawList = gpcRawList.mid(gpcICBegin, gpcICEnd-gpcICBegin);
     //qDebug() << ICRawList;
 
     QRegularExpression re;
     QRegularExpressionMatch match;
-    qint32 icstart,icstop,icnext;
+    qint32 icstart, icstop, icnext;
 
     re.setPattern("^\\s*(\\[.*\\]).*");
-    icstart=0; icstop=0; icnext=0;
+    icstart = 0; icstop = 0; icnext = 0;
 
     // each time read the whole section [SomeSectionName]
-    while ((icstart=ICRawList.indexOf(re,icnext)) > -1) {
-        icstop=icnext=ICRawList.indexOf(re,icstart+1);
-        if (icnext >-1) icstop=icnext-1;
+    while ((icstart = icRawList.indexOf(re,icnext)) > -1)
+    {
+        icstop = icnext = icRawList.indexOf(re,icstart+1);
+        if (icnext > -1) icstop = icnext-1;
         qDebug() << "Start: " << icstart << " , stop: " << icstop << " , next: " << icnext;
-        ICRawSection = ICRawList.mid(icstart,icstop-icstart);
+        icRawSection = icRawList.mid(icstart, icstop-icstart);
 
         parseICSection(icstart);
     }
@@ -167,71 +184,74 @@ void GPCReader::parseICSection(qint32 line) {
     //ToDo: use a list of linenumbers to check if all "non emtpy lines" got parsed, automark empty one as checked
     //qDebug() << "------- ICRAWSECTION ------";
     //qDebug() << ICRawSection;
-    ICFileName=GPCCurrentFilePath;
+    icFileName = gpcCurrentFilePath;
 
-    ICLineNo        =QString::number(line);
-    ICName          =GetVal("^\\s*(\\[.*\\]).*");
-    ICControl       =GetVal("^\\s*control\\s*=(.*)");
+    icLineNo    = QString::number(line);
+    icName      = getVal("^\\s*(\\[.*\\]).*");
+    icControl   = getVal("^\\s*control\\s*=(.*)");
 
-    //qDebug() << ICVec.size();
-    IC newIC = IC(ICRawSection,ICFileName,ICLineNo,ICName,ICControl);
+    IC newIC = IC(icRawSection, icFileName, icLineNo, icName, icControl);
 
-    newIC.Item          =GetList("^\\s*item\\s*=(.*)");
-    newIC.MaxVal        =GetVal("^\\s*maximum\\s*=(.*)");
-    newIC.MinVal        =GetVal("^\\s*minimum\\s*=(.*)");
-    newIC.Step          =GetVal("^\\s*step\\s*=(.*)");
-    newIC.Decimals      =GetVal("^\\s*decimals\\s*=(.*)");
+    newIC.item          = getList("^\\s*item\\s*=(.*)");
+    newIC.maxVal        = getVal("^\\s*maximum\\s*=(.*)");
+    newIC.minVal        = getVal("^\\s*minimum\\s*=(.*)");
+    newIC.step          = getVal("^\\s*step\\s*=(.*)");
+    newIC.decimals      = getVal("^\\s*decimals\\s*=(.*)");
 
 
-    newIC.Collapsible   =GetVal("^\\s*collapsible\\s*=(.*)");
-    newIC.Group         =GetVal("^\\s*group\\s*=(.*)");
-    newIC.GroupCol      =GetVal("^\\s*groupcol\\s*=(.*)");
-    newIC.Color         =GetVal("^\\s*color\\s*=(.*)");
+    newIC.collapsible   = getVal("^\\s*collapsible\\s*=(.*)");
+    newIC.group         = getVal("^\\s*group\\s*=(.*)");
+    newIC.groupCol      = getVal("^\\s*groupcol\\s*=(.*)");
+    newIC.color         = getVal("^\\s*color\\s*=(.*)");
 
-    newIC.VarType       =GetVal("^\\s*vartype\\s*=(.*)");
-    newIC.VarName       =GetVal("^\\s*varname\\s*=(.*)");
-    newIC.Comment       =GetVal("^\\s*comment\\s*=(.*)");
+    newIC.varType       = getVal("^\\s*vartype\\s*=(.*)");
+    newIC.varName       = getVal("^\\s*varname\\s*=(.*)");
+    newIC.comment       = getVal("^\\s*comment\\s*=(.*)");
 
-    newIC.Shortdesc     =GetShortdesc();
-    newIC.ByteOffset    =GetVal("^\\s*byteoffset\\s*=(.*)");
-    newIC.BitSize       =GetVal("^\\s*bitsize\\s*=(.*)");
-    newIC.BitOffset     =GetVal("^\\s*bitoffset\\s*=(.*)");
-    newIC.DefaultVal    =GetVal("^\\s*default\\s*=(.*)");
+    newIC.shortdesc     = getShortdesc();
+    newIC.byteOffset    = getVal("^\\s*byteoffset\\s*=(.*)");
+    newIC.bitSize       = getVal("^\\s*bitsize\\s*=(.*)");
+    newIC.bitOffset     = getVal("^\\s*bitoffset\\s*=(.*)");
+    newIC.defaultVal    = getVal("^\\s*default\\s*=(.*)");
 
     //ToDo: put hex conversion into own function(s)
     // insert dot at decimal position
-    if (newIC.Control.indexOf("spinboxf") > -1) {
-        newIC.DefaultVal.insert(newIC.Decimals.length() - newIC.Decimals.toInt()-1,'.');
+    if (newIC.control.indexOf("spinboxf") > -1)
+    {
+        newIC.defaultVal.insert(newIC.decimals.length() - newIC.decimals.toInt()-1,'.');
         // to hex
         //qDebug() << "valtohex, string: " << ICDefaultVal;
-        float fconv=ICDefaultVal.toFloat();
+        float fconv = newIC.defaultVal.toFloat();
         //qDebug() << "valtohex, float: " << fconv;
         qint32 iconv;
-        if (ICBitSize.contains("16")) iconv = qRound(fconv * 256);
+        if (newIC.bitSize.contains("16")) iconv = qRound(fconv * 256);
         else iconv = qRound(fconv * 65536); // bitsize 32 , if (ICBitSize.contains("32"))
         //qDebug() << "valtohex, iconv: " << iconv;
-        ICDefaultValHex =QString("%1").arg(iconv, ICBitSize.toInt()/4, 16, QLatin1Char( '0' ));
+        newIC.defaultValHex = QString("%1").arg(iconv, newIC.bitSize.toInt()/4, 16, QLatin1Char( '0' ));
     } else {
         // to hex
-        if (ICDefaultVal.length()>0) ICDefaultValHex =QString("%1").arg(ICDefaultVal.toInt(), ICBitSize.toInt()/4, 16, QLatin1Char( '0' ));
-        else ICDefaultValHex="";
+        if (newIC.defaultVal.length() > 0)
+            newIC.defaultValHex = QString("%1").arg(newIC.defaultVal.toInt(), newIC.bitSize.toInt()/4, 16, QLatin1Char( '0' ));
+        else newIC.defaultValHex = "";
     }
 
     // byteoffset to hex
-    if (newIC.ByteOffset.length()>0) newIC.ByteOffsetHex =QString("%1").arg(newIC.ByteOffset.toInt(), 2, 16, QLatin1Char( '0' ));
-    else newIC.ByteOffsetHex="";
+    if (newIC.byteOffset.length()  >0)
+        newIC.byteOffsetHex = QString("%1").arg(newIC.byteOffset.toInt(), 2, 16, QLatin1Char( '0' ));
+    else newIC.byteOffsetHex = "";
 
-    newIC.ICOut();
-    ICVec.push_back(newIC);
-    //qDebug() << ICVec.size();
+    newIC.debug();
 
+    //qDebug() << "Size of vector: " << ICVector->Vector.size();
+    icVector->vector.push_back(newIC);
+    //qDebug() << "Size of vector: " << ICVector->Vector.size();
     /*
-    //ICNewVal=
-    //ICNewValHex=
+    //ICNewVal =
+    //ICNewValHex =
     */
 }
 
-QStringList GPCReader::GetShortdesc() {
+QStringList GPCReader::getShortdesc() {
     QStringList sval;
     QRegularExpression reMS, reME;
     QRegularExpressionMatch match;
@@ -241,30 +261,31 @@ QStringList GPCReader::GetShortdesc() {
     qint32 lineMS, lineME;
 
     reMS.setPattern(keyMS);
-    lineMS=ICRawSection.indexOf(reMS);// shortdesc = <<<'MULTILINE' tag
+    lineMS = icRawSection.indexOf(reMS);// shortdesc = <<<'MULTILINE' tag
 
     // multi-line
-    if (lineMS > -1) {
-        match=reMS.match(ICRawSection[lineMS]);
-        keyME="^\\s*(" + match.captured(1) + ")\\s*.*";
+    if (lineMS > -1)
+    {
+        match = reMS.match(icRawSection[lineMS]);
+        keyME = "^\\s*(" + match.captured(1) + ")\\s*.*";
         //qDebug() << " multiline identifier: " << match.captured(1);
         //qDebug() << " multiline endsearch key: " << keyME;
         reME.setPattern(keyME);
-        lineME=ICRawSection.indexOf(reME);
+        lineME = icRawSection.indexOf(reME);
         //qDebug() << " Multiline Shortdesc start: " << lineMS << " , end: " << lineME;
-        sval = ICRawSection.mid(lineMS+1,lineME-lineMS-1);
+        sval = icRawSection.mid(lineMS+1, lineME-lineMS-1);
     } else {
     // single-line
-        sval.append(GetVal(keyS,false));
+        sval.append(getVal(keyS,false));
     }
     return sval;
 }
 
-QString GPCReader::GetVal(QString key, bool trimmed) {
-    return GetVal(ICRawSection,key,trimmed);
+QString GPCReader::getVal(QString key, bool trimmed) {
+    return getVal(icRawSection, key, trimmed);
 }
 
-QString GPCReader::GetVal(QStringList source, QString key, bool trimmed) {
+QString GPCReader::getVal(QStringList source, QString key, bool trimmed) {
     QString sval;
     QRegularExpression re;
     QRegularExpressionMatch match;
@@ -273,24 +294,25 @@ QString GPCReader::GetVal(QStringList source, QString key, bool trimmed) {
     re.setPatternOptions(QRegularExpression::DotMatchesEverythingOption);
     re.setPattern(key);
     qint32 line;
-    line=source.indexOf(re);
-    if (line > -1) {
+    line = source.indexOf(re);
+    if (line > -1)
+    {
         //qDebug() << "MATCH !!!!! at " << line;
-        match=re.match(source[line]);
+        match = re.match(source[line]);
         //qDebug() << "Match: " << match;
-        sval=match.captured(1);
-        if (trimmed) sval=sval.trimmed();
+        sval = match.captured(1);
+        if (trimmed) sval = sval.trimmed();
         //qDebug() << "result: " << sval;
         return sval;
     }
     return sval;
 }
 
-QStringList GPCReader::GetList(QString key, bool trimmed) {
-    return GetList(ICRawSection, key, trimmed);
+QStringList GPCReader::getList(QString key, bool trimmed) {
+    return getList(icRawSection, key, trimmed);
 }
 
-QStringList GPCReader::GetList(QStringList source, QString key, bool trimmed) {
+QStringList GPCReader::getList(QStringList source, QString key, bool trimmed) {
     QString sval;
     QStringList svallist;
     QRegularExpression re;
@@ -299,12 +321,13 @@ QStringList GPCReader::GetList(QStringList source, QString key, bool trimmed) {
     //qDebug() << " key: " << key;
     //re.setPatternOptions(QRegularExpression::DotMatchesEverythingOption);
     re.setPattern(key);
-    qint32 line=0;
+    qint32 line = 0;
 
-    while ((line=source.indexOf(re,line)) > -1) {
-        match=re.match(source[line]);
-        sval=match.captured(1);
-        if (trimmed) sval=sval.trimmed();
+    while ((line = source.indexOf(re,line)) > -1)
+    {
+        match = re.match(source[line]);
+        sval = match.captured(1);
+        if (trimmed) sval = sval.trimmed();
         svallist.append(sval);
         //qDebug() << "result at " << line << " : " << sval;
         line++;

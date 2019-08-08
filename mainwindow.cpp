@@ -32,19 +32,24 @@ void MainWindow::readSource(QString sFilePath) {
 
     sFilePath = sFilePath.replace("\\","/");
     if (QFileInfo(sFilePath).exists() ||
-        sFilePath.compare("clipboard")==0) {
+        sFilePath.compare("clipboard") == 0)
+    {
             //ToDo: how to handle cliboard read #include files, GPCSelectedDir is the path of the program in this case, ..where to search for ? ask the user to select directory or "skip" ?
             enableReloadBtn();
             showMessageStatusBar(sFilePath);
-            GPCSelectedDir=QFileInfo(sFilePath).absolutePath().append("/");
-            qDebug() << " ScriptsDir: " << GPCSelectedDir;
+            gpcSelectedDir = QFileInfo(sFilePath).absolutePath().append("/");
+            qDebug() << " ScriptsDir: " << gpcSelectedDir;
             qDebug() << " sFilePath: " << sFilePath;
-            GPCSelectFilePath=sFilePath;
+            gpcSelectFilePath = sFilePath;
             addRecentFile(sFilePath);
-            GPCReader *gpc = new GPCReader(GPCSelectedDir,GPCSelectFilePath);
-            //ToDo: parse ic data using/filling ic.h
-
-
+            GPCReader *gpc = new GPCReader(gpcSelectedDir,gpcSelectFilePath);
+            gpc->icVector->debug();
+            if (!gpc->getGPCICFound())
+            {
+                msgboxICNotFound(gpcSelectFilePath);
+                return;
+            }
+            //ToDo: fill table view
 
     } else {
         // file not found
@@ -61,9 +66,8 @@ void MainWindow::msgboxFileNotFound(QString sFilepath) {
                                    QMessageBox::Yes | QMessageBox::Cancel,
                                    QMessageBox::Cancel);
     qDebug() << " Return value: " << ret;
-    if (ret == QMessageBox::Yes) {
-        on_actionOpenFile_triggered();
-    }
+
+    if (ret == QMessageBox::Yes) on_actionOpenFile_triggered();
 }
 
 void MainWindow::msgboxICNotFound(QString source) {
@@ -74,6 +78,12 @@ void MainWindow::msgboxICNotFound(QString source) {
                                    QMessageBox::Close);
 }
 
+void MainWindow::msgboxICNotFound() {
+    QMessageBox::information(this, QCoreApplication::applicationName(),
+                                   tr("No 'Interactive Configuration' found."
+                                   ),
+                                   QMessageBox::Close);
+}
 
 
 void MainWindow::enableReloadBtn() {
@@ -81,14 +91,14 @@ void MainWindow::enableReloadBtn() {
 }
 
 void MainWindow::modifyStatusBar() { // set resizing policy of statusBar
-    StatusBarLabel = new QLabel;
-    StatusBarLabel->setAlignment(Qt::AlignRight);
-    statusBar()->addPermanentWidget(StatusBarLabel);
+    statusBarLabel = new QLabel;
+    statusBarLabel->setAlignment(Qt::AlignRight);
+    statusBar()->addPermanentWidget(statusBarLabel);
     statusBar()->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
 }
 
 void MainWindow::showMessageStatusBar(QString msg) {
-    StatusBarLabel->setText(msg);
+    statusBarLabel->setText(msg);
 }
 
 static inline QString recentFilesKey() { return QStringLiteral("recentFileList"); }
@@ -98,10 +108,11 @@ void MainWindow::readRecentFiles()
 {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
     const int count = settings.beginReadArray(recentFilesKey());
-    RecentFilesList.clear();
-    for (int i = 0; i < count; ++i) {
+    recentFilesList.clear();
+    for (int i = 0; i < count; ++i)
+    {
         settings.setArrayIndex(i);
-        RecentFilesList.append(settings.value(fileKey()).toString());
+        recentFilesList.append(settings.value(fileKey()).toString());
     }
     settings.endArray();
     //qDebug() << "readRecentFiles() found recent files : " << count;
@@ -111,24 +122,26 @@ void MainWindow::readRecentFiles()
 void MainWindow::writeRecentFiles()
 {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
-    const int count = RecentFilesList.count();
+    const int count = recentFilesList.count();
     settings.beginWriteArray(recentFilesKey());
-    for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < count; ++i)
+    {
         settings.setArrayIndex(i);
-        settings.setValue(fileKey(), RecentFilesList.at(i));
-        qDebug() << " Recent file " << i << " : " << RecentFilesList.at(i);
+        settings.setValue(fileKey(), recentFilesList.at(i));
+        qDebug() << " Recent file " << i << " : " << recentFilesList.at(i);
     }
     settings.endArray();
 }
 
 void MainWindow::addRecentFile(QString s) {
     //qDebug() << " addrecentfile qstring: " << s;
-    if (s.compare("clipboard")==0) return; // do no add clipboard to recent file list
-    RecentFilesList.prepend(s.replace("\\","/"));
-    RecentFilesList.removeDuplicates();
+    if (s.compare("clipboard") == 0) return; // do no add clipboard to recent file list
+    recentFilesList.prepend(s.replace("\\","/"));
+    recentFilesList.removeDuplicates();
     //if (RecentFilesList.count()>MaxRecentFiles) qDebug() << "max recentlist reached ";
-    if (RecentFilesList.count()>MaxRecentFiles) {
-        RecentFilesList=RecentFilesList.mid(0,MaxRecentFiles);
+    if (recentFilesList.count() > MAX_RECENT_FILES)
+    {
+        recentFilesList = recentFilesList.mid(0,MAX_RECENT_FILES);
     }
 
     writeRecentFiles();
@@ -136,17 +149,19 @@ void MainWindow::addRecentFile(QString s) {
 }
 
 void MainWindow::showRecentFiles() {
-    if (RecentFilesList.count()<1) ui->menuRe_cent->menuAction()->setEnabled(false);
+    if (recentFilesList.count() < 1) ui->menuRe_cent->menuAction()->setEnabled(false);
     else ui->menuRe_cent->menuAction()->setEnabled(true);
 
-    int irfl=0;
-    foreach (QAction *action, ui->menuRe_cent->actions()) {
+    int irfl = 0;
+    foreach (QAction *action, ui->menuRe_cent->actions())
+    {
          //qDebug() << "recent " << action->text() << " ... " << RecentFilesList.count();
-         if (irfl < RecentFilesList.count()) {
-            action->setText(QString::number(irfl+1) + ": " + RecentFilesList[irfl]);
-            action->setData(RecentFilesList[irfl]);
+         if (irfl < recentFilesList.count())
+         {
+            action->setText(QString::number(irfl+1) + ": " + recentFilesList[irfl]);
+            action->setData(recentFilesList[irfl]);
 
-            QFile inputFile(RecentFilesList[irfl]);
+            QFile inputFile(recentFilesList[irfl]);
             action->setVisible(true);
             if (inputFile.exists()) action->setEnabled(true);
             else action->setEnabled(false);
@@ -162,16 +177,16 @@ void MainWindow::showRecentFiles() {
 
 void MainWindow::on_actionOpenFile_triggered()
 {
-    qDebug() << "GPCSelectedDir: " << GPCSelectedDir;
-    QDir curPath=QDir::currentPath();
-    if (GPCSelectedDir.length()>0) curPath.setPath(GPCSelectedDir);
+    qDebug() << "GPCSelectedDir: " << gpcSelectedDir;
+    QDir curPath = QDir::currentPath();
+    if (gpcSelectedDir.length() > 0) curPath.setPath(gpcSelectedDir);
     QString scriptFileName =  QFileDialog::getOpenFileName(
               this,
               "Open Document",
                 curPath.path(),
               "Script files (*.gpc *.gph);;All files (*.*)");
 
-    if( !scriptFileName.isNull() )
+    if(!scriptFileName.isNull())
     {
       //qDebug() << "selected file path : " << scriptFileName.toUtf8();
       readSource(scriptFileName);
@@ -244,12 +259,12 @@ void MainWindow::on_actionRecent_File6_triggered()
 
 void MainWindow::on_actionReload_triggered()
 {
-    readSource(GPCSelectFilePath);
+    readSource(gpcSelectFilePath);
 }
 
 void MainWindow::on_actionContextMenuToolbar_triggered()
 {
     QPoint mp = ui->mainToolBar->mapFromGlobal(QCursor::pos());
     QAction *qa = ui->mainToolBar->actionAt(mp);
-    if (qa==ui->actionOpenFile) ui->menuRe_cent->exec(QCursor::pos());
+    if (qa == ui->actionOpenFile) ui->menuRe_cent->exec(QCursor::pos());
 }
