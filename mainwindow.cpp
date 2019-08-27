@@ -43,13 +43,35 @@ void MainWindow::readSource(QString sFilePath) {
             gpcSelectFilePath = sFilePath;
             addRecentFile(sFilePath);
             GPCReader *gpc = new GPCReader(gpcSelectedDir,gpcSelectFilePath);
-            gpc->icVector->debug();
+            //gpc->icVector->debug();
             if (!gpc->getGPCICFound())
             {
                 msgboxICNotFound(gpcSelectFilePath);
                 return;
             }
-            //ToDo: fill table view
+            //ToDo: fill table
+            ui->tableWidget->clearContents();
+            ui->tableWidget->setRowCount(gpc->icVector->vector.size());
+            ui->tableWidget->setColumnCount(28);
+            QStringList LabelsCol = {"Filename","Line","IC Name",
+                                     "Byte Offset","Byte Offhex","Bit Size","Bit Offset",
+                                     "State","Info",
+                                     "Def-Val","Def-Hex","New-Val","New-Hex",
+                                     "IC Type","Min","Max","Decimals","Step","Items",
+                                     "Group","Groupcol","Color","Border","Collapsible",
+                                     "Shortdesc",
+                                     "Var Type","Var Name","Var Comment"
+                                    };
+            ui->tableWidget->setHorizontalHeaderLabels(LabelsCol);
+            for (int i = 0; i < gpc->icVector->vector.size(); ++i)
+            {
+                QTableWidgetItem *newItem = new QTableWidgetItem(tr("%1").arg(
+                        (i+1)));
+                newItem->setCheckState(Qt::Unchecked);
+                ui->tableWidget->setItem(i, 0, newItem);
+            }
+
+
 
     } else {
         // file not found
