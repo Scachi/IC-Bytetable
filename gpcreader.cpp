@@ -9,6 +9,15 @@
 #include "gpcreader.h"
 #include "mainwindow.h"
 
+GPCReader::GPCReader(QString sDir, QString sFilePath) {
+       icVector = new ICV;
+       gpcSelectedDir = sDir;
+       gpcSelectedFilePath = sFilePath;
+       gpcCurrentFilePath = "";
+       //qDebug() << " Sdir / sfilepath: " << sDir << " / " << sFilePath;
+       parse();
+}
+
 bool GPCReader::getGPCICFound() {
     return gpcICFound;
 }
@@ -71,7 +80,7 @@ void GPCReader::readClipboard() {
         QString sClip = clipboard->text();
         gpcRawList = sClip.split("\n");
         /*
-        for (int i = 0; i < GPCRawList.size(); ++i) {
+        for (int i = 0; i < GPCRawList.size(); ++i) {+
             qDebug() << "GPCRawList: " << GPCRawList[i];
         }
         */
@@ -203,6 +212,7 @@ void GPCReader::parseICSection(qint32 line) {
     newIC.group         = getVal("^\\s*group\\s*=(.*)");
     newIC.groupCol      = getVal("^\\s*groupcol\\s*=(.*)");
     newIC.color         = getVal("^\\s*color\\s*=(.*)");
+    newIC.border        = getVal("^\\s*border\\s*=(.*)");
 
     newIC.varType       = getVal("^\\s*vartype\\s*=(.*)");
     newIC.varName       = getVal("^\\s*varname\\s*=(.*)");

@@ -11,14 +11,7 @@
 class GPCReader
 {
 public:
-    GPCReader(QString sDir, QString sFilePath) {
-        icVector = new ICV;
-        gpcSelectedDir = sDir;
-        gpcSelectedFilePath = sFilePath;
-        gpcCurrentFilePath = "";
-        //qDebug() << " Sdir / sfilepath: " << sDir << " / " << sFilePath;
-        parse();
-    }
+    GPCReader(QString sDir, QString sFilePath);
 
 public:
     ICV *icVector;

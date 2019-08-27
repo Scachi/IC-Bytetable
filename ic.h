@@ -31,6 +31,7 @@ public:
     QString     group;
     QString     groupCol;
     QString     color;
+    QString     border;
 
     QString     varType;  // for future usage - creation of ICs: vartype=
     QString     varName;  // for future usage - creation of ICs: varname=
