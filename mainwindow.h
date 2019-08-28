@@ -6,6 +6,7 @@
 #include <QLabel>
 
 #include "ic.h"
+#include "icmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -63,6 +64,7 @@ private:
     QString     gpcSelectedDir;      // the path part of the file that was initially opened
     QString     gpcSelectFilePath;   // selected filename from filedialog or recent file list
     QLabel      *statusBarLabel;
+    ICModel     icModel;             // Tableview model
 
 private:
     void modifyStatusBar();

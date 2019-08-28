@@ -5,12 +5,12 @@
 #include <QDebug>
 
 #include "ic.h"
-#include "icv.h"
+#include "icd.h"
 #include "gpcreader.h"
 #include "mainwindow.h"
 
 GPCReader::GPCReader(QString sDir, QString sFilePath) {
-       icVector = new ICV;
+       icData = new ICD;
        gpcSelectedDir = sDir;
        gpcSelectedFilePath = sFilePath;
        gpcCurrentFilePath = "";
@@ -180,7 +180,7 @@ void GPCReader::parseICRawList() {
     {
         icstop = icnext = icRawList.indexOf(re,icstart+1);
         if (icnext > -1) icstop = icnext-1;
-        qDebug() << "Start: " << icstart << " , stop: " << icstop << " , next: " << icnext;
+        //qDebug() << "Start: " << icstart << " , stop: " << icstop << " , next: " << icnext;
         icRawSection = icRawList.mid(icstart, icstop-icstart);
 
         parseICSection(icstart);
@@ -250,11 +250,11 @@ void GPCReader::parseICSection(qint32 line) {
         newIC.byteOffsetHex = QString("%1").arg(newIC.byteOffset.toInt(), 2, 16, QLatin1Char( '0' ));
     else newIC.byteOffsetHex = "";
 
-    newIC.debug();
+    //newIC.debug();
 
-    //qDebug() << "Size of vector: " << ICVector->Vector.size();
-    icVector->vector.push_back(newIC);
-    //qDebug() << "Size of vector: " << ICVector->Vector.size();
+    //qDebug() << "Size of List: " << icData->data.size();
+    icData->data.push_back(newIC);
+    //qDebug() << "Size of List: " << icData->data.size();
     /*
     //ICNewVal =
     //ICNewValHex =

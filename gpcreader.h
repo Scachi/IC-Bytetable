@@ -6,7 +6,7 @@
 #include <QDebug>
 
 #include "ic.h"
-#include "icv.h"
+#include "icd.h"
 
 class GPCReader
 {
@@ -14,7 +14,7 @@ public:
     GPCReader(QString sDir, QString sFilePath);
 
 public:
-    ICV *icVector;
+    ICD *icData;
     bool getGPCICFound();
 
 private:

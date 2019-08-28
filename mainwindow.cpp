@@ -11,6 +11,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "ic.h"
+#include "icmodel.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -43,13 +44,19 @@ void MainWindow::readSource(QString sFilePath) {
             gpcSelectFilePath = sFilePath;
             addRecentFile(sFilePath);
             GPCReader *gpc = new GPCReader(gpcSelectedDir,gpcSelectFilePath);
-            gpc->icVector->debug();
+            //gpc->icData->debug();
             if (!gpc->getGPCICFound())
             {
                 msgboxICNotFound(gpcSelectFilePath);
                 return;
             }
-            //ToDo: fill table view
+
+            icModel.icData.clear();
+            for (int i = 0; i < gpc->icData->data.size(); ++i)
+            {
+              icModel.icData.append(gpc->icData->data[i]);
+            }
+            ui->tableView->setModel(&icModel);
 
     } else {
         // file not found

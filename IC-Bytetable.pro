@@ -27,14 +27,16 @@ CONFIG += c++11
 SOURCES += \
         gpcreader.cpp \
         ic.cpp \
-        icv.cpp \
+        icd.cpp \
+        icmodel.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
         gpcreader.h \
         ic.h \
-        icv.h \
+        icd.h \
+        icmodel.h \
         mainwindow.h
 
 FORMS += \
