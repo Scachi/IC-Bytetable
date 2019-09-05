@@ -58,7 +58,7 @@ private:
     void parseICRawList();
     void parseICSection(qint32 line);
 
-    QStringList getShortdesc();
+    QStringList getShortDesc();
     QString     getVal(QString key, bool trimmed=true);
     QString     getVal(QStringList source, QString key, bool trimmed=true);
     QStringList getList(QString key, bool trimmed=true);

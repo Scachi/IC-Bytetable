@@ -1,3 +1,5 @@
+#include <QFont>
+#include <QColor>
 #include "icmodel.h"
 
 ICModel::ICModel(QObject *parent)
@@ -5,85 +7,193 @@ ICModel::ICModel(QObject *parent)
 {
 }
 
+QVariant ICModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    //if (orientation != Qt::Horizontal || role != Qt::DisplayRole) return {};
+    if (role != Qt::DisplayRole) return {};
+
+    if (orientation == Qt::Horizontal) {
+        switch (section)
+        {
+            case  0: return "Filename";
+            case  1: return "Line";
+            case  2: return "Name";
+
+            case  3: return "Byte Offset";
+            case  4: return "Byte Offhex";
+            case  5: return "Bit Size";
+            case  6: return "Bit Offset";
+
+            case  7: return "Status";
+            case  8: return "Notes";
+
+            case  9: return "Def Val";
+            case 10: return "Def Hex";
+            case 11: return "New Val";
+            case 12: return "New Hex";
+
+            case 13: return "Control";
+            case 14: return "Items";
+            case 15: return "Min Val";
+            case 16: return "Max Val";
+            case 17: return "Decimals";
+            case 18: return "Step";
+
+            case 19: return "ShortDesc";
+            case 20: return "Callapsible";
+            case 21: return "Group";
+            case 22: return "GroupCol";
+            case 23: return "Color";
+            case 24: return "Border";
+
+            case 25: return "VarType";
+            case 26: return "VarName";
+            case 27: return "Comment";
+
+            default: return {};
+        }
+    }
+    else if (orientation == Qt::Vertical) {
+        return section+1;
+    }
+
+    return {};
+}
+
 QVariant ICModel::data(const QModelIndex &index, int role) const
 {
-    if (role == Qt::DisplayRole)
-       return QString("Row%1, Column%2")
-                   .arg(index.row() + 1)
-                   .arg(index.column() +1);
+    const auto & ic = icData[index.row()]; // access to data
 
+    if (role == Qt::TextAlignmentRole) {
+        return Qt::AlignTop;
+    }
+
+    /*
+    // font style
+    if (role == Qt::FontRole && index.column() == 0)
+    { // First column items are bold.
+            QFont font;
+            font.setBold(true);
+            return font;
+    }
+    */
+
+    // font color
+    if (role == Qt::ForegroundRole)
+    {
+        switch(index.column())
+        {
+            case  2: return QColor(ic.getColor()); // color the [Name]
+            //case 19: return QColor(Qt::gray);
+            default: return {};
+        }
+    }
+
+    // values formatted for tooltip
+    if (role == Qt::ToolTipRole) {
+        switch (index.column())
+        {
+            case  0: return ic.getFileNameFull();
+            case  2: return ic.getName();
+            case 14: return ic.getItemNames();
+            case 19: return ic.getShortDesc(20);
+            //default: return {};
+        }
+    }
+
+    // checkboxes
+    if (role == Qt::CheckStateRole) {
+        switch (index.column())
+        {
+            case  0: if (ic.checked) return Qt::Checked;
+                     else return Qt::Unchecked;
+
+        }
+    }
+
+    // values normal tableview
+    if (role == Qt::DisplayRole) {
+        switch (index.column())
+        {
+            case  0: return ic.getFileName();
+            case  1: return ic.getLineNo();
+            case  2: return ic.getName();
+
+            case  3: return ic.getByteOffset();
+            case  4: return ic.getByteOffsetHex();
+            case  5: return ic.getBitSize();
+            case  6: return ic.getBitOffset();
+
+            case  7: return ic.getValid();
+            case  8: return ic.getNotes();
+
+            case  9: return ic.getDefaultVal();
+            case 10: return ic.getDefaultValHex();
+            case 11: return ic.getNewVal();
+            case 12: return ic.getNewValHex();
+
+            case 13: return ic.getControl();
+            case 14: return ic.getItem("#");
+            case 15: return ic.getMinVal();
+            case 16: return ic.getMaxVal();
+            case 17: return ic.getDecimals();
+            case 18: return ic.getStep();
+
+            //case 19: return ic.getShortDesc();
+            case 19: return ic.getShortDescPlain(100);
+            case 20: return ic.getCollapsible();
+            case 21: return ic.getGroup();
+            case 22: return ic.getGroupCol();
+            case 23: return ic.getColor();
+            case 24: return ic.getBorder();
+
+            case 25: return ic.getVarType();
+            case 26: return ic.getVarName();
+            case 27: return ic.getComment();
+
+            default: return {};
+         }
+    }
+
+    /*
+    if (role == Qt::EditRole) {
+
+    }
+    */
     return QVariant();
 }
 
-/* source: https://stackoverflow.com/questions/18964377/using-qtableview-with-a-model
+Qt::ItemFlags ICModel::flags(const QModelIndex &index) const
+{
+    return Qt::ItemIsUserCheckable | Qt::ItemIsEditable | QAbstractTableModel::flags(index);
+}
 
-class Vehicle {
-   QString m_make, m_model, m_registrationNumber;
-public:
-   Vehicle(const QString & make, const QString & model, const QString & registrationNumber) :
-      m_make{make}, m_model{model}, m_registrationNumber{registrationNumber} {}
-   QString make() const { return m_make; }
-   QString model() const { return m_model; }
-   QString registrationNumber() const { return m_registrationNumber; }
-   bool isRegistered() const { return !m_registrationNumber.isEmpty(); }
-};
+bool ICModel::setData(const QModelIndex &index,
+                              const QVariant &value, int role)
+{
+    auto & ic = icData[index.row()]; // access to data
 
-class VehicleModel : public QAbstractTableModel {
-   QList<Vehicle> m_data;
-public:
-   VehicleModel(QObject * parent = {}) : QAbstractTableModel{parent} {}
-   int rowCount(const QModelIndex &) const override { return m_data.count(); }
-   int columnCount(const QModelIndex &) const override { return 3; }
-   QVariant data(const QModelIndex &index, int role) const override {
-      if (role != Qt::DisplayRole && role != Qt::EditRole) return {};
-      const auto & vehicle = m_data[index.row()];
-      switch (index.column()) {
-      case 0: return vehicle.make();
-      case 1: return vehicle.model();
-      case 2: return vehicle.registrationNumber();
-      default: return {};
-      };
-   }
-   QVariant headerData(int section, Qt::Orientation orientation, int role) const override {
-      if (orientation != Qt::Horizontal || role != Qt::DisplayRole) return {};
-      switch (section) {
-      case 0: return "Make";
-      case 1: return "Model";
-      case 2: return "Reg.#";
-      default: return {};
-      }
-   }
-   void append(const Vehicle & vehicle) {
-      beginInsertRows({}, m_data.count(), m_data.count());
-      m_data.append(vehicle);
-      endInsertRows();
-   }
-};
+    if (role == Qt::EditRole) {
+        /*
+        if (!checkIndex(index)) return false;
+        ic.checked = value.toBool();
+        qDebug() << "checked: " << ic.checked;
+        QString result="result";
+        //emit dataChanged(index, index, {role});
+        emit editCompleted(result);
+        return true;
+        */
+    }
+    if (role == Qt::CheckStateRole) {
+        ic.checked = value.toBool();
+        //qDebug() << "checked: " << ic.checked;
+        return true;
+    }
+    return false;
+}
 
-class Widget : public QWidget {
-   QGridLayout m_layout{this};
-   QTableView m_view;
-   QPushButton m_button{"Filter"};
-   VehicleModel m_model;
-   QSortFilterProxyModel m_proxy;
-   QInputDialog m_dialog;
-public:
-   Widget() {
-      m_layout.addWidget(&m_view, 0, 0, 1, 1);
-      m_layout.addWidget(&m_button, 1, 0, 1, 1);
-      connect(&m_button, SIGNAL(clicked()), &m_dialog, SLOT(open()));
-      m_model.append({"Volvo", "240", "SQL8941"});
-      m_model.append({"Volvo", "850", {}});
-      m_model.append({"Volvo", "940", "QRZ1321"});
-      m_model.append({"Volvo", "960", "QRZ1628"});
-      m_proxy.setSourceModel(&m_model);
-      m_proxy.setFilterKeyColumn(2);
-      m_view.setModel(&m_proxy);
-      m_dialog.setLabelText("Enter registration number fragment to filter on. Leave empty to clear filter.");
-      m_dialog.setInputMode(QInputDialog::TextInput);
-      connect(&m_dialog, SIGNAL(textValueSelected(QString)),
-              &m_proxy, SLOT(setFilterFixedString(QString)));
-   }
-};
-
-*/
+void ICModel::clear(void) {
+    beginResetModel();
+    icData.clear();
+    endResetModel();
+}

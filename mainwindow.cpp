@@ -36,28 +36,26 @@ void MainWindow::readSource(QString sFilePath) {
         sFilePath.compare("clipboard") == 0)
     {
             //ToDo: how to handle cliboard read #include files, GPCSelectedDir is the path of the program in this case, ..where to search for ? ask the user to select directory or "skip" ?
-            enableReloadBtn();
-            showMessageStatusBar(sFilePath);
-            gpcSelectedDir = QFileInfo(sFilePath).absolutePath().append("/");
+            enableReloadBtn();  // enable reload button
+            showMessageStatusBar(sFilePath); // show filepath in statusbar
+            gpcSelectedDir = QFileInfo(sFilePath).absolutePath().append("/"); // remember the scripts directory
             qDebug() << " ScriptsDir: " << gpcSelectedDir;
             qDebug() << " sFilePath: " << sFilePath;
             gpcSelectFilePath = sFilePath;
-            addRecentFile(sFilePath);
-            GPCReader *gpc = new GPCReader(gpcSelectedDir,gpcSelectFilePath);
+            addRecentFile(sFilePath); // add the file to the recent file list
+            GPCReader *gpc = new GPCReader(gpcSelectedDir,gpcSelectFilePath); // read the content, parse the IC
             //gpc->icData->debug();
-            if (!gpc->getGPCICFound())
+            if (!gpc->getGPCICFound()) // abort when no IC was found
             {
                 msgboxICNotFound(gpcSelectFilePath);
                 return;
             }
 
-            icModel.icData.clear();
-            for (int i = 0; i < gpc->icData->data.size(); ++i)
-            {
-              icModel.icData.append(gpc->icData->data[i]);
-            }
+            // clear previous data
+            icModel.clear();
+            // fill the tableview
+            icModel.icData.append(gpc->icData->data);
             ui->tableView->setModel(&icModel);
-
     } else {
         // file not found
         msgboxFileNotFound(sFilePath);

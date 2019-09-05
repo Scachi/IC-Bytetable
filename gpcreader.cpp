@@ -195,7 +195,7 @@ void GPCReader::parseICSection(qint32 line) {
     //qDebug() << ICRawSection;
     icFileName = gpcCurrentFilePath;
 
-    icLineNo    = QString::number(line);
+    icLineNo    = QString::number(line+gpcICBegin+1);
     icName      = getVal("^\\s*(\\[.*\\]).*");
     icControl   = getVal("^\\s*control\\s*=(.*)");
 
@@ -218,7 +218,7 @@ void GPCReader::parseICSection(qint32 line) {
     newIC.varName       = getVal("^\\s*varname\\s*=(.*)");
     newIC.comment       = getVal("^\\s*comment\\s*=(.*)");
 
-    newIC.shortdesc     = getShortdesc();
+    newIC.shortDesc     = getShortDesc();
     newIC.byteOffset    = getVal("^\\s*byteoffset\\s*=(.*)");
     newIC.bitSize       = getVal("^\\s*bitsize\\s*=(.*)");
     newIC.bitOffset     = getVal("^\\s*bitoffset\\s*=(.*)");
@@ -250,6 +250,9 @@ void GPCReader::parseICSection(qint32 line) {
         newIC.byteOffsetHex = QString("%1").arg(newIC.byteOffset.toInt(), 2, 16, QLatin1Char( '0' ));
     else newIC.byteOffsetHex = "";
 
+    // checked state
+    newIC.checked=false;
+
     //newIC.debug();
 
     //qDebug() << "Size of List: " << icData->data.size();
@@ -261,7 +264,7 @@ void GPCReader::parseICSection(qint32 line) {
     */
 }
 
-QStringList GPCReader::getShortdesc() {
+QStringList GPCReader::getShortDesc() {
     QStringList sval;
     QRegularExpression reMS, reME;
     QRegularExpressionMatch match;
@@ -282,7 +285,7 @@ QStringList GPCReader::getShortdesc() {
         //qDebug() << " multiline endsearch key: " << keyME;
         reME.setPattern(keyME);
         lineME = icRawSection.indexOf(reME);
-        //qDebug() << " Multiline Shortdesc start: " << lineMS << " , end: " << lineME;
+        //qDebug() << " Multiline shortdesc start: " << lineMS << " , end: " << lineME;
         sval = icRawSection.mid(lineMS+1, lineME-lineMS-1);
     } else {
     // single-line
