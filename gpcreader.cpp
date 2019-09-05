@@ -8,6 +8,7 @@
 #include "icd.h"
 #include "gpcreader.h"
 #include "mainwindow.h"
+#include "xtra.h"
 
 GPCReader::GPCReader(QString sDir, QString sFilePath) {
        icData = new ICD;
@@ -224,26 +225,16 @@ void GPCReader::parseICSection(qint32 line) {
     newIC.bitOffset     = getVal("^\\s*bitoffset\\s*=(.*)");
     newIC.defaultVal    = getVal("^\\s*default\\s*=(.*)");
 
-    //ToDo: put hex conversion into own function(s)
     // insert dot at decimal position
     if (newIC.control.indexOf("spinboxf") > -1)
     {
-        newIC.defaultVal.insert(newIC.decimals.length() - newIC.decimals.toInt()-1,'.');
-        // to hex
-        //qDebug() << "valtohex, string: " << ICDefaultVal;
-        float fconv = newIC.defaultVal.toFloat();
-        //qDebug() << "valtohex, float: " << fconv;
-        qint32 iconv;
-        if (newIC.bitSize.contains("16")) iconv = qRound(fconv * 256);
-        else iconv = qRound(fconv * 65536); // bitsize 32 , if (ICBitSize.contains("32"))
-        //qDebug() << "valtohex, iconv: " << iconv;
-        newIC.defaultValHex = QString("%1").arg(iconv, newIC.bitSize.toInt()/4, 16, QLatin1Char( '0' ));
-    } else {
-        // to hex
-        if (newIC.defaultVal.length() > 0)
-            newIC.defaultValHex = QString("%1").arg(newIC.defaultVal.toInt(), newIC.bitSize.toInt()/4, 16, QLatin1Char( '0' ));
-        else newIC.defaultValHex = "";
+        // formatting the decimal values
+        newIC.minVal = XTRA::xDecDot(newIC.minVal, newIC.decimals);
+        newIC.maxVal = XTRA::xDecDot(newIC.maxVal, newIC.decimals);
+        newIC.defaultVal = XTRA::xDecDot(newIC.defaultVal, newIC.decimals);
+        newIC.step = XTRA::xDecDot(newIC.step, newIC.decimals);
     }
+    newIC.defaultValHex = XTRA::x2Hex(newIC.defaultVal,newIC.bitSize);
 
     // byteoffset to hex
     if (newIC.byteOffset.length()  >0)

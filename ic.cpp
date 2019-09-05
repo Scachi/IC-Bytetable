@@ -188,7 +188,7 @@ QString IC::getShortDescPlain(int limit) const {
         doc.setHtml(shortdesc);
         shortdesc = doc.toPlainText();
         shortdesc=shortdesc.trimmed();
-        if (shortdesc.startsWith("<br>")) shortdesc.remove(0,4);
+        shortdesc.replace("\n:",":"); // remove linebreaks in front of :
         return shortdesc;
     }
     return {};

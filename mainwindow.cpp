@@ -55,6 +55,8 @@ void MainWindow::readSource(QString sFilePath) {
             icModel.clear();
             // fill the tableview
             icModel.icData.append(gpc->icData->data);
+            //ui->tableView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+            //ui->tableView->verticalHeader()->setDefaultAlignment(Qt::AlignTop);
             ui->tableView->setModel(&icModel);
     } else {
         // file not found

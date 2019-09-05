@@ -68,6 +68,7 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
         return Qt::AlignTop;
     }
 
+
     /*
     // font style
     if (role == Qt::FontRole && index.column() == 0)
@@ -96,8 +97,8 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
             case  0: return ic.getFileNameFull();
             case  2: return ic.getName();
             case 14: return ic.getItemNames();
-            case 19: return ic.getShortDesc(20);
-            //default: return {};
+            case 19: return ic.getShortDesc(40);
+            default: return {};
         }
     }
 

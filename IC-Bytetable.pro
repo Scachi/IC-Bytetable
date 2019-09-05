@@ -30,14 +30,16 @@ SOURCES += \
         icd.cpp \
         icmodel.cpp \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        xtra.cpp
 
 HEADERS += \
         gpcreader.h \
         ic.h \
         icd.h \
         icmodel.h \
-        mainwindow.h
+        mainwindow.h \
+        xtra.h
 
 FORMS += \
         mainwindow.ui
