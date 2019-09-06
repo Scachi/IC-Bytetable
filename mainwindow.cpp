@@ -55,9 +55,14 @@ void MainWindow::readSource(QString sFilePath) {
             icModel.clear();
             // fill the tableview
             icModel.icData.append(gpc->icData->data);
-            //ui->tableView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-            //ui->tableView->verticalHeader()->setDefaultAlignment(Qt::AlignTop);
-            ui->tableView->setModel(&icModel);
+            //  //ui->tableView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+            //  //ui->tableView->verticalHeader()->setDefaultAlignment(Qt::AlignTop);
+            // sorting via proxymodel
+            //ui->tableView->setModel(&icModel);
+            proxyModel.setSourceModel(&icModel);
+            proxyModel.setDynamicSortFilter(true);
+            ui->tableView->setModel(&proxyModel);
+            proxyModel.invalidate();
     } else {
         // file not found
         msgboxFileNotFound(sFilePath);

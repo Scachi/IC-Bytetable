@@ -15,6 +15,7 @@ public:
     QString getFileNameFull() const;
     QString getLineNo() const;
     QString getName() const;
+    QString getNameToolTip() const;
 
     QString getByteOffset() const;
     QString getByteOffsetHex() const;
@@ -22,7 +23,7 @@ public:
     QString getBitOffset() const;
 
     QString getValid() const;
-    QString getNotes() const;
+    QString getInfo() const;
 
     QString getDefaultVal() const;
     QString getDefaultValHex() const;
@@ -30,8 +31,8 @@ public:
     QString getNewValHex() const;
 
     QString getControl() const;
-    QString getItem(QString prefix="") const;
-    QString getItemNames() const;
+    QString getItemCount(QString prefix="") const;
+    QString getItemNamesToolTip() const;
     QString getMinVal() const;
     QString getMaxVal() const;
     QString getDecimals() const;
@@ -40,9 +41,11 @@ public:
     QString getShortDesc(int limit=10) const;
     QString getShortDescPlain(int limit=10) const;
     QString getCollapsible() const;
+    QString getCollapsibleToolTip() const;
     QString getGroup() const;
     QString getGroupCol() const;
     QString getColor() const;
+    QString getColorToolTip() const;
     QString getBorder() const;
 
     QString getVarType() const;

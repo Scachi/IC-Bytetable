@@ -236,10 +236,7 @@ void GPCReader::parseICSection(qint32 line) {
     }
     newIC.defaultValHex = XTRA::x2Hex(newIC.defaultVal,newIC.bitSize);
 
-    // byteoffset to hex
-    if (newIC.byteOffset.length()  >0)
-        newIC.byteOffsetHex = QString("%1").arg(newIC.byteOffset.toInt(), 2, 16, QLatin1Char( '0' ));
-    else newIC.byteOffsetHex = "";
+    newIC.byteOffsetHex = XTRA::x2Hex(newIC.byteOffset,"8");
 
     // checked state
     newIC.checked=false;

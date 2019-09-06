@@ -74,6 +74,14 @@ QString IC::getName() const {
     return this->name;
 }
 
+QString IC::getNameToolTip() const {
+    QString tmp=this->name;
+    tmp=tmp.mid(1,tmp.length()-2);
+    tmp.prepend(QString("<font color=%1>").arg(this->color)).append("</font>");
+    tmp.prepend("<p style='white-space:pre'>").append("</p>"); // linebreaks as in text
+    return tmp;
+}
+
 QString IC::getByteOffset() const {
     return this->byteOffset;
 }
@@ -98,7 +106,7 @@ QString IC::getValid() const {
     }
 }
 
-QString IC::getNotes() const {
+QString IC::getInfo() const {
     //return this->info;// << this->warn << this->err;
     QString tmp;
     tmp = "E:" + QString::number(this->err.size()) + " | W:" + QString::number(this->warn.size()) + " | I:" + QString::number(this->info.size());
@@ -125,12 +133,12 @@ QString IC::getControl() const {
     return this->control;
 }
 
-QString IC::getItem(QString prefix) const {
+QString IC::getItemCount(QString prefix) const {
     if (!this->item.size()) return {};
     return QString::number(this->item.size()).prepend(prefix);
 }
 
-QString IC::getItemNames() const {
+QString IC::getItemNamesToolTip() const {
     if (!this->item.size()) return {};
     return this->item.join("</li><li>").prepend("<ul type='square'><li>").append("</li></ul>").prepend("<p style='white-space:pre'>").append("</p>");
 }
@@ -214,6 +222,17 @@ QString IC::getCollapsible() const {
     return this->collapsible;
 }
 
+QString IC::getCollapsibleToolTip() const {
+    if (this->collapsible.length()==0) return {};
+    switch(this->collapsible.toInt())
+    {
+        case  1: return "unfolded";
+        case  2: return "folded";
+        case  3: return "hidden";
+        default: return {};
+    }
+}
+
 QString IC::getGroup() const {
     return this->group;
 }
@@ -224,6 +243,13 @@ QString IC::getGroupCol() const {
 
 QString IC::getColor() const {
     return this->color;
+}
+
+QString IC::getColorToolTip() const {
+    if (this->color.length()==0) return {};
+    QString tmp=this->color;
+    tmp.prepend(QString("<font color=%1>").arg(this->color)).append("</font>");
+    return tmp;
 }
 
 QString IC::getBorder() const {

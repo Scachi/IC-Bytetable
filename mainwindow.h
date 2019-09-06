@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QScrollArea>
 #include <QLabel>
+#include <QSortFilterProxyModel>
 
 #include "ic.h"
 #include "icmodel.h"
@@ -64,7 +65,8 @@ private:
     QString     gpcSelectedDir;      // the path part of the file that was initially opened
     QString     gpcSelectFilePath;   // selected filename from filedialog or recent file list
     QLabel      *statusBarLabel;
-    ICModel     icModel;             // Tableview model
+    ICModel     icModel;             // tableview model
+    QSortFilterProxyModel proxyModel;// sorting of tableview via proxyModel
 
 private:
     void modifyStatusBar();

@@ -1,6 +1,7 @@
 #include <QFont>
 #include <QColor>
 #include "icmodel.h"
+#include "mainwindow.h"
 
 ICModel::ICModel(QObject *parent)
     : QAbstractTableModel(parent)
@@ -25,7 +26,7 @@ QVariant ICModel::headerData(int section, Qt::Orientation orientation, int role)
             case  6: return "Bit Offset";
 
             case  7: return "Status";
-            case  8: return "Notes";
+            case  8: return "Info";
 
             case  9: return "Def Val";
             case 10: return "Def Hex";
@@ -86,6 +87,7 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
         {
             case  2: return QColor(ic.getColor()); // color the [Name]
             //case 19: return QColor(Qt::gray);
+            case  23: return QColor(ic.getColor()); // color the [Name]
             default: return {};
         }
     }
@@ -95,9 +97,10 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
         switch (index.column())
         {
             case  0: return ic.getFileNameFull();
-            case  2: return ic.getName();
-            case 14: return ic.getItemNames();
+            case  2: return ic.getNameToolTip();
+            case 14: return ic.getItemNamesToolTip();
             case 19: return ic.getShortDesc(40);
+            case 20: return ic.getCollapsibleToolTip();
             default: return {};
         }
     }
@@ -117,16 +120,16 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
         switch (index.column())
         {
             case  0: return ic.getFileName();
-            case  1: return ic.getLineNo();
+            case  1: return ic.getLineNo().toInt(); // toInt for correct num ordering
             case  2: return ic.getName();
 
-            case  3: return ic.getByteOffset();
+            case  3: return ic.getByteOffset().toInt(); // toInt for correct num ordering
             case  4: return ic.getByteOffsetHex();
-            case  5: return ic.getBitSize();
+            case  5: return ic.getBitSize().toInt(); // toInt for correct num ordering
             case  6: return ic.getBitOffset();
 
             case  7: return ic.getValid();
-            case  8: return ic.getNotes();
+            case  8: return ic.getInfo();
 
             case  9: return ic.getDefaultVal();
             case 10: return ic.getDefaultValHex();
@@ -134,13 +137,12 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
             case 12: return ic.getNewValHex();
 
             case 13: return ic.getControl();
-            case 14: return ic.getItem("#");
+            case 14: return ic.getItemCount("#");
             case 15: return ic.getMinVal();
             case 16: return ic.getMaxVal();
             case 17: return ic.getDecimals();
             case 18: return ic.getStep();
 
-            //case 19: return ic.getShortDesc();
             case 19: return ic.getShortDescPlain(100);
             case 20: return ic.getCollapsible();
             case 21: return ic.getGroup();
