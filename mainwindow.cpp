@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     readRecentFiles();
     modifyStatusBar(); // set resizing policy
+    icModel = new ICModel;
+    icProxy = new ICProxy;
 }
 
 MainWindow::~MainWindow()
@@ -52,17 +54,20 @@ void MainWindow::readSource(QString sFilePath) {
             }
 
             // clear previous data
-            icModel.clear();
+            icModel->clear();
             // fill the tableview
-            icModel.icData.append(gpc->icData->data);
+            icModel->icData.append(gpc->icData->data);
             //  //ui->tableView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
             //  //ui->tableView->verticalHeader()->setDefaultAlignment(Qt::AlignTop);
             // sorting via proxymodel
             //ui->tableView->setModel(&icModel);
-            proxyModel.setSourceModel(&icModel);
-            proxyModel.setDynamicSortFilter(true);
-            ui->tableView->setModel(&proxyModel);
-            proxyModel.invalidate();
+            icProxy->setSourceModel(icModel);
+            icProxy->setDynamicSortFilter(true);
+            ui->tableView->setModel(icProxy);
+            icProxy->invalidate();
+            icProxy->colSortNow();
+            //icProxy->sort(6,Qt::AscendingOrder);
+            //icProxy->sort(3,Qt::AscendingOrder);
     } else {
         // file not found
         msgboxFileNotFound(sFilePath);
@@ -185,7 +190,6 @@ void MainWindow::showRecentFiles() {
          irfl++;
     }
 }
-
 
 void MainWindow::on_actionOpenFile_triggered()
 {

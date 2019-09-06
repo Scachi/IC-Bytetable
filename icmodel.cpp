@@ -123,10 +123,13 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
             case  1: return ic.getLineNo().toInt(); // toInt for correct num ordering
             case  2: return ic.getName();
 
-            case  3: return ic.getByteOffset().toInt(); // toInt for correct num ordering
+            //case  3: return ic.getByteOffset; // toInt for correct num ordering
+            case  3: if (ic.getByteOffset().length() > 0) return ic.getByteOffset().toInt(); else return {};
             case  4: return ic.getByteOffsetHex();
-            case  5: return ic.getBitSize().toInt(); // toInt for correct num ordering
-            case  6: return ic.getBitOffset();
+            //case  5: return ic.getBitSize(); // toInt for correct num ordering
+            case  5: if (ic.getBitSize().length() > 0) return ic.getBitSize().toInt(); else return {};
+            //case  6: return ic.getBitOffset(); // toInt for correct num ordering
+            case  6: if (ic.getBitOffset().length() > 0) return ic.getBitOffset().toInt(); else return {};
 
             case  7: return ic.getValid();
             case  8: return ic.getInfo();

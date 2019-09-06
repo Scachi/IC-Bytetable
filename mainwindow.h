@@ -8,6 +8,7 @@
 
 #include "ic.h"
 #include "icmodel.h"
+#include "icproxy.h"
 
 namespace Ui {
 class MainWindow;
@@ -58,15 +59,17 @@ public:
     void msgboxFileNotFound(QString sFilepath);
     void msgboxICNotFound(QString source);
     void msgboxICNotFound();
+    //QSortFilterProxyModel proxyModel;// sorting of tableview via proxyModel
+    //ICPROXY proxyModel;// sorting of tableview via proxyModel
 
 private:
     enum { MAX_RECENT_FILES = 6 };
     QStringList recentFilesList;
-    QString     gpcSelectedDir;      // the path part of the file that was initially opened
-    QString     gpcSelectFilePath;   // selected filename from filedialog or recent file list
+    QString     gpcSelectedDir;     // the path part of the file that was initially opened
+    QString     gpcSelectFilePath;  // selected filename from filedialog or recent file list
     QLabel      *statusBarLabel;
-    ICModel     icModel;             // tableview model
-    QSortFilterProxyModel proxyModel;// sorting of tableview via proxyModel
+    ICModel     *icModel;            // tableview model
+    ICProxy     *icProxy;            // QSortFilterProxyModel for sorting
 
 private:
     void modifyStatusBar();
@@ -74,6 +77,7 @@ private:
     void readRecentFiles();
     void addRecentFileTrigger(QAction *a);
     void showRecentFiles();
+
 };
 
 #endif // MAINWINDOW_H

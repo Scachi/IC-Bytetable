@@ -29,6 +29,7 @@ SOURCES += \
         ic.cpp \
         icd.cpp \
         icmodel.cpp \
+        icproxy.cpp \
         main.cpp \
         mainwindow.cpp \
         xtra.cpp
@@ -38,6 +39,7 @@ HEADERS += \
         ic.h \
         icd.h \
         icmodel.h \
+        icproxy.h \
         mainwindow.h \
         xtra.h
 
