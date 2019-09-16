@@ -12,6 +12,7 @@
 #include "ui_mainwindow.h"
 #include "ic.h"
 #include "icmodel.h"
+#include "xtra.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -20,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     readRecentFiles();
     modifyStatusBar(); // set resizing policy
+    modifyToolBar();
     icModel = new ICModel;
     icProxy = new ICProxy;
 }
@@ -53,6 +55,7 @@ void MainWindow::readSource(QString sFilePath) {
                 return;
             }
 
+            // output
             // clear previous data
             icModel->clear();
             // fill the tableview
@@ -68,6 +71,11 @@ void MainWindow::readSource(QString sFilePath) {
             icProxy->colSortNow();
             //icProxy->sort(6,Qt::AscendingOrder);
             //icProxy->sort(3,Qt::AscendingOrder);
+            QString tmp;
+            tmp = tr("%1 Bits used by Interactive Configuration<br>Click for more information").arg(gpc->icData->bitsUsed);
+            tmp=XTRA::xNoAutoLinebreaks(tmp);
+            ui->actionPMEM_Usage->setToolTip(tmp);
+            showMessageToolBar(tr("%1 of 1024 bits used").arg(gpc->icData->bitsUsed));
     } else {
         // file not found
         msgboxFileNotFound(sFilePath);
@@ -116,6 +124,18 @@ void MainWindow::modifyStatusBar() { // set resizing policy of statusBar
 
 void MainWindow::showMessageStatusBar(QString msg) {
     statusBarLabel->setText(msg);
+}
+
+void MainWindow::modifyToolBar() { // set resizing policy of statusBar
+    toolBarLabel = new QLabel;
+    toolBarLabel->setText("");
+    toolBarLabel->setAlignment(Qt::AlignVCenter);
+    ui->toolBar->addWidget(toolBarLabel);
+    ui->toolBar->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+}
+
+void MainWindow::showMessageToolBar(QString msg) {
+    toolBarLabel->setText("<br><br>" + msg);
 }
 
 static inline QString recentFilesKey() { return QStringLiteral("recentFileList"); }

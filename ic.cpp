@@ -78,6 +78,7 @@ QString IC::getNameToolTip() const {
     QString tmp=this->name;
     tmp=tmp.mid(1,tmp.length()-2);
     tmp.prepend(QString("<font color=%1>").arg(this->color)).append("</font>");
+    if (getGroup().length() || getGroupCol().length()) tmp.prepend("<i>grouped: ").append("</i>");
     tmp.prepend("<p style='white-space:pre'>").append("</p>"); // linebreaks as in text
     return tmp;
 }

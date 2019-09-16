@@ -8,5 +8,6 @@
         <file>resources/help-about.ico</file>
         <file>resources/icon.ico</file>
         <file>resources/view-refresh.ico</file>
+        <file>resources/applications-table.ico</file>
     </qresource>
 </RCC>

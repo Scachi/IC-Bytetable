@@ -24,3 +24,8 @@ QString XTRA::x2Hex (QString value, QString bitsize) {
     value = QString("%1").arg(iconv, bitsize.toInt()/4, 16, QLatin1Char( '0' ));
     return value;
 }
+
+QString XTRA::xNoAutoLinebreaks (QString qs) {
+    qs.prepend("<p style='white-space:pre'>").append("</p>");
+    return qs;
+}

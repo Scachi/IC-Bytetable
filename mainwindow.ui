@@ -67,7 +67,7 @@
        <bool>true</bool>
       </attribute>
       <attribute name="verticalHeaderVisible">
-       <bool>true</bool>
+       <bool>false</bool>
       </attribute>
       <attribute name="verticalHeaderCascadingSectionResizes">
        <bool>false</bool>
@@ -283,6 +283,9 @@
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -438,8 +441,15 @@
    </property>
   </action>
   <action name="actionPMEM_Usage">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/resources/applications-table.ico</normaloff>:/resources/applications-table.ico</iconset>
+   </property>
    <property name="text">
-    <string>PMEM Usage</string>
+    <string>&amp;PMEM Usage</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
  </widget>

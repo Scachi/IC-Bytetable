@@ -14,7 +14,7 @@ void ICD::debug() {
     }
 }
 
-// qDebug() specific IC entry by lineNo
+// qDebug() specific IC entry by Name
 void ICD::debug(QString sName) {
     for(int idx = 0; idx < data.size(); idx++)
     {

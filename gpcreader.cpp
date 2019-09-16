@@ -15,6 +15,7 @@ GPCReader::GPCReader(QString sDir, QString sFilePath) {
        gpcSelectedDir = sDir;
        gpcSelectedFilePath = sFilePath;
        gpcCurrentFilePath = "";
+       icData->bitsUsed=0;
        //qDebug() << " Sdir / sfilepath: " << sDir << " / " << sFilePath;
        parse();
 }
@@ -245,6 +246,7 @@ void GPCReader::parseICSection(qint32 line) {
 
     //qDebug() << "Size of List: " << icData->data.size();
     icData->data.push_back(newIC);
+    icData->bitsUsed += newIC.bitSize.toInt();
     //qDebug() << "Size of List: " << icData->data.size();
     /*
     //ICNewVal =

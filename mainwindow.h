@@ -45,7 +45,6 @@ private slots:
 
     void on_actionReload_triggered();
 
-
     void on_actionContextMenuToolbar_triggered();
 
 private:
@@ -56,6 +55,7 @@ public:
     void addRecentFile(QString s);
     void enableReloadBtn();
     void showMessageStatusBar(QString msg);
+    void showMessageToolBar(QString msg);
     void msgboxFileNotFound(QString sFilepath);
     void msgboxICNotFound(QString source);
     void msgboxICNotFound();
@@ -68,11 +68,13 @@ private:
     QString     gpcSelectedDir;     // the path part of the file that was initially opened
     QString     gpcSelectFilePath;  // selected filename from filedialog or recent file list
     QLabel      *statusBarLabel;
+    QLabel      *toolBarLabel;
     ICModel     *icModel;            // tableview model
     ICProxy     *icProxy;            // QSortFilterProxyModel for sorting
 
 private:
     void modifyStatusBar();
+    void modifyToolBar();
     void writeRecentFiles();
     void readRecentFiles();
     void addRecentFileTrigger(QAction *a);

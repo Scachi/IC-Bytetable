@@ -13,6 +13,8 @@ public:
     static QString xDecDot (QString value, QString decimals);
     // convert to hex, automatically selects decimal or integer
     static QString x2Hex (QString value, QString bitsize);
+    // stop tooltip / richtext from adding automatic linebreaks
+    static QString xNoAutoLinebreaks (QString qs);
 };
 
 #endif // XTRA_H

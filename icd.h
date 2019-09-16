@@ -14,6 +14,7 @@ public:
     void debug(qint32 iLineNo);
 
     QList<IC> data;
+    qint16 bitsUsed;
 
 };
 
