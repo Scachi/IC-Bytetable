@@ -220,7 +220,7 @@ void MainWindow::on_actionOpenFile_triggered()
               this,
               "Open Document",
                 curPath.path(),
-              "Script files (*.gpc *.gph);;All files (*.*)");
+              "Script files (*.gpc *.gph *.gcd);;All files (*.*)");
 
     if(!scriptFileName.isNull())
     {

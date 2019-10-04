@@ -24,6 +24,8 @@ public:
 
     QString getValid() const;
     QString getInfo() const;
+    QString getInfoToolTip() const;
+    QString getInfoCode() const;
 
     QString getDefaultVal() const;
     QString getDefaultValHex() const;
@@ -47,12 +49,26 @@ public:
     QString getColor() const;
     QString getColorToolTip() const;
     QString getBorder() const;
-
+/*
     QString getVarType() const;
     QString getVarName() const;
     QString getComment() const;
-
+*/
     bool containsBRTags(QString source) const;
+    qint8 validate();
+    qint8 validateControl();
+    qint8 validateControlCommon();
+    qint8 validateControlDefault();
+    qint8 validateControlItem(bool checkdefault=true);
+    qint8 validateControlValue();
+    qint8 validateByteOffset();
+    qint8 validateBitSize();
+    qint8 validateBitOffset();
+
+    qint8 infoAdd(QString msg);
+    qint8 warnAdd(QString msg);
+    qint8 errAdd(QString msg);
+
 
 public:
     QStringList rawSection; // complete raw data of the section
@@ -74,9 +90,11 @@ public:
     QString     color;
     QString     border;
 
+    /*
     QString     varType;  // for future usage - creation of ICs: vartype=
     QString     varName;  // for future usage - creation of ICs: varname=
     QString     comment;  // for future usage - creation of ICs: comment=
+    */
 
     QStringList shortDesc;
     QString     byteOffset;

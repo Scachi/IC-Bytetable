@@ -46,7 +46,7 @@ void GPCReader::parse() {
                 gpcCurrentFilePath = includeList[i];
                 includeList.removeAt(i);
                 readFile(gpcSelectedDir);
-                parseGPCRawList();
+                parseGPCRawList(); // search for #include lines
                 parseICRawList();
             }
         }
@@ -64,6 +64,7 @@ void GPCReader::readFile(QString path) {
     QString line;
     // loop through all lines
     gpcRawList.clear();
+
     while (!in.atEnd())
     {
         gpcRawList.append(in.readLine());
@@ -164,10 +165,19 @@ bool GPCReader::gpcRawHasIC() {
 
 void GPCReader::parseICRawList() {
     qDebug() << "parseICRawList";
-    if (!gpcRawHasIC()) return;
-    qDebug() << "Interactive Configuration found in file " << gpcCurrentFilePath;
-    gpcICFound = true;
-    icRawList = gpcRawList.mid(gpcICBegin, gpcICEnd-gpcICBegin);
+    if (gpcCurrentFilePath.endsWith(".gcd")) // cached IC content in GTunerIV\cache
+    {
+        gpcICFound = true;
+        icRawList = gpcRawList;
+        gpcICBegin = 0;
+    }
+    else // regular .gpc .gph files
+    {
+        if (!gpcRawHasIC()) return;
+        qDebug() << "Interactive Configuration found in file " << gpcCurrentFilePath;
+        gpcICFound = true;
+        icRawList = gpcRawList.mid(gpcICBegin, gpcICEnd-gpcICBegin);
+    }
     //qDebug() << ICRawList;
 
     QRegularExpression re;
@@ -183,8 +193,7 @@ void GPCReader::parseICRawList() {
         icstop = icnext = icRawList.indexOf(re,icstart+1);
         if (icnext > -1) icstop = icnext-1;
         //qDebug() << "Start: " << icstart << " , stop: " << icstop << " , next: " << icnext;
-        icRawSection = icRawList.mid(icstart, icstop-icstart);
-
+        icRawSection = icRawList.mid(icstart, icstop-icstart+1);
         parseICSection(icstart);
     }
 }
@@ -215,11 +224,11 @@ void GPCReader::parseICSection(qint32 line) {
     newIC.groupCol      = getVal("^\\s*groupcol\\s*=(.*)");
     newIC.color         = getVal("^\\s*color\\s*=(.*)");
     newIC.border        = getVal("^\\s*border\\s*=(.*)");
-
+/*
     newIC.varType       = getVal("^\\s*vartype\\s*=(.*)");
     newIC.varName       = getVal("^\\s*varname\\s*=(.*)");
     newIC.comment       = getVal("^\\s*comment\\s*=(.*)");
-
+*/
     newIC.shortDesc     = getShortDesc();
     newIC.byteOffset    = getVal("^\\s*byteoffset\\s*=(.*)");
     newIC.bitSize       = getVal("^\\s*bitsize\\s*=(.*)");
@@ -243,6 +252,7 @@ void GPCReader::parseICSection(qint32 line) {
     newIC.checked=false;
 
     //newIC.debug();
+    newIC.validate();
 
     //qDebug() << "Size of List: " << icData->data.size();
     icData->data.push_back(newIC);

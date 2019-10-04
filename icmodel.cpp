@@ -46,11 +46,11 @@ QVariant ICModel::headerData(int section, Qt::Orientation orientation, int role)
             case 22: return "GroupCol";
             case 23: return "Color";
             case 24: return "Border";
-
+/*
             case 25: return "VarType";
             case 26: return "VarName";
             case 27: return "Comment";
-
+*/
             default: return {};
         }
     }
@@ -86,6 +86,10 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
         switch(index.column())
         {
             case  2: return QColor(ic.getColor()); // color the [Name]
+            case  7: if (ic.valid==2) return QColor("#02a1db"); // info
+                     if (ic.valid==4) return QColor("#f79a05"); // warn
+                     if (ic.valid==8) return QColor("#c70202"); // error
+                     return QColor("green"); // ok
             //case 19: return QColor(Qt::gray);
             case  23: return QColor(ic.getColor()); // color the [Name]
             default: return {};
@@ -98,6 +102,7 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
         {
             case  0: return ic.getFileNameFull();
             case  2: return ic.getNameToolTip();
+            case  8: return ic.getInfoToolTip();
             case 14: return ic.getItemNamesToolTip();
             case 19: return ic.getShortDesc(40);
             case 20: return ic.getCollapsibleToolTip();
@@ -149,11 +154,11 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
             case 22: return ic.getGroupCol();
             case 23: return ic.getColor();
             case 24: return ic.getBorder();
-
+/*
             case 25: return ic.getVarType();
             case 26: return ic.getVarName();
             case 27: return ic.getComment();
-
+*/
             default: return {};
          }
     }

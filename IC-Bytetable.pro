@@ -32,6 +32,7 @@ SOURCES += \
         icproxy.cpp \
         main.cpp \
         mainwindow.cpp \
+        pmem.cpp \
         xtra.cpp
 
 HEADERS += \
@@ -41,6 +42,7 @@ HEADERS += \
         icmodel.h \
         icproxy.h \
         mainwindow.h \
+        pmem.h \
         xtra.h
 
 FORMS += \
