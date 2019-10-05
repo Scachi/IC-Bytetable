@@ -196,6 +196,7 @@ void GPCReader::parseICRawList() {
         icRawSection = icRawList.mid(icstart, icstop-icstart+1);
         parseICSection(icstart);
     }
+    icData->validateUniqueNames();
 }
 
 // search the section for all keywords and their values
@@ -257,6 +258,7 @@ void GPCReader::parseICSection(qint32 line) {
     //qDebug() << "Size of List: " << icData->data.size();
     icData->data.push_back(newIC);
     icData->bitsUsed += newIC.bitSize.toInt();
+
     //qDebug() << "Size of List: " << icData->data.size();
     /*
     //ICNewVal =

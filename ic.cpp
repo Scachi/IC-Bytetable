@@ -155,8 +155,8 @@ QString IC::getInfoToolTip() const {
         tmp.append("<font color='#02a1db'>Info:</font><br>");
         tmp.append(this->info.join("<br>"));
     }
-
-    return XTRA::xNoAutoLinebreaks(tmp);
+    if (tmp.length()>0) return XTRA::xNoAutoLinebreaks(tmp);
+    return {};
 }
 
 
@@ -323,6 +323,7 @@ qint8 IC::validate() {
     {
         if (this->color.length()>0) this->infoAdd("'color' has no effect on grouped controls");
     }
+
     return this->valid;
 }
 
@@ -464,4 +465,13 @@ qint8 IC::errAdd(QString msg) {
     this->err.append(msg);
     if (this->valid < 8) this->valid=8;
     return this->valid;
+}
+
+qint8 IC::msgAdd(QString msg, qint8 severity) {
+    switch(severity)
+    {
+        case 2 : return infoAdd(msg);
+        case 4 : return warnAdd(msg);
+        default : return errAdd(msg);
+    }
 }

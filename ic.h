@@ -68,6 +68,7 @@ public:
     qint8 infoAdd(QString msg);
     qint8 warnAdd(QString msg);
     qint8 errAdd(QString msg);
+    qint8 msgAdd(QString msg, qint8 severity=8);
 
 
 public:
