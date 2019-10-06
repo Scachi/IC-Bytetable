@@ -22,6 +22,6 @@ void PMEMWindow::closeEvent(QCloseEvent *event)
 {
     event->ignore();
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
-    settings.setValue("pmemgeometry", saveGeometry());
+    settings.setValue("pmem/geometry", saveGeometry());
     this->hide();
 }

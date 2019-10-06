@@ -83,6 +83,7 @@ private:
     void readRecentFiles();
     void addRecentFileTrigger(QAction *a);
     void showRecentFiles();
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // MAINWINDOW_H

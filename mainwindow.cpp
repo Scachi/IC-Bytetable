@@ -20,11 +20,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    restoreGeometry(settings.value("main/geometry").toByteArray());
+    restoreState(settings.value("main/state").toByteArray());
 
     pmemWindow = new PMEMWindow(this);
     Qt::WindowFlags flags(Qt::Dialog|Qt::WindowCloseButtonHint);
     pmemWindow->setWindowFlags(flags);
-    //qDebug() << "info: " << pmemWindow->windowFlags();
 
     readRecentFiles();
     modifyStatusBar(); // set resizing policy
@@ -315,6 +317,12 @@ void MainWindow::on_actionContextMenuToolbar_triggered()
 void MainWindow::on_actionPMEM_Usage_triggered()
 {
     static bool first=true;
+    static QByteArray mwGeometry = this->saveGeometry();
+    QByteArray mwGeoNow = this->saveGeometry();
+    if (mwGeoNow != mwGeometry) {
+        mwGeometry = mwGeoNow;
+        first=true;
+    }
     if (first) {
         first=false;
         QScreen *screenactive=QGuiApplication::screenAt(this->pos());
@@ -330,7 +338,15 @@ void MainWindow::on_actionPMEM_Usage_triggered()
     else if (pmemWindow->isHidden())
     {
         QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
-        pmemWindow->restoreGeometry(settings.value("pmemgeometry").toByteArray());
+        pmemWindow->restoreGeometry(settings.value("pmem/geometry").toByteArray());
     }
     pmemWindow->show();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    settings.setValue("main/geometry", saveGeometry());
+    settings.setValue("main/state", saveState());
+    QMainWindow::closeEvent(event);
 }
