@@ -448,6 +448,9 @@
    <property name="text">
     <string>&amp;PMEM Usage</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>

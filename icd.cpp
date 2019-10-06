@@ -39,7 +39,7 @@ bool ICD::validateUniqueNames() {
     {
         if (namesProcessed.contains(data[idx].name)) continue;
         namesProcessed.append(data[idx].name);
-        searchForNames(idx,data[idx].name);
+        searchForNames(idx,data[idx].name,true,QString("name %1 not unique").arg(data[idx].name));
     }
     return true;
 }

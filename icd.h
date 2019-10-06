@@ -14,7 +14,7 @@ public:
     void debug(qint32 iLineNo);
 
     bool validateUniqueNames();
-    bool searchForNames(int srcidx, QString name, bool mark=true, QString msg="[name] is not unique", qint8 severity=8);
+    bool searchForNames(int srcidx, QString name, bool mark=true, QString msg="name is not unique", qint8 severity=8);
 
     QList<IC> data;
     qint16 bitsUsed;

@@ -9,6 +9,7 @@
 #include "ic.h"
 #include "icmodel.h"
 #include "icproxy.h"
+#include "pmemwindow.h"
 
 namespace Ui {
 class MainWindow;
@@ -47,6 +48,8 @@ private slots:
 
     void on_actionContextMenuToolbar_triggered();
 
+    void on_actionPMEM_Usage_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -63,6 +66,7 @@ public:
     //ICPROXY proxyModel;// sorting of tableview via proxyModel
 
 private:
+    PMEMWindow *pmemWindow;
     enum { MAX_RECENT_FILES = 6 };
     QStringList recentFilesList;
     QString     gpcSelectedDir;     // the path part of the file that was initially opened
@@ -79,7 +83,6 @@ private:
     void readRecentFiles();
     void addRecentFileTrigger(QAction *a);
     void showRecentFiles();
-
 };
 
 #endif // MAINWINDOW_H

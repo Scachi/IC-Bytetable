@@ -13,12 +13,19 @@
 #include "ic.h"
 #include "icmodel.h"
 #include "xtra.h"
+#include "pmemwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    pmemWindow = new PMEMWindow(this);
+    Qt::WindowFlags flags(Qt::Dialog|Qt::WindowCloseButtonHint);
+    pmemWindow->setWindowFlags(flags);
+    //qDebug() << "info: " << pmemWindow->windowFlags();
+
     readRecentFiles();
     modifyStatusBar(); // set resizing policy
     modifyToolBar();
@@ -303,4 +310,27 @@ void MainWindow::on_actionContextMenuToolbar_triggered()
     QPoint mp = ui->mainToolBar->mapFromGlobal(QCursor::pos());
     QAction *qa = ui->mainToolBar->actionAt(mp);
     if (qa == ui->actionOpenFile) ui->menuRe_cent->exec(QCursor::pos());
+}
+
+void MainWindow::on_actionPMEM_Usage_triggered()
+{
+    static bool first=true;
+    if (first) {
+        first=false;
+        QScreen *screenactive=QGuiApplication::screenAt(this->pos());
+
+        if (screenactive->geometry().width() - (this->geometry().x() + this->geometry().width()) >= pmemWindow->width())
+        {
+            pmemWindow->move(this->x()+this->width(),this->y());
+        } else {
+            pmemWindow->move(screenactive->geometry().width()-pmemWindow->width(),this->y());
+        }
+        pmemWindow->resize(pmemWindow->width(),this->height());
+    }
+    else if (pmemWindow->isHidden())
+    {
+        QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
+        pmemWindow->restoreGeometry(settings.value("pmemgeometry").toByteArray());
+    }
+    pmemWindow->show();
 }

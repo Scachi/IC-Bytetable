@@ -33,6 +33,7 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         pmem.cpp \
+        pmemwindow.cpp \
         xtra.cpp
 
 HEADERS += \
@@ -43,10 +44,12 @@ HEADERS += \
         icproxy.h \
         mainwindow.h \
         pmem.h \
+        pmemwindow.h \
         xtra.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+        pmemwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
