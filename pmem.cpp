@@ -2,25 +2,22 @@
 
 PMEM::PMEM()
 {
+    this->bits[0]=0;
+    this->bits[1]=0;
+    this->bits[2]=0;
+    this->bits[3]=0;
+    this->bits[4]=0;
+    this->bits[5]=0;
+    this->bits[6]=0;
+    this->bits[7]=0;
 
+    this->line = -1;
+    this->byByte=false;
+    this->bySize=false;
+    this->byBit=false;
 }
 
-uint8_t PMEM::pAdd (uint8_t byteoffset, uint8_t bitsize) {
+PMEM::~PMEM()
+{
 
-    return 0;
-}
-
-uint8_t PMEM::pAdd (QString byteoffset, QString bitsize) {
-
-    return 0;
-}
-
-uint8_t PMEM::pAdd (uint8_t byteoffset, uint8_t bitsize, uint8_t bitoffset) {
-
-    return 0;
-}
-
-uint8_t PMEM::pAdd (QString byteoffset, QString bitsize, QString bitoffset) {
-
-    return 0;
 }

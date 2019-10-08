@@ -4,6 +4,9 @@
 
 #include "pmemwindow.h"
 #include "ui_pmemwindow.h"
+#include "pmemmodel.h"
+#include "pmem.h"
+#include "pmemd.h"
 
 PMEMWindow::PMEMWindow(QWidget *parent) :
     QDialog(parent),
@@ -17,6 +20,12 @@ PMEMWindow::~PMEMWindow()
     delete ui;
 }
 
+void PMEMWindow::setModel(PMEMModel *model)
+{
+    ui->tableView->setModel(nullptr);
+    qDebug() << "set model:" << model;
+    ui->tableView->setModel(model);
+}
 
 void PMEMWindow::closeEvent(QCloseEvent *event)
 {

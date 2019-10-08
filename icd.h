@@ -1,13 +1,15 @@
 #ifndef ICD_H
 #define ICD_H
 
-#include <QAbstractTableModel>
+//#include <QAbstractTableModel>
+#include <qlist.h>
 #include "ic.h"
 
 class ICD
 {
 public:
     ICD();
+    ~ICD();
 
     void debug();
     void debug(QString sName);

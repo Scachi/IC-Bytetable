@@ -24,6 +24,10 @@ IC::IC(QString sFileName, QString sLineNo, QString sName, QString sControl)
     valid = 0;
 }
 
+IC::~IC() {
+
+}
+
 
 void IC::debug() {
     qDebug() << "------- ICRAWSECTION ------";

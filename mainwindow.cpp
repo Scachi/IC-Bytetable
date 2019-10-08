@@ -14,6 +14,7 @@
 #include "icmodel.h"
 #include "xtra.h"
 #include "pmemwindow.h"
+#include "pmemmodel.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,22 +25,24 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreGeometry(settings.value("main/geometry").toByteArray());
     restoreState(settings.value("main/state").toByteArray());
 
-    pmemWindow = new PMEMWindow(this);
-    Qt::WindowFlags flags(Qt::Dialog|Qt::WindowCloseButtonHint);
-    pmemWindow->setWindowFlags(flags);
-
     readRecentFiles();
     modifyStatusBar(); // set resizing policy
     modifyToolBar();
     icModel = new ICModel;
     icProxy = new ICProxy;
+
+    pmemWindow = new PMEMWindow(this);
+    Qt::WindowFlags flags(Qt::Dialog|Qt::WindowCloseButtonHint);
+    pmemWindow->setWindowFlags(flags);
+    pmemModel = new PMEMModel;
+    //qDebug() << "model:" << pmemModel;
+    pmemWindow->setModel(pmemModel);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
 
 // reads initially selected file (by filedialog, commandline, clipboard-btn, reload-btn)
 void MainWindow::readSource(QString sFilePath) {
@@ -69,22 +72,20 @@ void MainWindow::readSource(QString sFilePath) {
             icModel->clear();
             // fill the tableview
             icModel->icData.append(gpc->icData->data);
-            //  //ui->tableView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-            //  //ui->tableView->verticalHeader()->setDefaultAlignment(Qt::AlignTop);
-            // sorting via proxymodel
             //ui->tableView->setModel(&icModel);
             icProxy->setSourceModel(icModel);
             icProxy->setDynamicSortFilter(true);
             ui->tableView->setModel(icProxy);
             icProxy->invalidate();
             icProxy->colSortNow();
-            //icProxy->sort(6,Qt::AscendingOrder);
-            //icProxy->sort(3,Qt::AscendingOrder);
             QString tmp;
             tmp = tr("%1 Bits used by Interactive Configuration<br>Click for more information").arg(gpc->icData->bitsUsed);
             tmp=XTRA::xNoAutoLinebreaks(tmp);
             ui->actionPMEM_Usage->setToolTip(tmp);
-            showMessageToolBar(tr("%1 of 1024 bits used").arg(gpc->icData->bitsUsed));
+            showMessageToolBar(tr("<br>%1 of 1024<br>bits used").arg(gpc->icData->bitsUsed));
+            pmemModel->pmemData.clear();
+            pmemModel->pmemData.append(gpc->pmemData->data);
+            pmemWindow->setModel(pmemModel);
     } else {
         // file not found
         msgboxFileNotFound(sFilePath);
@@ -138,13 +139,15 @@ void MainWindow::showMessageStatusBar(QString msg) {
 void MainWindow::modifyToolBar() { // set resizing policy of statusBar
     toolBarLabel = new QLabel;
     toolBarLabel->setText("");
-    toolBarLabel->setAlignment(Qt::AlignVCenter);
+    toolBarLabel->setMargin(10);
+    toolBarLabel->setAlignment(Qt::AlignCenter);
     ui->toolBar->addWidget(toolBarLabel);
+
     ui->toolBar->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
 }
 
 void MainWindow::showMessageToolBar(QString msg) {
-    toolBarLabel->setText("<br><br>" + msg);
+    toolBarLabel->setText(msg);
 }
 
 static inline QString recentFilesKey() { return QStringLiteral("recentFileList"); }
@@ -334,6 +337,7 @@ void MainWindow::on_actionPMEM_Usage_triggered()
             pmemWindow->move(screenactive->geometry().width()-pmemWindow->width(),this->y());
         }
         pmemWindow->resize(pmemWindow->width(),this->height());
+
     }
     else if (pmemWindow->isHidden())
     {
@@ -341,6 +345,7 @@ void MainWindow::on_actionPMEM_Usage_triggered()
         pmemWindow->restoreGeometry(settings.value("pmem/geometry").toByteArray());
     }
     pmemWindow->show();
+
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

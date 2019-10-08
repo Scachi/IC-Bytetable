@@ -1,5 +1,6 @@
 #include <QFont>
 #include <QColor>
+#include <QItemSelectionModel>
 #include "icmodel.h"
 #include "mainwindow.h"
 
@@ -85,13 +86,15 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
     {
         switch(index.column())
         {
-            case  2: return QColor(ic.getColor()); // color the [Name]
-            case  7: if (ic.valid==2) return QColor("#02a1db"); // info
-                     if (ic.valid==4) return QColor("#f79a05"); // warn
-                     if (ic.valid==8) return QColor("#c70202"); // error
+            case  2: if (ic.group.length() > 0 || ic.groupCol.length() >0)
+                        return {};
+                     return QColor(ic.getColor()); // color the [Name] of ungrouped controls
+            case  7: if (ic.valid == 2) return QColor("#02a1db"); // info
+                     if (ic.valid == 4) return QColor("#f79a05"); // warn
+                     if (ic.valid == 8) return QColor("#c70202"); // error
                      return QColor("green"); // ok
             //case 19: return QColor(Qt::gray);
-            case  23: return QColor(ic.getColor()); // color the [Name]
+            case  23: return QColor(ic.getColor()); // color for [Name]
             default: return {};
         }
     }
@@ -193,6 +196,9 @@ bool ICModel::setData(const QModelIndex &index,
         */
     }
     if (role == Qt::CheckStateRole) {
+        //QModelIndexList indexes = MainWindow().getSelectionTableView();
+        //qDebug() << "selected: " << indexes;
+
         ic.checked = value.toBool();
         //qDebug() << "checked: " << ic.checked;
         return true;

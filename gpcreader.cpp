@@ -9,13 +9,15 @@
 #include "gpcreader.h"
 #include "mainwindow.h"
 #include "xtra.h"
+#include "pmem.h"
+#include "pmemd.h"
 
 GPCReader::GPCReader(QString sDir, QString sFilePath) {
-       icData = new ICD;
+       icData = new ICD; // parsed interactive configuration data
+       pmemData = new PMEMD; // IC byte usage 0..127
        gpcSelectedDir = sDir;
        gpcSelectedFilePath = sFilePath;
        gpcCurrentFilePath = "";
-       icData->bitsUsed=0;
        //qDebug() << " Sdir / sfilepath: " << sDir << " / " << sFilePath;
        parse();
 }
@@ -35,7 +37,6 @@ void GPCReader::parse() {
 
     parseGPCRawList();
     parseICRawList();
-
     while (includeList.size())
     {
         for (int i = 0; i < includeList.size(); ++i)
@@ -256,8 +257,10 @@ void GPCReader::parseICSection(qint32 line) {
     newIC.validate();
 
     //qDebug() << "Size of List: " << icData->data.size();
-    icData->data.push_back(newIC);
+    icData->data.append(newIC);
     icData->bitsUsed += newIC.bitSize.toInt();
+
+    pmemData->byteSet(newIC.lineNo,newIC.byteOffset,newIC.bitSize,newIC.bitOffset);
 
     //qDebug() << "Size of List: " << icData->data.size();
     /*

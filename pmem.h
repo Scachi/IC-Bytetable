@@ -7,13 +7,15 @@ class PMEM
 {
 public:
     PMEM();
-    uint8_t pAdd (uint8_t byteoffset, uint8_t bitsize);
-    uint8_t pAdd (QString byteoffset, QString bitsize);
-    uint8_t pAdd (uint8_t byteoffset, uint8_t bitsize, uint8_t bitoffset);
-    uint8_t pAdd (QString byteoffset, QString bitsize, QString bitoffset);
+    ~PMEM();
 
-private:
-    uint8_t pmem[128][10]; // [n] byte , [][0-7] bit, [][8] errors
+public:
+    uint8_t bits[8];
+    qint32  line;
+    bool    byByte; // usage by direct byte,
+    bool    bySize; // usage by bitsize > 8
+    bool    byBit;  // usage by bitsize < 8
+
 };
 
 #endif // PMEM_H

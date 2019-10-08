@@ -33,6 +33,8 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         pmem.cpp \
+        pmemd.cpp \
+        pmemmodel.cpp \
         pmemwindow.cpp \
         xtra.cpp
 
@@ -44,6 +46,8 @@ HEADERS += \
         icproxy.h \
         mainwindow.h \
         pmem.h \
+        pmemd.h \
+        pmemmodel.h \
         pmemwindow.h \
         xtra.h
 

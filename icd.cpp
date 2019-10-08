@@ -3,6 +3,11 @@
 
 ICD::ICD()
 {
+    bitsUsed=0;
+}
+
+ICD::~ICD()
+{
 
 }
 

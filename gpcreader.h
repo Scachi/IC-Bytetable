@@ -7,6 +7,8 @@
 
 #include "ic.h"
 #include "icd.h"
+#include "pmem.h"
+#include "pmemd.h"
 
 class GPCReader
 {
@@ -15,6 +17,8 @@ public:
 
 public:
     ICD *icData;
+    PMEMD *pmemData;
+
     bool getGPCICFound();
 
 private:

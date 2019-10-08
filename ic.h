@@ -7,6 +7,7 @@ class IC
 {
 public:
     IC();
+    ~IC();
     IC(QStringList slRawSection, QString sFileName, QString sLineNo, QString sName, QString sControl);
     IC(QString sFileName, QString sLineNo, QString sName, QString sControl);   
     void debug();

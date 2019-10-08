@@ -5,11 +5,13 @@
 #include <QScrollArea>
 #include <QLabel>
 #include <QSortFilterProxyModel>
+#include <QItemSelectionModel>
 
 #include "ic.h"
 #include "icmodel.h"
 #include "icproxy.h"
 #include "pmemwindow.h"
+#include "pmemmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -62,8 +64,6 @@ public:
     void msgboxFileNotFound(QString sFilepath);
     void msgboxICNotFound(QString source);
     void msgboxICNotFound();
-    //QSortFilterProxyModel proxyModel;// sorting of tableview via proxyModel
-    //ICPROXY proxyModel;// sorting of tableview via proxyModel
 
 private:
     PMEMWindow *pmemWindow;
@@ -75,6 +75,8 @@ private:
     QLabel      *toolBarLabel;
     ICModel     *icModel;            // tableview model
     ICProxy     *icProxy;            // QSortFilterProxyModel for sorting
+    PMEMModel   *pmemModel;
+
 
 private:
     void modifyStatusBar();
