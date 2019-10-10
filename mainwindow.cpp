@@ -78,6 +78,10 @@ void MainWindow::readSource(QString sFilePath) {
             ui->tableView->setModel(icProxy);
             icProxy->invalidate();
             icProxy->colSortNow();
+            ui->tableView->resizeColumnsToContents();
+            ui->tableView->setColumnWidth(0,100);
+            ui->tableView->setColumnWidth(8,100);
+            ui->tableView->setColumnWidth(19,100);
             QString tmp;
             tmp = tr("%1 Bits used by Interactive Configuration<br>Click for more information").arg(gpc->icData->bitsUsed);
             tmp=XTRA::xNoAutoLinebreaks(tmp);

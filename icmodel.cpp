@@ -21,28 +21,28 @@ QVariant ICModel::headerData(int section, Qt::Orientation orientation, int role)
             case  1: return "Line";
             case  2: return "Name";
 
-            case  3: return "Byte Offset";
-            case  4: return "Byte Offhex";
-            case  5: return "Bit Size";
-            case  6: return "Bit Offset";
+            case  3: return "Byte\nOffset";
+            case  4: return "Byte\nOffhex";
+            case  5: return "Bit\nSize";
+            case  6: return "Bit\nOffset";
 
             case  7: return "Status";
             case  8: return "Info";
 
-            case  9: return "Def Val";
-            case 10: return "Def Hex";
-            case 11: return "New Val";
-            case 12: return "New Hex";
+            case  9: return "Def\nVal";
+            case 10: return "Def\nHex";
+            case 11: return "New\nVal";
+            case 12: return "New\nHex";
 
             case 13: return "Control";
             case 14: return "Items";
-            case 15: return "Min Val";
-            case 16: return "Max Val";
+            case 15: return "Min\nVal";
+            case 16: return "Max\nVal";
             case 17: return "Decimals";
             case 18: return "Step";
 
             case 19: return "ShortDesc";
-            case 20: return "Callapsible";
+            case 20: return "Collapsible";
             case 21: return "Group";
             case 22: return "GroupCol";
             case 23: return "Color";
