@@ -260,7 +260,7 @@ void GPCReader::parseICSection(qint32 line) {
     icData->data.append(newIC);
     icData->bitsUsed += newIC.bitSize.toInt();
 
-    pmemData->byteSet(newIC.lineNo,newIC.byteOffset,newIC.bitSize,newIC.bitOffset);
+    pmemData->byteSet(newIC.fileName,newIC.lineNo,newIC.byteOffset,newIC.bitSize,newIC.bitOffset);
 
     //qDebug() << "Size of List: " << icData->data.size();
     /*

@@ -1,3 +1,5 @@
+#include <qdebug.h>
+
 #include "pmemd.h"
 #include "pmem.h"
 
@@ -14,23 +16,27 @@ PMEMD::~PMEMD()
 
 }
 
-bool PMEMD::byteSet (qint32 line, uint8_t byteoffset, uint8_t bitsize) {
-    return true;
-}
+bool PMEMD::byteSet (QString filename, QString line, QString byteoffset, QString bitsize, QString bitoffset) {
+    // skip entries without byteoffset or bitsize
+    if (byteoffset.length() == 0 || bitsize.length() == 0) return false;
 
-bool PMEMD::byteSet (qint32 line, QString byteoffset, QString bitsize) {
-    return true;
-}
-
-bool PMEMD::byteSet (qint32 line, uint8_t byteoffset, uint8_t bitsize, uint8_t bitoffset) {
-    return true;
-}
-
-bool PMEMD::byteSet (QString line, QString byteoffset, QString bitsize, QString bitoffset) {
-    for (uint8_t i=0;i<bitsize;i++)
-    {
-        if (i<8) data[byteoffset.toInt()].bits[i]+=1;
+    // bytes
+    if (bitsize.toInt()%8 == 0) {
+        data[byteoffset.toInt()].setByteByOffset(filename,line);
+        for (int i=1;i<bitsize.toInt()/8;i++)
+        {
+            data[byteoffset.toInt()+i].setByteBySize(filename,line);
+        }
+    // bits
+    } else {
+        data[byteoffset.toInt()].setBitByOffset(filename,line,bitoffset.toInt());
+        if (bitsize.toInt()>1) {
+            for (int i=bitoffset.toInt()+1;i<bitsize.toInt();i++)
+            {
+                data[byteoffset.toInt()].setBitBySize(filename,line,i%8);
+            }
+        }
     }
+    // data[byteoffset.toInt()].debug(byteoffset.toInt());
     return true;
 }
-
