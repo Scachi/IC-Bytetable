@@ -17,6 +17,7 @@ class PMEMWindow : public QDialog
 public:
     explicit PMEMWindow(QWidget *parent = nullptr);
     void setModel(PMEMModel *model);
+    void updateStats(PMEMD *pmemd);
     ~PMEMWindow();
 
 private:

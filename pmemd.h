@@ -13,6 +13,9 @@ public:
     QList<PMEM> data;
 
     bool byteSet (QString filename, QString line, QString byteoffset, QString bitsize, QString bitoffset);
+
+    int getFreeBytes();
+    int getFreeBits();
 };
 
 #endif // PMEMD_H

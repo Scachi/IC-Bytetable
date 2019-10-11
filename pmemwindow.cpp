@@ -27,6 +27,14 @@ void PMEMWindow::setModel(PMEMModel *model)
     ui->tableView->setModel(model);
 }
 
+void PMEMWindow::updateStats(PMEMD *pmemd)
+{
+    int bytes=pmemd->getFreeBytes();
+    int bits=pmemd->getFreeBits();
+    ui->liFreeBytes->setText(QString::number(bytes));
+    ui->liFreeBits->setText(QString::number(bits));
+}
+
 void PMEMWindow::closeEvent(QCloseEvent *event)
 {
     event->ignore();

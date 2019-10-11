@@ -40,3 +40,21 @@ bool PMEMD::byteSet (QString filename, QString line, QString byteoffset, QString
     // data[byteoffset.toInt()].debug(byteoffset.toInt());
     return true;
 }
+
+int PMEMD::getFreeBytes()
+{
+    int bytes=0;
+    for (int i=0;i<128;i++) {
+        if (!data[i].isByte() && !data[i].getBits()) bytes++;
+    }
+    return bytes;
+}
+
+int PMEMD::getFreeBits()
+{
+    int bits=0;
+    for (int i=0;i<128;i++) {
+        if (data[i].getBits()) bits+=8-data[i].getBits();
+    }
+    return bits;
+}

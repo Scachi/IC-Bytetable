@@ -90,6 +90,7 @@ void MainWindow::readSource(QString sFilePath) {
             pmemModel->pmemData.clear();
             pmemModel->pmemData.append(gpc->pmemData->data);
             pmemWindow->setModel(pmemModel);
+            pmemWindow->updateStats(gpc->pmemData);
     } else {
         // file not found
         msgboxFileNotFound(sFilePath);

@@ -202,7 +202,6 @@ void GPCReader::parseICRawList() {
 
 // search the section for all keywords and their values
 void GPCReader::parseICSection(qint32 line) {
-
     //ToDo: use a list of linenumbers to check if all "non emtpy lines" got parsed, automark empty one as checked
     //qDebug() << "------- ICRAWSECTION ------";
     //qDebug() << ICRawSection;
