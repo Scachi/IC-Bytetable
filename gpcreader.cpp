@@ -18,12 +18,17 @@ GPCReader::GPCReader(QString sDir, QString sFilePath) {
        gpcSelectedDir = sDir;
        gpcSelectedFilePath = sFilePath;
        gpcCurrentFilePath = "";
+       gpcValid=true;
        //qDebug() << " Sdir / sfilepath: " << sDir << " / " << sFilePath;
        parse();
 }
 
 bool GPCReader::getGPCICFound() {
-    return gpcICFound;
+    return this->gpcICFound;
+}
+
+bool GPCReader::isValid() {
+    return this->gpcValid;
 }
 
 void GPCReader::parse() {
@@ -52,13 +57,24 @@ void GPCReader::parse() {
             }
         }
     }
+    if (!icData->validateUniqueNames())
+    {
+        this->gpcValid=false;
+        //qDebug("Not unique!");
+    }
+    if (!pmemData->update(icData)) { // fill PMEM data (filename,lineno,bytes,bits,offsets)
+        this->gpcValid=false;
+        //qDebug("pmemData not valid");
+    }
 }
 
 void GPCReader::readFile(QString path) {
     QString file2open = locateFile(path);
     QFile inputFile(file2open);
+    /*
     if (inputFile.exists()) qDebug() << "Going to read: " << file2open;
     else qDebug() << "Failed to find: " << file2open;
+    */
 
     inputFile.open(QIODevice::ReadOnly);
     QTextStream in(&inputFile);
@@ -158,14 +174,14 @@ bool GPCReader::gpcRawHasIC() {
     //qDebug() << "Interactive Configuration: begins at line:" << GPCICBegin << " and ends at line:" << GPCICEnd;
     if (gpcICBegin == -1 || gpcICEnd == -1)
     {
-        qDebug() << "No Interactive Configuration in file " << gpcCurrentFilePath;
+        //qDebug() << "No Interactive Configuration in file " << gpcCurrentFilePath;
         return false;
     }
     return true;
 }
 
 void GPCReader::parseICRawList() {
-    qDebug() << "parseICRawList";
+    //qDebug() << "parseICRawList";
     if (gpcCurrentFilePath.endsWith(".gcd")) // cached IC content in GTunerIV\cache
     {
         gpcICFound = true;
@@ -175,7 +191,7 @@ void GPCReader::parseICRawList() {
     else // regular .gpc .gph files
     {
         if (!gpcRawHasIC()) return;
-        qDebug() << "Interactive Configuration found in file " << gpcCurrentFilePath;
+        //qDebug() << "Interactive Configuration found in file " << gpcCurrentFilePath;
         gpcICFound = true;
         icRawList = gpcRawList.mid(gpcICBegin, gpcICEnd-gpcICBegin);
     }
@@ -197,7 +213,6 @@ void GPCReader::parseICRawList() {
         icRawSection = icRawList.mid(icstart, icstop-icstart+1);
         parseICSection(icstart);
     }
-    icData->validateUniqueNames();
 }
 
 // search the section for all keywords and their values
@@ -258,8 +273,6 @@ void GPCReader::parseICSection(qint32 line) {
     //qDebug() << "Size of List: " << icData->data.size();
     icData->data.append(newIC);
     icData->bitsUsed += newIC.bitSize.toInt();
-
-    pmemData->byteSet(newIC.fileName,newIC.lineNo,newIC.byteOffset,newIC.bitSize,newIC.bitOffset);
 
     //qDebug() << "Size of List: " << icData->data.size();
     /*

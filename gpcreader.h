@@ -20,11 +20,13 @@ public:
     PMEMD *pmemData;
 
     bool getGPCICFound();
+    bool isValid();
 
 private:
     QString     gpcSelectedDir;     // the path part of the file that was initially opened
     QString     gpcSelectedFilePath;// selected filename from filedialog or recent file list
     bool        gpcICFound;         // true when an IC definition has been found
+    bool        gpcValid;           // errors found ?
 
     QString     gpcCurrentFilePath; // current file processed
     QStringList gpcPathList;        // pathes to search files in

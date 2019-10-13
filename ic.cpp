@@ -472,6 +472,14 @@ qint8 IC::errAdd(QString msg) {
     return this->valid;
 }
 
+qint8 IC::errAdd(QStringList msg) {
+    //qDebug() << "err!!!";
+    this->err.append(msg);
+    if (this->valid < 8) this->valid=8;
+    return this->valid;
+}
+
+
 qint8 IC::msgAdd(QString msg, qint8 severity) {
     switch(severity)
     {

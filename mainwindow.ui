@@ -266,7 +266,6 @@
    <addaction name="actionOpenFile"/>
    <addaction name="actionReadClipboard"/>
    <addaction name="actionReload"/>
-   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="contextMenuPolicy">
@@ -285,6 +284,9 @@
    </property>
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
    </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonTextUnderIcon</enum>

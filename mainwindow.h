@@ -64,6 +64,7 @@ public:
     void msgboxFileNotFound(QString sFilepath);
     void msgboxICNotFound(QString source);
     void msgboxICNotFound();
+    void msgboxProblemsFound();
 
 private:
     PMEMWindow *pmemWindow;
@@ -75,8 +76,6 @@ private:
     QLabel      *toolBarLabel;
     ICModel     *icModel;            // tableview model
     ICProxy     *icProxy;            // QSortFilterProxyModel for sorting
-    PMEMModel   *pmemModel;
-
 
 private:
     void modifyStatusBar();
@@ -86,6 +85,8 @@ private:
     void addRecentFileTrigger(QAction *a);
     void showRecentFiles();
     void closeEvent(QCloseEvent *event);
+    void saveStateDefault();
+    void restoreStateDefault();
 };
 
 #endif // MAINWINDOW_H

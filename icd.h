@@ -17,6 +17,7 @@ public:
 
     bool validateUniqueNames();
     bool searchForNames(int srcidx, QString name, bool mark=true, QString msg="name is not unique", qint8 severity=8);
+    bool isValid();
 
     QList<IC> data;
     qint16 bitsUsed;

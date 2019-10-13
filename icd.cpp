@@ -40,26 +40,39 @@ void ICD::debug(qint32 iLineNo) {
 // validate the names of all controls to be unique
 bool ICD::validateUniqueNames() {
     QStringList namesProcessed;
+    bool unique=true;
     for(int idx = 0; idx < data.size(); idx++)
     {
         if (namesProcessed.contains(data[idx].name)) continue;
         namesProcessed.append(data[idx].name);
-        searchForNames(idx,data[idx].name,true,QString("name %1 not unique").arg(data[idx].name));
+        if (!searchForNames(idx,data[idx].name,true,QString("name %1 not unique").arg(data[idx].name)))
+        {
+            unique=false;
+        }
     }
-    return true;
+    return unique;
 }
 
 bool ICD::searchForNames(int srcid, QString name, bool mark, QString msg, qint8 severity) {
-    bool found=false;
+    bool unique=true;
     for(int idx = 0; idx < data.size(); idx++)
     {
         if (idx==srcid) continue;
         if (data[idx].name.compare(name)==0)
         {
-            found=true;
+            unique=false;
             if (mark) data[idx].msgAdd(msg,severity);
         }
     }
-    if (found && mark) data[srcid].msgAdd(msg,severity);
-    return found;
+    if (!unique && mark) data[srcid].msgAdd(msg,severity);
+    return unique;
+}
+
+bool ICD::isValid() {
+    bool valid=true;
+    for(int idx = 0; idx < data.size(); idx++)
+    {
+        if (data[idx].valid>2) valid=false;
+    }
+    return valid;
 }

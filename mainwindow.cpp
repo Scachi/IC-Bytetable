@@ -21,22 +21,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
     restoreGeometry(settings.value("main/geometry").toByteArray());
     restoreState(settings.value("main/state").toByteArray());
-
     readRecentFiles();
     modifyStatusBar(); // set resizing policy
     modifyToolBar();
     icModel = new ICModel;
     icProxy = new ICProxy;
 
-    pmemWindow = new PMEMWindow(this);
+    pmemWindow = new PMEMWindow(this); //<- single window shown in taskbar
+    //pmemWindow = new PMEMWindow(); //<- separate windows shown in taskbar
     Qt::WindowFlags flags(Qt::Dialog|Qt::WindowCloseButtonHint);
     pmemWindow->setWindowFlags(flags);
-    pmemModel = new PMEMModel;
-    //qDebug() << "model:" << pmemModel;
-    pmemWindow->setModel(pmemModel);
 }
 
 MainWindow::~MainWindow()
@@ -55,12 +53,15 @@ void MainWindow::readSource(QString sFilePath) {
             enableReloadBtn();  // enable reload button
             showMessageStatusBar(sFilePath); // show filepath in statusbar
             gpcSelectedDir = QFileInfo(sFilePath).absolutePath().append("/"); // remember the scripts directory
-            qDebug() << " ScriptsDir: " << gpcSelectedDir;
-            qDebug() << " sFilePath: " << sFilePath;
+            //qDebug() << " ScriptsDir: " << gpcSelectedDir;
+            //qDebug() << " sFilePath: " << sFilePath;
             gpcSelectFilePath = sFilePath;
             addRecentFile(sFilePath); // add the file to the recent file list
             GPCReader *gpc = new GPCReader(gpcSelectedDir,gpcSelectFilePath); // read the content, parse the IC
-            //gpc->icData->debug();
+            // clear previous data
+            icModel->clear();
+            pmemWindow->updateModelData(gpc->pmemData);
+
             if (!gpc->getGPCICFound()) // abort when no IC was found
             {
                 msgboxICNotFound(gpcSelectFilePath);
@@ -68,8 +69,6 @@ void MainWindow::readSource(QString sFilePath) {
             }
 
             // output
-            // clear previous data
-            icModel->clear();
             // fill the tableview
             icModel->icData.append(gpc->icData->data);
             //ui->tableView->setModel(&icModel);
@@ -86,11 +85,12 @@ void MainWindow::readSource(QString sFilePath) {
             tmp = tr("%1 Bits used by Interactive Configuration<br>Click for more information").arg(gpc->icData->bitsUsed);
             tmp=XTRA::xNoAutoLinebreaks(tmp);
             ui->actionPMEM_Usage->setToolTip(tmp);
-            showMessageToolBar(tr("<br>%1 of 1024<br>bits used").arg(gpc->icData->bitsUsed));
-            pmemModel->pmemData.clear();
-            pmemModel->pmemData.append(gpc->pmemData->data);
-            pmemWindow->setModel(pmemModel);
+            showMessageToolBar(tr("%1 of 1024 bits used<br>( %2 bytes + %3 bits )").arg(gpc->icData->bitsUsed).arg(gpc->pmemData->getBytes()).arg(gpc->pmemData->getBits()));
+            pmemWindow->updateModelData(gpc->pmemData);
             pmemWindow->updateStats(gpc->pmemData);
+
+            if (!gpc->isValid() || !gpc->icData->isValid()) msgboxProblemsFound();
+
     } else {
         // file not found
         msgboxFileNotFound(sFilePath);
@@ -105,7 +105,7 @@ void MainWindow::msgboxFileNotFound(QString sFilepath) {
                                    ,
                                    QMessageBox::Yes | QMessageBox::Cancel,
                                    QMessageBox::Cancel);
-    qDebug() << " Return value: " << ret;
+    //qDebug() << " Return value: " << ret;
 
     if (ret == QMessageBox::Yes) on_actionOpenFile_triggered();
 }
@@ -125,6 +125,12 @@ void MainWindow::msgboxICNotFound() {
                                    QMessageBox::Close);
 }
 
+void MainWindow::msgboxProblemsFound() {
+    QMessageBox::warning(this, QCoreApplication::applicationName(),
+                                   tr("Problems Found !<br><br>Check the lists 'Status' and 'Info' columns for details.<br>Entries with problems may not be tracked in PMEM list."
+                                   ),
+                                   QMessageBox::Close);
+}
 
 void MainWindow::enableReloadBtn() {
     if (!ui->actionReload->isEnabled()) ui->actionReload->setEnabled(true);
@@ -144,7 +150,6 @@ void MainWindow::showMessageStatusBar(QString msg) {
 void MainWindow::modifyToolBar() { // set resizing policy of statusBar
     toolBarLabel = new QLabel;
     toolBarLabel->setText("");
-    toolBarLabel->setMargin(10);
     toolBarLabel->setAlignment(Qt::AlignCenter);
     ui->toolBar->addWidget(toolBarLabel);
 
@@ -182,7 +187,7 @@ void MainWindow::writeRecentFiles()
     {
         settings.setArrayIndex(i);
         settings.setValue(fileKey(), recentFilesList.at(i));
-        qDebug() << " Recent file " << i << " : " << recentFilesList.at(i);
+        //qDebug() << " Recent file " << i << " : " << recentFilesList.at(i);
     }
     settings.endArray();
 }
@@ -230,7 +235,7 @@ void MainWindow::showRecentFiles() {
 
 void MainWindow::on_actionOpenFile_triggered()
 {
-    qDebug() << "GPCSelectedDir: " << gpcSelectedDir;
+    //qDebug() << "GPCSelectedDir: " << gpcSelectedDir;
     QDir curPath = QDir::currentPath();
     if (gpcSelectedDir.length() > 0) curPath.setPath(gpcSelectedDir);
     QString scriptFileName =  QFileDialog::getOpenFileName(
@@ -358,5 +363,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
     settings.setValue("main/geometry", saveGeometry());
     settings.setValue("main/state", saveState());
+    pmemWindow->closeIt(); // <- required to close both windows when pmemwindow is created without parent
     QMainWindow::closeEvent(event);
 }

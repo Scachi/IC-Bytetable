@@ -13,6 +13,8 @@ PMEMWindow::PMEMWindow(QWidget *parent) :
     ui(new Ui::PMEMWindow)
 {
     ui->setupUi(this);
+
+    pmemModel = new PMEMModel;
 }
 
 PMEMWindow::~PMEMWindow()
@@ -20,11 +22,13 @@ PMEMWindow::~PMEMWindow()
     delete ui;
 }
 
-void PMEMWindow::setModel(PMEMModel *model)
+void PMEMWindow::updateModelData(PMEMD *pmemd)
 {
+    pmemModel->pmemData.clear();
+    pmemModel->pmemData.append(pmemd->data);
+
     ui->tableView->setModel(nullptr);
-    qDebug() << "set model:" << model;
-    ui->tableView->setModel(model);
+    ui->tableView->setModel(pmemModel);
 }
 
 void PMEMWindow::updateStats(PMEMD *pmemd)
@@ -33,6 +37,12 @@ void PMEMWindow::updateStats(PMEMD *pmemd)
     int bits=pmemd->getFreeBits();
     ui->liFreeBytes->setText(QString::number(bytes));
     ui->liFreeBits->setText(QString::number(bits));
+    //qDebug() << "bytes: " << pmemd->getBytes() << " bits: " << pmemd->getBits();
+}
+
+void PMEMWindow::closeIt()
+{
+    this->close();
 }
 
 void PMEMWindow::closeEvent(QCloseEvent *event)

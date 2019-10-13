@@ -52,7 +52,8 @@ QVariant PMEMModel::data(const QModelIndex &index, int role) const
     // font color
     if (role == Qt::ForegroundRole)
     {
-        if (!pmem.isValid()) return QColor("#c70202");
+        if (pmem.isByte() && !pmem.isValid()) return QColor("#c70202");
+        if (pmem.isBit() && !pmem.isValidBit(index.column())) return QColor("#c70202");
     }
 
     // values normal tableview
