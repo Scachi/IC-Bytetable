@@ -97,6 +97,7 @@ QStringList PMEM::ErrMsgs(int bitsize, int bitoffset) {
         if (this->getByByte() > 1) errmsgs.append("byte used multiple times (direct)\n");
         if (this->getByByteSize() > 1) errmsgs.append("byte used multiple times (overlap)\n");
     } else {
+        if (this->isByte() && this->isBit()) errmsgs.append("used as bit and byte\n");
         if (this->byBit[bitoffset] && this->byBitSize[bitoffset]) errmsgs.append("bit used direct and by size\n");
         if (this->byBit[bitoffset]>1) errmsgs.append("bit used multiple times (direct)\n");
         if (this->byBitSize[bitoffset]>1) errmsgs.append("bit used multiple times (overlap)\n");
