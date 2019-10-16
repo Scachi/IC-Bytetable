@@ -72,6 +72,10 @@ public:
     qint8 errAdd(QStringList msg);
     qint8 msgAdd(QString msg, qint8 severity=8);
 
+    bool isChecked();
+    bool isUsingPMEM();
+    bool getSize(int *bytes, int *bits);
+
 
 public:
     QStringList rawSection; // complete raw data of the section

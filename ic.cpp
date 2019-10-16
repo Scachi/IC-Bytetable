@@ -488,3 +488,28 @@ qint8 IC::msgAdd(QString msg, qint8 severity) {
         default : return errAdd(msg);
     }
 }
+
+bool IC::isUsingPMEM()
+{
+    if (this->byteOffset.length()>0) return true;
+
+    return false;
+}
+
+bool IC::isChecked()
+{
+    return this->checked;
+}
+
+bool IC::getSize(int *bytes, int *bits)
+{
+    if (this->isUsingPMEM()) {
+        int bitsize = 8;
+        if (this->getBitSize().length()>0) bitsize = this->getBitSize().toInt();
+
+        if (this->getBitOffset().length() > 0 || bitsize<8) *bits+=bitsize;
+        else *bytes+=bitsize/8;
+        return true;
+    }
+    return false;
+}

@@ -52,6 +52,8 @@ private slots:
 
     void on_actionPMEM_Usage_triggered();
 
+    void on_tableView_customContextMenuRequested(const QPoint &pos);
+
 private:
     Ui::MainWindow *ui;
 
@@ -65,6 +67,7 @@ public:
     void msgboxICNotFound(QString source);
     void msgboxICNotFound();
     void msgboxProblemsFound();
+    void msgboxSumSize(int entries, int usingpmem, int bytes, int bits);
 
 private:
     PMEMWindow *pmemWindow;
@@ -76,6 +79,42 @@ private:
     QLabel      *toolBarLabel;
     ICModel     *icModel;            // tableview model
     ICProxy     *icProxy;            // QSortFilterProxyModel for sorting
+
+    QStringList *tvCtxCopyIdx;
+    QStringList *tvCtxCopyData;
+    QStringList *tvCtxCopyDataHex;
+
+    void tableViewCreateCtxMenu();
+    QMenu *tvCtxMenu;
+    QAction *tvCtxSelCopy;
+    QAction *tvCtxChkCopy;
+    QAction *tvCtxPaste;
+    QAction *tvCtxSelDelete;
+    QAction *tvCtxChkDelete;
+    QAction *tvCtxAllDelete;
+    QAction *tvCtxSelCheck;
+    QAction *tvCtxSelUncheck;
+    QAction *tvCtxAllCheck;
+    QAction *tvCtxAllUncheck;
+    QAction *tvCtxSelSumSize;
+    QAction *tvCtxChkSumSize;
+    QAction *tvCtxExportCSV;
+
+    void tableViewSelectedCopy();
+    void tableViewCheckedCopy();
+    void tableViewPaste();
+
+    void tableViewSelectedDelete();
+    void tableViewCheckedDelete();
+    void tableViewAllDelete();
+
+    void tableViewSelectedCheck();
+    void tableViewSelectedUncheck();
+    void tableViewAllCheck();
+    void tableViewAllUncheck();
+
+    void tableViewSelectedSumSize();
+    void tableViewCheckedSumSize();
 
 private:
     void modifyStatusBar();

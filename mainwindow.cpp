@@ -28,8 +28,13 @@ MainWindow::MainWindow(QWidget *parent) :
     readRecentFiles();
     modifyStatusBar(); // set resizing policy
     modifyToolBar();
+    tableViewCreateCtxMenu();
     icModel = new ICModel;
     icProxy = new ICProxy;
+
+    tvCtxCopyIdx = new QStringList;
+    tvCtxCopyData = new QStringList;
+    tvCtxCopyDataHex = new QStringList;
 
     pmemWindow = new PMEMWindow(this); //<- single window shown in taskbar
     //pmemWindow = new PMEMWindow(); //<- separate windows shown in taskbar
@@ -129,6 +134,16 @@ void MainWindow::msgboxProblemsFound() {
     QMessageBox::warning(this, QCoreApplication::applicationName(),
                                    tr("Problems Found !<br><br>Check the lists 'Status' and 'Info' columns for details.<br>Entries with problems may not be tracked in PMEM list."
                                    ),
+                                   QMessageBox::Close);
+}
+
+void MainWindow::msgboxSumSize(int entries, int usingpmem, int bytes, int bits)
+{
+    QMessageBox::information(this, QCoreApplication::applicationName(),
+                                   tr("%1 marked entries. %2 using pmem space.\n\n"
+                                      "Used bytes: %3\n"
+                                      "Used bits: %4\n"
+                                     ).arg(entries).arg(usingpmem).arg(bytes).arg(bits),
                                    QMessageBox::Close);
 }
 
@@ -365,4 +380,228 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("main/state", saveState());
     pmemWindow->closeIt(); // <- required to close both windows when pmemwindow is created without parent
     QMainWindow::closeEvent(event);
+}
+
+void MainWindow::tableViewCreateCtxMenu()
+{
+    tvCtxSelCopy = new QAction(tr("Copy Values (selected)"), this);
+    connect(tvCtxSelCopy, &QAction::triggered, this, &MainWindow::tableViewSelectedCopy);
+    tvCtxChkCopy = new QAction(tr("Copy Values (checked)"), this);
+    connect(tvCtxChkCopy, &QAction::triggered, this, &MainWindow::tableViewCheckedCopy);
+    tvCtxPaste = new QAction(tr("Paste Values"), this);
+    connect(tvCtxPaste, &QAction::triggered, this, &MainWindow::tableViewPaste);
+    tvCtxSelDelete = new QAction(tr("Delete Values (selected)"), this);
+    connect(tvCtxSelDelete, &QAction::triggered, this, &MainWindow::tableViewSelectedDelete);
+    tvCtxChkDelete = new QAction(tr("Delete Values (checked)"), this);
+    connect(tvCtxChkDelete, &QAction::triggered, this, &MainWindow::tableViewCheckedDelete);
+    tvCtxAllDelete = new QAction(tr("Delete Values (all)"), this);
+    connect(tvCtxAllDelete, &QAction::triggered, this, &MainWindow::tableViewAllDelete);
+    //--------------------------------------------------------------------
+    tvCtxSelCheck = new QAction(tr("Check (selected)"), this);
+    connect(tvCtxSelCheck, &QAction::triggered, this, &MainWindow::tableViewSelectedCheck);
+    tvCtxSelUncheck = new QAction(tr("Uncheck (selected)"), this);
+    connect(tvCtxSelUncheck, &QAction::triggered, this, &MainWindow::tableViewSelectedUncheck);
+    tvCtxAllCheck = new QAction(tr("Check (all)"), this);
+    connect(tvCtxAllCheck, &QAction::triggered, this, &MainWindow::tableViewAllCheck);
+    tvCtxAllUncheck = new QAction(tr("Uncheck (all)"), this);
+    connect(tvCtxAllUncheck, &QAction::triggered, this, &MainWindow::tableViewAllUncheck);
+    //--------------------------------------------------------------------
+    tvCtxSelSumSize = new QAction(tr("Sum Size (selected)"), this);
+    connect(tvCtxSelSumSize, &QAction::triggered, this, &MainWindow::tableViewSelectedSumSize);
+    tvCtxChkSumSize = new QAction(tr("Sum Size (checked)"), this);
+    connect(tvCtxChkSumSize, &QAction::triggered, this, &MainWindow::tableViewCheckedSumSize);
+    //--------------------------------------------------------------------
+    tvCtxExportCSV = new QAction(tr("Export as CSV"), this);
+    //connect(tvCtxExportCSV, &QAction::triggered, this, &MainWindow::close);
+    tvCtxExportCSV->setEnabled(false);
+
+    tvCtxMenu = new QMenu;
+    tvCtxMenu->addAction(tvCtxSelCopy);
+    tvCtxMenu->addAction(tvCtxChkCopy);
+    tvCtxMenu->addAction(tvCtxPaste);
+    tvCtxMenu->addAction(tvCtxSelDelete);
+    tvCtxMenu->addAction(tvCtxChkDelete);
+    tvCtxMenu->addAction(tvCtxAllDelete);
+    tvCtxMenu->addSeparator();
+    tvCtxMenu->addAction(tvCtxSelCheck);
+    tvCtxMenu->addAction(tvCtxSelUncheck);
+    tvCtxMenu->addAction(tvCtxAllCheck);
+    tvCtxMenu->addAction(tvCtxAllUncheck);
+    tvCtxMenu->addSeparator();
+    tvCtxMenu->addAction(tvCtxSelSumSize);
+    tvCtxMenu->addAction(tvCtxChkSumSize);
+    tvCtxMenu->addSeparator();
+    tvCtxMenu->addAction(tvCtxExportCSV);
+}
+
+void MainWindow::tableViewSelectedCopy()
+{
+    tvCtxCopyIdx->clear();
+    tvCtxCopyData->clear();
+    tvCtxCopyDataHex->clear();
+
+    foreach(const QModelIndex &index,
+            ui->tableView->selectionModel()->selectedRows())
+    {
+        IC ic = icModel->icData[icProxy->mapToSource(index).row()];
+        tvCtxCopyIdx->append(QString::number(index.row()));
+        if (ic.getNewVal().length()>0)
+        {
+            tvCtxCopyData->append(ic.getNewVal());
+            tvCtxCopyDataHex->append(ic.getNewValHex());
+        }
+        else {
+            tvCtxCopyData->append(ic.getDefaultVal());
+            tvCtxCopyDataHex->append(ic.getDefaultValHex());
+        }
+    }
+}
+
+void MainWindow::tableViewCheckedCopy()
+{
+    tvCtxCopyIdx->clear();
+    tvCtxCopyData->clear();
+    tvCtxCopyDataHex->clear();
+
+    for(int index = 0; index < icModel->icData.size(); index++)
+    {
+        IC ic = icModel->icData[index];
+        if (ic.isChecked())
+        {
+            tvCtxCopyIdx->append(QString::number(index));
+            if (ic.getNewVal().length()>0)
+            {
+                tvCtxCopyData->append(ic.getNewVal());
+                tvCtxCopyDataHex->append(ic.getNewValHex());
+            }
+            else {
+                tvCtxCopyData->append(ic.getDefaultVal());
+                tvCtxCopyDataHex->append(ic.getDefaultValHex());
+            }
+        }
+    }
+}
+
+void MainWindow::tableViewPaste()
+{
+    const QModelIndex index = ui->tableView->selectionModel()->selectedRows().first();
+    //qDebug() << "selection at: " << index.row();
+    int idx_first=0;
+    for (int idx=0; idx<tvCtxCopyIdx->size();idx++)
+    {
+        /*
+        qDebug() << "idx: " << tvCtxCopyIdx->at(idx) <<
+                    " , val: " << tvCtxCopyData->at(idx) <<
+                    " , hex: " << tvCtxCopyDataHex->at(idx);
+                    */
+
+        if (idx == 0) idx_first=tvCtxCopyIdx->at(idx).toInt();
+        QModelIndex indexT = icProxy->index(index.row()+(tvCtxCopyIdx->at(idx).toInt()-idx_first),0);
+        //qDebug() << "indexT: " << indexT.row();
+        IC *ic = &icModel->icData[icProxy->mapToSource(indexT).row()];
+        //qDebug() << "Paste at: " << ic->getName();
+        ic->newVal=tvCtxCopyData->at(idx);
+        ic->newValHex=tvCtxCopyDataHex->at(idx);
+    }
+}
+
+void MainWindow::tableViewSelectedDelete()
+{
+    foreach(const QModelIndex &index,
+            ui->tableView->selectionModel()->selectedRows())
+    {
+        icModel->icData[icProxy->mapToSource(index).row()].newVal="";
+        icModel->icData[icProxy->mapToSource(index).row()].newValHex="";
+    }
+}
+
+void MainWindow::tableViewCheckedDelete()
+{
+    for(int idx = 0; idx < icModel->icData.size(); idx++)
+    {
+        if (icModel->icData[idx].checked)
+        {
+            icModel->icData[idx].newVal="";
+            icModel->icData[idx].newValHex="";
+        }
+    }
+}
+
+void MainWindow::tableViewAllDelete()
+{
+    for(int idx = 0; idx < icModel->icData.size(); idx++)
+    {
+        icModel->icData[idx].newVal="";
+        icModel->icData[idx].newValHex="";
+    }
+}
+
+
+void MainWindow::tableViewSelectedCheck()
+{
+    foreach(const QModelIndex &index,
+            ui->tableView->selectionModel()->selectedRows())
+    {
+        icModel->icData[icProxy->mapToSource(index).row()].checked=true;
+    }
+}
+
+void MainWindow::tableViewSelectedUncheck()
+{
+    foreach(const QModelIndex &index,
+            ui->tableView->selectionModel()->selectedRows())
+    {
+        icModel->icData[icProxy->mapToSource(index).row()].checked=false;
+    }
+}
+
+void MainWindow::tableViewAllCheck()
+{
+    for(int idx = 0; idx < icModel->icData.size(); idx++)
+    {
+        icModel->icData[idx].checked=true;
+    }
+}
+
+void MainWindow::tableViewAllUncheck()
+{
+    for(int idx = 0; idx < icModel->icData.size(); idx++)
+    {
+        icModel->icData[idx].checked=false;
+    }
+}
+
+void MainWindow::tableViewSelectedSumSize()
+{
+    int entries=0, usingpmem=0;
+    int bytes=0, bits=0;
+    foreach(const QModelIndex &index,
+            ui->tableView->selectionModel()->selectedRows())
+    {
+        entries++;
+        IC ic = icModel->icData[icProxy->mapToSource(index).row()];
+        usingpmem+=ic.getSize(&bytes,&bits);
+    }
+    msgboxSumSize(entries,usingpmem,bytes,bits);
+}
+
+void MainWindow::tableViewCheckedSumSize()
+{
+    int entries=0, usingpmem=0;
+    int bytes=0, bits=0;
+    for(int index = 0; index < icModel->icData.size(); index++)
+    {
+        IC ic = icModel->icData[index];
+        if (ic.isChecked()) {
+            entries++;
+            usingpmem+=ic.getSize(&bytes,&bits);
+        }
+    }
+    msgboxSumSize(entries,usingpmem,bytes,bits);
+}
+
+void MainWindow::on_tableView_customContextMenuRequested(const QPoint &pos)
+{
+    if (ui->tableView->selectionModel()==nullptr) return;
+    tvCtxMenu->exec(QCursor::pos());
 }
