@@ -1,3 +1,4 @@
+#include <QFile>
 #include <QFont>
 #include <QColor>
 #include <QItemSelectionModel>
@@ -7,6 +8,12 @@
 ICModel::ICModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
+    columnNames << "Filename" << "Line" << "Name";
+    columnNames << "Byte\nOffset" << "Byte\nOffhex" << "Bit\nSize" << "Bit\nOffset";
+    columnNames << "Status" << "Info";
+    columnNames << "Def\nVal" << "Def\nHex" << "New\nVal" << "New\nHex";
+    columnNames << "Control" << "Items" << "Min\nVal" << "Max\nVal" << "Decimals" << "Step";
+    columnNames << "ShortDesc" << "Collapsible" << "Group" << "GroupCol" << "Color" << "Border";
 }
 
 QVariant ICModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -14,46 +21,11 @@ QVariant ICModel::headerData(int section, Qt::Orientation orientation, int role)
     //if (orientation != Qt::Horizontal || role != Qt::DisplayRole) return {};
     if (role != Qt::DisplayRole) return {};
 
+
+
     if (orientation == Qt::Horizontal) {
-        switch (section)
-        {
-            case  0: return "Filename";
-            case  1: return "Line";
-            case  2: return "Name";
-
-            case  3: return "Byte\nOffset";
-            case  4: return "Byte\nOffhex";
-            case  5: return "Bit\nSize";
-            case  6: return "Bit\nOffset";
-
-            case  7: return "Status";
-            case  8: return "Info";
-
-            case  9: return "Def\nVal";
-            case 10: return "Def\nHex";
-            case 11: return "New\nVal";
-            case 12: return "New\nHex";
-
-            case 13: return "Control";
-            case 14: return "Items";
-            case 15: return "Min\nVal";
-            case 16: return "Max\nVal";
-            case 17: return "Decimals";
-            case 18: return "Step";
-
-            case 19: return "ShortDesc";
-            case 20: return "Collapsible";
-            case 21: return "Group";
-            case 22: return "GroupCol";
-            case 23: return "Color";
-            case 24: return "Border";
-/*
-            case 25: return "VarType";
-            case 26: return "VarName";
-            case 27: return "Comment";
-*/
-            default: return {};
-        }
+        if (section < columnNames.size()) return columnNames.at(section);
+        else return {};
     }
     else if (orientation == Qt::Vertical) {
         return section+1;
@@ -210,4 +182,65 @@ void ICModel::clear(void) {
     beginResetModel();
     icData.clear();
     endResetModel();
+}
+
+bool ICModel::exportCSV(QString filename)
+{
+    QString csvQuote="\"";
+    QString csvDelimiter=",";
+    QString fname = filename.replace("_data.txt",".txt").replace("_chart.txt",".txt").replace(".txt","_data.txt");
+    fname = fname.replace("_data.csv",".csv").replace("_chart.csv",".csv").replace(".csv","_data.csv");
+    QFile file(fname);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return false;
+    QTextStream out(&file);
+    // column titles
+    out << csvQuote << "Index" << csvQuote << csvDelimiter;
+    for (int col=0; col < this->iRowCount ; col++)
+    {
+        if (col>0) out << csvDelimiter;
+        QString title;
+        if (col < this->columnNames.size())
+            title = this->columnNames.at(col);
+        else title = QString::number(col);
+        out << csvQuote << title.replace("\n"," ") << csvQuote;
+    }
+    out << "\n";
+    // content
+    for (int row=0; row<this->icData.count(); row++)
+    {
+        if (row>0) out << "\n";
+        out << csvQuote << row << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getFileName() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getLineNo() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getName() << csvQuote << csvDelimiter;
+
+        out << csvQuote << icData[row].getByteOffset() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getByteOffsetHex() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getBitSize() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getBitOffset() << csvQuote << csvDelimiter;
+
+        out << csvQuote << icData[row].getValid() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getInfo().replace("\n"," ") << csvQuote << csvDelimiter;
+
+        out << csvQuote << icData[row].getDefaultVal() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getDefaultValHex() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getNewVal() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getNewValHex() << csvQuote << csvDelimiter;
+
+        out << csvQuote << icData[row].getControl() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getItemCount() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getMinVal() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getMaxVal() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getDecimals() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getStep() << csvQuote << csvDelimiter;
+
+        out << csvQuote << icData[row].getShortDescPlain(99).replace("\n"," ") << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getCollapsible() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getGroup() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getGroupCol() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getColor() << csvQuote << csvDelimiter;
+        out << csvQuote << icData[row].getBorder() << csvQuote;
+    }
+    return true;
 }

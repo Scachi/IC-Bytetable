@@ -166,6 +166,19 @@ bool PMEM::isValidBit(int offset) const
     return this->validBit[offset];
 }
 
+QString PMEM::getTableMark(int bitoffset) const
+{
+    if (this->getByByte()) return "X";
+    else if (this->getByByteSize()) return "x";
+    else {
+        if (this->getBit(bitoffset)) {
+            if (this->getByBit(bitoffset)) return "B";
+            if (this->getByBitSize(bitoffset)) return "b";
+        }
+    }
+    return "";
+}
+
 
 void PMEM::debug(int offset)
 {

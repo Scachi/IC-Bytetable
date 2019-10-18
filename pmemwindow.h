@@ -20,6 +20,7 @@ public:
     void updateModelData(PMEMD *pmemd);
     void updateStats(PMEMD *pmemd);
     void closeIt();
+    bool exportCSV(QString filename);
     ~PMEMWindow();
 
 private:

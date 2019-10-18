@@ -132,10 +132,33 @@ void MainWindow::msgboxICNotFound() {
 
 void MainWindow::msgboxProblemsFound() {
     QMessageBox::warning(this, QCoreApplication::applicationName(),
-                                   tr("Problems Found !<br><br>Check the lists 'Status' and 'Info' columns for details.<br>Entries with problems may not be tracked in PMEM list."
+                                   tr("Problems Found !\n\nCheck the lists 'Status' and 'Info' columns for details.\nEntries with problems may not be tracked in PMEM list."
                                    ),
                                    QMessageBox::Close);
 }
+
+void MainWindow::msgboxCSVExport(bool data, bool chart) {
+    QString dataStatus=tr("OK");
+    QString chartStatus=tr("OK");
+    if (!data) dataStatus=tr("ERRROR");
+    if (!chart) chartStatus=tr("ERROR");
+    QString msg = tr("Data Export: %1\n"
+                     "Chart Export: %2"
+                  ).arg(dataStatus).arg(chartStatus);
+
+    if (!data || !chart) {
+        msg.prepend(tr("Error during CSV Export!\n\n"));
+        QMessageBox::warning(this, QCoreApplication::applicationName(),
+                                   msg,
+                                   QMessageBox::Close);
+    } else {
+        msg.prepend(tr("CSV Exported\n\n"));
+        QMessageBox::information(this, QCoreApplication::applicationName(),
+                                   msg,
+                                   QMessageBox::Close);
+    }
+}
+
 
 void MainWindow::msgboxSumSize(int entries, int usingpmem, int bytes, int bits)
 {
@@ -412,8 +435,8 @@ void MainWindow::tableViewCreateCtxMenu()
     connect(tvCtxChkSumSize, &QAction::triggered, this, &MainWindow::tableViewCheckedSumSize);
     //--------------------------------------------------------------------
     tvCtxExportCSV = new QAction(tr("Export as CSV"), this);
-    //connect(tvCtxExportCSV, &QAction::triggered, this, &MainWindow::close);
-    tvCtxExportCSV->setEnabled(false);
+    connect(tvCtxExportCSV, &QAction::triggered, this, &MainWindow::csvExport);
+    //tvCtxExportCSV->setEnabled(false);
 
     tvCtxMenu = new QMenu;
     tvCtxMenu->addAction(tvCtxSelCopy);
@@ -598,6 +621,25 @@ void MainWindow::tableViewCheckedSumSize()
         }
     }
     msgboxSumSize(entries,usingpmem,bytes,bits);
+}
+
+void MainWindow::csvExport()
+{
+    QDir curPath = QDir::currentPath();
+    if (gpcSelectedDir.length() > 0) curPath.setPath(gpcSelectedDir);
+    QString csvFileName =  QFileDialog::getSaveFileName(
+              this,
+              "Save CSV Export",
+                curPath.path(),
+              "CSV (*.csv *.txt);;All files (*.*)");
+
+    if(!csvFileName.isNull())
+    {
+        bool csvData, csvChart;
+        csvData = icModel->exportCSV(csvFileName);
+        csvChart = pmemWindow->exportCSV(csvFileName);
+        msgboxCSVExport(csvData,csvChart);
+    }
 }
 
 void MainWindow::on_tableView_customContextMenuRequested(const QPoint &pos)

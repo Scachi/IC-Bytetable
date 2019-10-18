@@ -44,6 +44,8 @@ public:
     bool    isValid() const; // report false on byte or bits error
     bool    isValidBit(int offset) const; // single bit report
 
+    QString getTableMark(int bitoffset=0) const;
+
     void    debug(int offset);
 };
 

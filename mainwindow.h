@@ -66,6 +66,7 @@ public:
     void msgboxFileNotFound(QString sFilepath);
     void msgboxICNotFound(QString source);
     void msgboxICNotFound();
+    void msgboxCSVExport(bool data, bool chart);
     void msgboxProblemsFound();
     void msgboxSumSize(int entries, int usingpmem, int bytes, int bits);
 
@@ -115,6 +116,7 @@ private:
 
     void tableViewSelectedSumSize();
     void tableViewCheckedSumSize();
+    void csvExport();
 
 private:
     void modifyStatusBar();

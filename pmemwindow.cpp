@@ -45,6 +45,11 @@ void PMEMWindow::closeIt()
     this->close();
 }
 
+bool PMEMWindow::exportCSV(QString filename)
+{
+    return pmemModel->exportCSV(filename);
+}
+
 void PMEMWindow::closeEvent(QCloseEvent *event)
 {
     event->ignore();
