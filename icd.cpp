@@ -1,5 +1,7 @@
+#include <QtDebug>
 #include "icd.h"
 #include "ic.h"
+#include "xtra.h"
 
 ICD::ICD()
 {
@@ -12,7 +14,8 @@ ICD::~ICD()
 }
 
 // qDebug() complete IC
-void ICD::debug() {
+void ICD::debug()
+{
     for(int idx = 0; idx < data.size(); idx++)
     {
         data[idx].debug();
@@ -20,7 +23,8 @@ void ICD::debug() {
 }
 
 // qDebug() specific IC entry by Name
-void ICD::debug(QString sName) {
+void ICD::debug(QString sName)
+{
     for(int idx = 0; idx < data.size(); idx++)
     {
         if( data[idx].name.compare(sName)==0 )
@@ -29,7 +33,8 @@ void ICD::debug(QString sName) {
 }
 
 // qDebug() specific IC entry by lineNo
-void ICD::debug(qint32 iLineNo) {
+void ICD::debug(qint32 iLineNo)
+{
     for(int idx = 0; idx < data.size(); idx++)
     {
         if(data[idx].lineNo.toInt() == iLineNo)
@@ -38,7 +43,8 @@ void ICD::debug(qint32 iLineNo) {
 }
 
 // validate the names of all controls to be unique
-bool ICD::validateUniqueNames() {
+bool ICD::validateUniqueNames()
+{
     QStringList namesProcessed;
     bool unique=true;
     for(int idx = 0; idx < data.size(); idx++)
@@ -53,7 +59,8 @@ bool ICD::validateUniqueNames() {
     return unique;
 }
 
-bool ICD::searchForNames(int srcid, QString name, bool mark, QString msg, qint8 severity) {
+bool ICD::searchForNames(int srcid, QString name, bool mark, QString msg, qint8 severity)
+{
     bool unique=true;
     for(int idx = 0; idx < data.size(); idx++)
     {
@@ -68,7 +75,72 @@ bool ICD::searchForNames(int srcid, QString name, bool mark, QString msg, qint8 
     return unique;
 }
 
-bool ICD::isValid() {
+// the hex value is for the whole byte, so we need to look all bits up to create the correct hex value
+void ICD::bits2Hex()
+{
+    QStringList bytesProcessed;
+    QString byteHex;
+    for(int idx = 0; idx < data.size(); idx++)
+    {
+        if (data[idx].byteOffset.length()==0) continue;
+        if (data[idx].bitSize.toInt()>=8) continue;
+        if (bytesProcessed.contains(data[idx].byteOffset)) continue;
+        bytesProcessed.append(data[idx].byteOffset);
+        byteHex = bits2ByteHex(data[idx].byteOffset);
+        setByteoffset2Hex(data[idx].byteOffset.toInt(),byteHex,true);
+    }
+}
+
+QString ICD::bits2ByteHex(QString byteoffset)
+{
+    QStringList bits={"0","0","0","0","0","0","0","0"};
+    for(int idx = 0; idx < data.size(); idx++)
+    {
+        if (data[idx].byteOffset.length()==0) continue;
+        if (data[idx].bitSize.toInt()>=8) continue;
+        if (data[idx].byteOffset.compare(byteoffset)==0)
+        {
+            //ToDo: convert bitsize bits to bitmask and use it to fill bits[]
+            QString sHex = XTRA::x2Hex(data[idx].defaultVal,data[idx].bitSize);
+            QString sBin = XTRA::xHex2Bin(sHex,"8");
+            //qDebug() << "sHex:" << sHex << " , sBin:" << sBin;
+            int inbit=7;
+            for (int outbit=data[idx].bitOffset.toInt();
+                 outbit<data[idx].bitOffset.toInt()+data[idx].bitSize.toInt();
+                 outbit++)
+            {
+                if (outbit>7) break;
+                bits[7-outbit]=sBin.mid(inbit,1);
+                inbit--;
+            }
+        }
+    }
+    QString bitmask = bits.join("");
+    QString byte = XTRA::xBin2Byte(bitmask);
+    QString byteHex = XTRA::x2Hex(byte,"8");
+    //qDebug() << "byte " << byteoffset << "  :" << bitmask << " : " << byte << " : " << byteHex;
+    return byteHex;
+}
+
+bool ICD::setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly)
+{
+    bool found=false;
+    for(int idx = 0; idx < data.size(); idx++)
+    {
+        if (data[idx].byteOffset.length() > 0  && data[idx].byteOffset.toInt()==byteoffset)
+        {
+            if (bitsonly &&  data[idx].bitSize.toInt()>=8) continue;
+            //qDebug() << " Setting " << icData[row].byteOffset << " to " << hexvalue;
+            data[idx].defaultValHex = hexvalue;
+            found = true;
+        }
+    }
+    return found;
+}
+
+
+bool ICD::isValid()
+{
     bool valid=true;
     for(int idx = 0; idx < data.size(); idx++)
     {

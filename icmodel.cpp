@@ -4,6 +4,7 @@
 #include <QItemSelectionModel>
 #include "icmodel.h"
 #include "mainwindow.h"
+#include "xtra.h"
 
 ICModel::ICModel(QObject *parent)
     : QAbstractTableModel(parent)
@@ -243,4 +244,143 @@ bool ICModel::exportCSV(QString filename)
         out << csvQuote << icData[row].getBorder() << csvQuote;
     }
     return true;
+}
+
+bool ICModel::importConfigString(QString cfgstring)
+{
+    //qDebug() << "Import";
+    if (cfgstring.startsWith("GIVICFG:"))
+        cfgstring = cfgstring.mid(8);
+    //qDebug() << "cfgstring: " << cfgstring;
+
+    //parse the string - all values are hex
+    int hexIndex;
+    int byteOffset = 0;
+    QString hexValue;
+    int bitSize;
+
+    for (hexIndex = 0; hexIndex < cfgstring.length() - 1; hexIndex++)
+    {
+        hexValue = cfgstring.mid(hexIndex, 1);
+        // check if current character is a '#' then read nn (the byteoffset)
+        if (hexValue.compare("#") ==0 ) // byteoffset found
+        {
+            bool ok;
+            hexIndex += 1;
+            hexValue = cfgstring.mid(hexIndex, 2);
+            byteOffset = hexValue.toInt(&ok,16); // update byteoffset value
+            //qDebug() << "ok:" << ok << "HexIndex: " << hexIndex << "Jumping to Byteoffset: " << byteOffset;
+            hexIndex += 1; // increase to next hex to read/check
+        }
+        else if (hexValue.compare(":") == 0 ) // normal value definition
+        {
+            hexIndex += 1;
+            bitSize = getBitsizeFromByteoffset(byteOffset);
+            if (bitSize < 8) bitSize = 8;
+            hexValue = cfgstring.mid(hexIndex, bitSize / 4);
+            //qDebug() << "ImportValues byteoffset:'" << byteOffset << "' | hexvalue'" << hexValue; //4debug
+            setByteoffset2Hex(byteOffset,hexValue);
+            //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
+            hexIndex += (bitSize / 4) - 1;  // update hex index position
+            byteOffset += (bitSize / 8);    // update byteoffet position
+        }
+        else if (hexValue.compare("|") == 0 ) // bitwise OR (set a bit)
+        {
+            bool ok;
+            hexIndex += 1;
+            bitSize = getBitsizeFromByteoffset(byteOffset);
+            if (bitSize < 8) bitSize = 8;
+            hexValue = cfgstring.mid(hexIndex, bitSize / 4);
+            //qDebug() << "ImportValues byteoffset:'" << byteOffset << "' | hexvalue'" << hexValue; //4debug
+            QString binOR = QString("%1").arg(hexValue.toULongLong(&ok, 16), 8, 2, QChar('0'));
+            QString hexSrc = getValHexFromByteoffset(&ok, byteOffset);
+            //QString binSrc = QString("%1").arg(hexSrc.toULongLong(&ok, 16), 8, 2, QChar('0'));
+            QString binSrc = XTRA::xHex2Bin(hexSrc,QString::number(bitSize));
+            qDebug() << "BINARY OR: ";
+            qDebug() << binSrc << " <- src mask";
+            qDebug() << binOR << " <- mod mask";
+            //setByteoffset2Hex(byteOffset,hexValue);
+            //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
+            hexIndex += (bitSize / 4) - 1;  // update hex index position
+            byteOffset += (bitSize / 8);    // update byteoffet position
+        }
+        else if (hexValue.compare("&") == 0 ) // bitwise AND (clear a bit)
+        {
+            bool ok;
+            hexIndex += 1;
+            bitSize = getBitsizeFromByteoffset(byteOffset); // get bitsize
+            if (bitSize < 8) bitSize = 8;
+            hexValue = cfgstring.mid(hexIndex, bitSize / 4); // read the hexvalue
+            //qDebug() << "ImportValues byteoffset:'" << byteOffset << "' | hexvalue'" << hexValue; //4debug
+            QString binAND = QString("%1").arg(hexValue.toULongLong(&ok, 16), 8, 2, QChar('0'));
+            QString hexSrc = getValHexFromByteoffset(&ok, byteOffset);
+            //QString binSrc = QString("%1").arg(hexSrc.toULongLong(&ok, 16), 8, 2, QChar('0'));
+            QString binSrc = XTRA::xHex2Bin(hexSrc,QString::number(bitSize));
+            qDebug() << "BINARY AND: ";
+            qDebug() << binSrc << " <- src mask";
+            qDebug() << binAND << " <- mod mask";
+            //setByteoffset2Hex(byteOffset,hexValue);
+            //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
+            hexIndex += (bitSize / 4) - 1;  // update hex index position
+            byteOffset += (bitSize / 8);    // update byteoffet position
+        } else {
+            //hexIndex += 1;
+            bitSize = getBitsizeFromByteoffset(byteOffset); // get bitsize
+            if (bitSize < 8) bitSize = 8;
+            hexValue = cfgstring.mid(hexIndex, bitSize / 4); // read the hexvalue
+            //qDebug() << "ImportValues byteoffset:'" << byteOffset << "' | hexvalue'" << hexValue; //4debug
+            setByteoffset2Hex(byteOffset,hexValue); // import the hexvalue
+            //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
+            hexIndex += (bitSize / 4) - 1; // update hex index position
+            byteOffset += (bitSize / 8); // update byteoffet position
+        }
+    }
+    endResetModel();
+    return true;
+}
+
+int ICModel::getBitsizeFromByteoffset(int byteoffset)
+{
+    for (int row=0; row<this->icData.count(); row++)
+    {
+        if (icData[row].byteOffset.length() > 0 && icData[row].byteOffset.toInt()==byteoffset)
+            return icData[row].bitSize.toInt();
+    }
+    return 8;
+}
+
+QString ICModel::getValHexFromByteoffset(bool *ok,int byteoffset)
+{
+    for (int row=0; row<this->icData.count(); row++)
+    {
+        if (icData[row].byteOffset.length() > 0 && icData[row].byteOffset.toInt()==byteoffset) {
+            *ok=true;
+            if (icData[row].newValHex.length()>0) return icData[row].newValHex;
+            else return icData[row].defaultValHex;
+        }
+    }
+    *ok=false;
+    return "00";
+}
+
+bool ICModel::setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly)
+{
+    bool found=false;
+    for (int row=0; row<this->icData.count(); row++)
+    {
+        if (icData[row].byteOffset.length() > 0  && icData[row].byteOffset.toInt()==byteoffset)
+        {
+            if (bitsonly &&  icData[row].bitSize.toInt()>=8) continue;
+            //qDebug() << " Setting " << icData[row].byteOffset << " to " << hexvalue;
+            icData[row].newValHex = hexvalue;
+            found = true;
+        }
+    }
+    return found;
+}
+
+QString ICModel::exportConfigString() const
+{
+    QString exportString="none";
+    return exportString;
 }

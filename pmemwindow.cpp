@@ -26,7 +26,6 @@ void PMEMWindow::updateModelData(PMEMD *pmemd)
 {
     pmemModel->pmemData.clear();
     pmemModel->pmemData.append(pmemd->data);
-
     ui->tableView->setModel(nullptr);
     ui->tableView->setModel(pmemModel);
 }

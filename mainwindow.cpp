@@ -647,3 +647,14 @@ void MainWindow::on_tableView_customContextMenuRequested(const QPoint &pos)
     if (ui->tableView->selectionModel()==nullptr) return;
     tvCtxMenu->exec(QCursor::pos());
 }
+
+void MainWindow::on_Import_clicked()
+{
+    QString cfgString = ui->lineEdit_Import->text();
+    icModel->importConfigString(cfgString);
+}
+
+void MainWindow::on_Export_clicked()
+{
+    ui->lineEdit_Export->setText(icModel->exportConfigString());
+}

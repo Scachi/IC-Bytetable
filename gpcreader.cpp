@@ -57,6 +57,7 @@ void GPCReader::parse() {
             }
         }
     }
+    icData->bits2Hex();
     if (!icData->validateUniqueNames())
     {
         this->gpcValid=false;

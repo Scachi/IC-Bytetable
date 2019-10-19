@@ -3,6 +3,7 @@
 
 #include <QAbstractTableModel>
 #include "ic.h"
+#include "icd.h"
 
 class ICModel : public QAbstractTableModel
 {
@@ -20,6 +21,11 @@ public:
     void clear(void);
 
     bool exportCSV(QString filename);
+    bool importConfigString(QString cfgstring);
+    int getBitsizeFromByteoffset(int byteoffset);
+    QString getValHexFromByteoffset(bool *ok, int byteoffset);
+    bool setByteoffset2Hex(int byteoffset, QString hexvalue,bool bitsonly=false);
+    QString exportConfigString() const;
 
 private:
     int iRowCount = 25;

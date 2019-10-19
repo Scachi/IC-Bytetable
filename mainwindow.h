@@ -54,6 +54,10 @@ private slots:
 
     void on_tableView_customContextMenuRequested(const QPoint &pos);
 
+    void on_Import_clicked();
+
+    void on_Export_clicked();
+
 private:
     Ui::MainWindow *ui;
 
