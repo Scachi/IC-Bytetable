@@ -650,8 +650,11 @@ void MainWindow::on_tableView_customContextMenuRequested(const QPoint &pos)
 
 void MainWindow::on_Import_clicked()
 {
+    if (icModel->icData == nullptr) return;
     QString cfgString = ui->lineEdit_Import->text();
     icModel->importConfigString(cfgString);
+    icProxy->invalidate();
+    icProxy->colSortNow();
 }
 
 void MainWindow::on_Export_clicked()

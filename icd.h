@@ -22,7 +22,7 @@ public:
     bool validateUniqueNames();
     void bits2Hex();
     QString bits2ByteHex(QString byteoffset);
-    bool setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly=false);
+    bool setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly=false, bool setdefval=true);
     int getBitsizeFromByteoffset(int byteoffset);
     QString getValHexFromByteoffset(bool *ok, int byteoffset);
     bool isValid();

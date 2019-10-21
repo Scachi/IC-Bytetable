@@ -135,7 +135,7 @@ QString ICD::bits2ByteHex(QString byteoffset)
     return byteHex;
 }
 
-bool ICD::setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly)
+bool ICD::setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly, bool setdefval)
 {
     bool found=false;
     for(int idx = 0; idx < data.size(); idx++)
@@ -143,8 +143,16 @@ bool ICD::setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly)
         if (data[idx].byteOffset.length() > 0  && data[idx].byteOffset.toInt()==byteoffset)
         {
             if (bitsonly &&  data[idx].bitSize.toInt()>=8) continue;
-            //qDebug() << " Setting " << icData[row].byteOffset << " to " << hexvalue;
-            data[idx].defaultValHex = hexvalue;
+            //qDebug() << " Setting " << data[idx].byteOffset << " to " << hexvalue;
+            if (setdefval) data[idx].defaultValHex = hexvalue;
+            else
+            {
+                data[idx].newValHex = hexvalue;
+                data[idx].newVal = XTRA::xHex2Val(hexvalue,data[idx].bitSize,
+                                                    data[idx].bitOffset,
+                                                    data[idx].minVal,
+                                                    data[idx].decimals);
+            }
             found = true;
         }
     }
@@ -266,7 +274,7 @@ bool ICD::importConfigString(QString cfgstring)
     //qDebug() << "Import";
     if (cfgstring.startsWith("GIVICFG:"))
         cfgstring = cfgstring.mid(8);
-    //qDebug() << "cfgstring: " << cfgstring;
+    qDebug() << "cfgstring: " << cfgstring;
 
     //parse the string - all values are hex
     int hexIndex;
@@ -278,7 +286,7 @@ bool ICD::importConfigString(QString cfgstring)
     {
         hexValue = cfgstring.mid(hexIndex, 1);
         // check if current character is a '#' then read nn (the byteoffset)
-        if (hexValue.compare("#") ==0 ) // byteoffset found
+        if (hexValue.compare("#") == 0 ) // byteoffset found
         {
             bool ok;
             hexIndex += 1;
@@ -294,7 +302,7 @@ bool ICD::importConfigString(QString cfgstring)
             if (bitSize < 8) bitSize = 8;
             hexValue = cfgstring.mid(hexIndex, bitSize / 4);
             //qDebug() << "ImportValues byteoffset:'" << byteOffset << "' | hexvalue'" << hexValue; //4debug
-            setByteoffset2Hex(byteOffset,hexValue);
+            setByteoffset2Hex(byteOffset,hexValue,false,false);
             //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
             hexIndex += (bitSize / 4) - 1;  // update hex index position
             byteOffset += (bitSize / 8);    // update byteoffet position
@@ -344,7 +352,7 @@ bool ICD::importConfigString(QString cfgstring)
             if (bitSize < 8) bitSize = 8;
             hexValue = cfgstring.mid(hexIndex, bitSize / 4); // read the hexvalue
             //qDebug() << "ImportValues byteoffset:'" << byteOffset << "' | hexvalue'" << hexValue; //4debug
-            setByteoffset2Hex(byteOffset,hexValue); // import the hexvalue
+            setByteoffset2Hex(byteOffset,hexValue,false,false); // import the hexvalue
             //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
             hexIndex += (bitSize / 4) - 1; // update hex index position
             byteOffset += (bitSize / 8); // update byteoffet position

@@ -15,6 +15,8 @@ public:
     static QString x2Hex (QString value, QString bitsize);
     // convert hex hh to bin 00000000, bitsize <= 8 only
     static QString xHex2Bin(QString value, QString bitsize);
+    // convert hex to value, automatically selects decimal or integer
+    static QString xHex2Val(QString value, QString bitsize, QString bitoffset, QString minimum, QString decimals);
     // convert bin 00000000 to byte
     static QString xBin2Byte(QString value);
     // stop tooltip / richtext from adding automatic linebreaks

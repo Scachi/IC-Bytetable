@@ -181,7 +181,6 @@ void ICModel::clear(void)
 bool ICModel::importConfigString(QString cfgstring)
 {
     icData->importConfigString(cfgstring);
-    endResetModel();
     return true;
 }
 
