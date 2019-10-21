@@ -24,8 +24,8 @@ PMEMWindow::~PMEMWindow()
 
 void PMEMWindow::updateModelData(PMEMD *pmemd)
 {
-    pmemModel->pmemData.clear();
-    pmemModel->pmemData.append(pmemd->data);
+    pmemModel->clear();
+    pmemModel->pmemData=pmemd;
     ui->tableView->setModel(nullptr);
     ui->tableView->setModel(pmemModel);
 }
@@ -46,7 +46,7 @@ void PMEMWindow::closeIt()
 
 bool PMEMWindow::exportCSV(QString filename)
 {
-    return pmemModel->exportCSV(filename);
+    return pmemModel->pmemData->exportCSV(filename);
 }
 
 void PMEMWindow::closeEvent(QCloseEvent *event)

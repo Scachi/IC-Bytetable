@@ -1,11 +1,19 @@
 #include <QtDebug>
+#include <QFile>
 #include "icd.h"
 #include "ic.h"
 #include "xtra.h"
 
 ICD::ICD()
 {
-    bitsUsed=0;
+    bitsUsed = 0;
+    fieldNames << "Filename" << "Line" << "Name";
+    fieldNames << "Byte\nOffset" << "Byte\nOffhex" << "Bit\nSize" << "Bit\nOffset";
+    fieldNames << "Status" << "Info";
+    fieldNames << "Def\nVal" << "Def\nHex" << "New\nVal" << "New\nHex";
+    fieldNames << "Control" << "Items" << "Min\nVal" << "Max\nVal" << "Decimals" << "Step";
+    fieldNames << "ShortDesc" << "Collapsible" << "Group" << "GroupCol" << "Color" << "Border";
+    fieldCount = fieldNames.size();
 }
 
 ICD::~ICD()
@@ -40,6 +48,11 @@ void ICD::debug(qint32 iLineNo)
         if(data[idx].lineNo.toInt() == iLineNo)
             data[idx].debug();
     }
+}
+
+void ICD::clear()
+{
+    this->data.clear();
 }
 
 // validate the names of all controls to be unique
@@ -138,6 +151,29 @@ bool ICD::setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly)
     return found;
 }
 
+int ICD::getBitsizeFromByteoffset(int byteoffset)
+{
+    for (int row=0; row<this->data.count(); row++)
+    {
+        if (data[row].byteOffset.length() > 0 && data[row].byteOffset.toInt()==byteoffset)
+            return data[row].bitSize.toInt();
+    }
+    return 8;
+}
+
+QString ICD::getValHexFromByteoffset(bool *ok,int byteoffset)
+{
+    for (int row=0; row<this->data.count(); row++)
+    {
+        if (data[row].byteOffset.length() > 0 && data[row].byteOffset.toInt()==byteoffset) {
+            *ok=true;
+            if (data[row].newValHex.length()>0) return data[row].newValHex;
+            else return data[row].defaultValHex;
+        }
+    }
+    *ok=false;
+    return "00";
+}
 
 bool ICD::isValid()
 {
@@ -147,4 +183,178 @@ bool ICD::isValid()
         if (data[idx].valid>2) valid=false;
     }
     return valid;
+}
+
+bool ICD::exportCSV(QString filename)
+{
+    QString csvQuote="\"";
+    QString csvDelimiter=",";
+    QString fname = filename.replace("_data.txt",".txt").replace("_chart.txt",".txt").replace(".txt","_data.txt");
+    fname = fname.replace("_data.csv",".csv").replace("_chart.csv",".csv").replace(".csv","_data.csv");
+    QFile file(fname);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return false;
+    QTextStream out(&file);
+    // column titles
+    out << csvQuote << "Index" << csvQuote << csvDelimiter;
+    for (int col=0; col < this->fieldCount ; col++)
+    {
+        if (col>0) out << csvDelimiter;
+        QString title;
+        if (col < this->fieldNames.size())
+            title = this->fieldNames.at(col);
+        else title = QString::number(col);
+        out << csvQuote << title.replace("\n"," ") << csvQuote;
+    }
+    out << "\n";
+    // content
+    for (int row=0; row<this->data.count(); row++)
+    {
+        if (row>0) out << "\n";
+        out << csvQuote << row << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getFileName() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getLineNo() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getName() << csvQuote << csvDelimiter;
+
+        out << csvQuote << data[row].getByteOffset() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getByteOffsetHex() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getBitSize() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getBitOffset() << csvQuote << csvDelimiter;
+
+        out << csvQuote << data[row].getValid() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getInfo().replace("\n"," ") << csvQuote << csvDelimiter;
+
+        out << csvQuote << data[row].getDefaultVal() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getDefaultValHex() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getNewVal() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getNewValHex() << csvQuote << csvDelimiter;
+
+        out << csvQuote << data[row].getControl() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getItemCount() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getMinVal() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getMaxVal() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getDecimals() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getStep() << csvQuote << csvDelimiter;
+
+        out << csvQuote << data[row].getShortDescPlain(99).replace("\n"," ") << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getCollapsible() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getGroup() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getGroupCol() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getColor() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getBorder() << csvQuote;
+    }
+    return true;
+}
+
+int ICD::getDataCount()
+{
+    return data.size();
+}
+
+int ICD::getFieldCount()
+{
+    return fieldCount;
+}
+
+QString ICD::getFieldName(int index) const
+{
+    return fieldNames.at(index);
+}
+
+bool ICD::importConfigString(QString cfgstring)
+{
+    //qDebug() << "Import";
+    if (cfgstring.startsWith("GIVICFG:"))
+        cfgstring = cfgstring.mid(8);
+    //qDebug() << "cfgstring: " << cfgstring;
+
+    //parse the string - all values are hex
+    int hexIndex;
+    int byteOffset = 0;
+    QString hexValue;
+    int bitSize;
+
+    for (hexIndex = 0; hexIndex < cfgstring.length() - 1; hexIndex++)
+    {
+        hexValue = cfgstring.mid(hexIndex, 1);
+        // check if current character is a '#' then read nn (the byteoffset)
+        if (hexValue.compare("#") ==0 ) // byteoffset found
+        {
+            bool ok;
+            hexIndex += 1;
+            hexValue = cfgstring.mid(hexIndex, 2);
+            byteOffset = hexValue.toInt(&ok,16); // update byteoffset value
+            //qDebug() << "ok:" << ok << "HexIndex: " << hexIndex << "Jumping to Byteoffset: " << byteOffset;
+            hexIndex += 1; // increase to next hex to read/check
+        }
+        else if (hexValue.compare(":") == 0 ) // normal value definition
+        {
+            hexIndex += 1;
+            bitSize = getBitsizeFromByteoffset(byteOffset);
+            if (bitSize < 8) bitSize = 8;
+            hexValue = cfgstring.mid(hexIndex, bitSize / 4);
+            //qDebug() << "ImportValues byteoffset:'" << byteOffset << "' | hexvalue'" << hexValue; //4debug
+            setByteoffset2Hex(byteOffset,hexValue);
+            //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
+            hexIndex += (bitSize / 4) - 1;  // update hex index position
+            byteOffset += (bitSize / 8);    // update byteoffet position
+        }
+        else if (hexValue.compare("|") == 0 ) // bitwise OR (set a bit)
+        {
+            bool ok;
+            hexIndex += 1;
+            bitSize = getBitsizeFromByteoffset(byteOffset);
+            if (bitSize < 8) bitSize = 8;
+            hexValue = cfgstring.mid(hexIndex, bitSize / 4);
+            //qDebug() << "ImportValues byteoffset:'" << byteOffset << "' | hexvalue'" << hexValue; //4debug
+            QString binOR = QString("%1").arg(hexValue.toULongLong(&ok, 16), 8, 2, QChar('0'));
+            QString hexSrc = getValHexFromByteoffset(&ok, byteOffset);
+            //QString binSrc = QString("%1").arg(hexSrc.toULongLong(&ok, 16), 8, 2, QChar('0'));
+            QString binSrc = XTRA::xHex2Bin(hexSrc,QString::number(bitSize));
+            qDebug() << "BINARY OR: ";
+            qDebug() << binSrc << " <- src mask";
+            qDebug() << binOR << " <- mod mask";
+            //setByteoffset2Hex(byteOffset,hexValue);
+            //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
+            hexIndex += (bitSize / 4) - 1;  // update hex index position
+            byteOffset += (bitSize / 8);    // update byteoffet position
+        }
+        else if (hexValue.compare("&") == 0 ) // bitwise AND (clear a bit)
+        {
+            bool ok;
+            hexIndex += 1;
+            bitSize = getBitsizeFromByteoffset(byteOffset); // get bitsize
+            if (bitSize < 8) bitSize = 8;
+            hexValue = cfgstring.mid(hexIndex, bitSize / 4); // read the hexvalue
+            //qDebug() << "ImportValues byteoffset:'" << byteOffset << "' | hexvalue'" << hexValue; //4debug
+            QString binAND = QString("%1").arg(hexValue.toULongLong(&ok, 16), 8, 2, QChar('0'));
+            QString hexSrc = getValHexFromByteoffset(&ok, byteOffset);
+            //QString binSrc = QString("%1").arg(hexSrc.toULongLong(&ok, 16), 8, 2, QChar('0'));
+            QString binSrc = XTRA::xHex2Bin(hexSrc,QString::number(bitSize));
+            qDebug() << "BINARY AND: ";
+            qDebug() << binSrc << " <- src mask";
+            qDebug() << binAND << " <- mod mask";
+            //setByteoffset2Hex(byteOffset,hexValue);
+            //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
+            hexIndex += (bitSize / 4) - 1;  // update hex index position
+            byteOffset += (bitSize / 8);    // update byteoffet position
+        } else {
+            //hexIndex += 1;
+            bitSize = getBitsizeFromByteoffset(byteOffset); // get bitsize
+            if (bitSize < 8) bitSize = 8;
+            hexValue = cfgstring.mid(hexIndex, bitSize / 4); // read the hexvalue
+            //qDebug() << "ImportValues byteoffset:'" << byteOffset << "' | hexvalue'" << hexValue; //4debug
+            setByteoffset2Hex(byteOffset,hexValue); // import the hexvalue
+            //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
+            hexIndex += (bitSize / 4) - 1; // update hex index position
+            byteOffset += (bitSize / 8); // update byteoffet position
+        }
+    }
+    return true;
+}
+
+QString ICD::exportConfigString() const
+{
+    QString exportString="none";
+    return exportString;
 }

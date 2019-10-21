@@ -65,7 +65,7 @@ void MainWindow::readSource(QString sFilePath) {
             GPCReader *gpc = new GPCReader(gpcSelectedDir,gpcSelectFilePath); // read the content, parse the IC
             // clear previous data
             icModel->clear();
-            pmemWindow->updateModelData(gpc->pmemData);
+            //pmemWindow->updateModelData(gpc->pmemData);
 
             if (!gpc->getGPCICFound()) // abort when no IC was found
             {
@@ -75,7 +75,7 @@ void MainWindow::readSource(QString sFilePath) {
 
             // output
             // fill the tableview
-            icModel->icData.append(gpc->icData->data);
+            icModel->icData=gpc->icData;
             //ui->tableView->setModel(&icModel);
             icProxy->setSourceModel(icModel);
             icProxy->setDynamicSortFilter(true);
@@ -466,7 +466,7 @@ void MainWindow::tableViewSelectedCopy()
     foreach(const QModelIndex &index,
             ui->tableView->selectionModel()->selectedRows())
     {
-        IC ic = icModel->icData[icProxy->mapToSource(index).row()];
+        IC ic = icModel->icData->data[icProxy->mapToSource(index).row()];
         tvCtxCopyIdx->append(QString::number(index.row()));
         if (ic.getNewVal().length()>0)
         {
@@ -486,9 +486,9 @@ void MainWindow::tableViewCheckedCopy()
     tvCtxCopyData->clear();
     tvCtxCopyDataHex->clear();
 
-    for(int index = 0; index < icModel->icData.size(); index++)
+    for(int index = 0; index < icModel->icData->data.size(); index++)
     {
-        IC ic = icModel->icData[index];
+        IC ic = icModel->icData->data[index];
         if (ic.isChecked())
         {
             tvCtxCopyIdx->append(QString::number(index));
@@ -521,7 +521,7 @@ void MainWindow::tableViewPaste()
         if (idx == 0) idx_first=tvCtxCopyIdx->at(idx).toInt();
         QModelIndex indexT = icProxy->index(index.row()+(tvCtxCopyIdx->at(idx).toInt()-idx_first),0);
         //qDebug() << "indexT: " << indexT.row();
-        IC *ic = &icModel->icData[icProxy->mapToSource(indexT).row()];
+        IC *ic = &icModel->icData->data[icProxy->mapToSource(indexT).row()];
         //qDebug() << "Paste at: " << ic->getName();
         ic->newVal=tvCtxCopyData->at(idx);
         ic->newValHex=tvCtxCopyDataHex->at(idx);
@@ -533,29 +533,29 @@ void MainWindow::tableViewSelectedDelete()
     foreach(const QModelIndex &index,
             ui->tableView->selectionModel()->selectedRows())
     {
-        icModel->icData[icProxy->mapToSource(index).row()].newVal="";
-        icModel->icData[icProxy->mapToSource(index).row()].newValHex="";
+        icModel->icData->data[icProxy->mapToSource(index).row()].newVal="";
+        icModel->icData->data[icProxy->mapToSource(index).row()].newValHex="";
     }
 }
 
 void MainWindow::tableViewCheckedDelete()
 {
-    for(int idx = 0; idx < icModel->icData.size(); idx++)
+    for(int idx = 0; idx < icModel->icData->data.size(); idx++)
     {
-        if (icModel->icData[idx].checked)
+        if (icModel->icData->data[idx].checked)
         {
-            icModel->icData[idx].newVal="";
-            icModel->icData[idx].newValHex="";
+            icModel->icData->data[idx].newVal="";
+            icModel->icData->data[idx].newValHex="";
         }
     }
 }
 
 void MainWindow::tableViewAllDelete()
 {
-    for(int idx = 0; idx < icModel->icData.size(); idx++)
+    for(int idx = 0; idx < icModel->icData->data.size(); idx++)
     {
-        icModel->icData[idx].newVal="";
-        icModel->icData[idx].newValHex="";
+        icModel->icData->data[idx].newVal="";
+        icModel->icData->data[idx].newValHex="";
     }
 }
 
@@ -565,7 +565,7 @@ void MainWindow::tableViewSelectedCheck()
     foreach(const QModelIndex &index,
             ui->tableView->selectionModel()->selectedRows())
     {
-        icModel->icData[icProxy->mapToSource(index).row()].checked=true;
+        icModel->icData->data[icProxy->mapToSource(index).row()].checked=true;
     }
 }
 
@@ -574,23 +574,23 @@ void MainWindow::tableViewSelectedUncheck()
     foreach(const QModelIndex &index,
             ui->tableView->selectionModel()->selectedRows())
     {
-        icModel->icData[icProxy->mapToSource(index).row()].checked=false;
+        icModel->icData->data[icProxy->mapToSource(index).row()].checked=false;
     }
 }
 
 void MainWindow::tableViewAllCheck()
 {
-    for(int idx = 0; idx < icModel->icData.size(); idx++)
+    for(int idx = 0; idx < icModel->icData->data.size(); idx++)
     {
-        icModel->icData[idx].checked=true;
+        icModel->icData->data[idx].checked=true;
     }
 }
 
 void MainWindow::tableViewAllUncheck()
 {
-    for(int idx = 0; idx < icModel->icData.size(); idx++)
+    for(int idx = 0; idx < icModel->icData->data.size(); idx++)
     {
-        icModel->icData[idx].checked=false;
+        icModel->icData->data[idx].checked=false;
     }
 }
 
@@ -602,7 +602,7 @@ void MainWindow::tableViewSelectedSumSize()
             ui->tableView->selectionModel()->selectedRows())
     {
         entries++;
-        IC ic = icModel->icData[icProxy->mapToSource(index).row()];
+        IC ic = icModel->icData->data[icProxy->mapToSource(index).row()];
         usingpmem+=ic.getSize(&bytes,&bits);
     }
     msgboxSumSize(entries,usingpmem,bytes,bits);
@@ -612,9 +612,9 @@ void MainWindow::tableViewCheckedSumSize()
 {
     int entries=0, usingpmem=0;
     int bytes=0, bits=0;
-    for(int index = 0; index < icModel->icData.size(); index++)
+    for(int index = 0; index < icModel->icData->data.size(); index++)
     {
-        IC ic = icModel->icData[index];
+        IC ic = icModel->icData->data[index];
         if (ic.isChecked()) {
             entries++;
             usingpmem+=ic.getSize(&bytes,&bits);
@@ -636,7 +636,7 @@ void MainWindow::csvExport()
     if(!csvFileName.isNull())
     {
         bool csvData, csvChart;
-        csvData = icModel->exportCSV(csvFileName);
+        csvData = icModel->icData->exportCSV(csvFileName);
         csvChart = pmemWindow->exportCSV(csvFileName);
         msgboxCSVExport(csvData,csvChart);
     }

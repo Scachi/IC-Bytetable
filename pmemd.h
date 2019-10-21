@@ -19,11 +19,17 @@ public:
     bool isValid();
     bool byteSet (QString filename, QString line, QString byteoffset, QString bitsize, QString bitoffset);
     QStringList byteCheck (QString byteoffset, QString bitsize, QString bitoffset);
+    bool exportCSV(QString filename);
 
     int getFreeBytes();
     int getFreeBits();
     int getBytes();
     int getBits();
+
+    int getFieldCount();
+
+private:
+    int fieldCount = 8; // count of important data variables used by listview and csvexport
 };
 
 #endif // PMEMD_H

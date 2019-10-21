@@ -1,4 +1,5 @@
-#include <qdebug.h>
+#include <QFile>
+#include <QDebug>
 
 #include "pmemd.h"
 #include "pmem.h"
@@ -141,4 +142,49 @@ int PMEMD::getBits()
             if (data[i].getByBit(i2) || data[i].getByBitSize(i2)) bits+=data[i].getBit(i2);
     }
     return bits;
+}
+
+int PMEMD::getFieldCount()
+{
+    return fieldCount;
+}
+
+bool PMEMD::exportCSV(QString filename)
+{
+    QString csvQuote="\"";
+    QString csvDelimiter=",";
+    QString fname = filename.replace("_data.txt",".txt").replace("_chart.txt",".txt").replace(".txt","_chart.txt");
+    fname = fname.replace("_data.csv",".csv").replace("_chart.csv",".csv").replace(".csv","_chart.csv");
+    QFile file(fname);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return false;
+    QTextStream out(&file);
+    // column titles
+    out << csvQuote << "Byte" << csvQuote << csvDelimiter;
+    for (int col = 0; col < fieldCount ; col++)
+    {
+        if (col > 0) out << csvDelimiter;
+        out << csvQuote << col << csvQuote;
+    }
+    out << csvDelimiter;
+    out << csvQuote << "Status" << csvQuote;
+    out << "\n";
+    // content
+    for (int row=0; row<this->data.size(); row++)
+    {
+        if (row > 0 ) out << "\n";
+        out << csvQuote << row << csvQuote << csvDelimiter;
+        for (int col=0; col < this->fieldCount ; col++)
+        {
+            if (col > 0) out << csvDelimiter;
+            PMEM pm = data[row];
+            out << csvQuote << pm.getTableMark(col) << csvQuote;
+        }
+        out << csvDelimiter;
+        out << csvQuote;
+        if (this->data[row].isValid()) out << "OK";
+        else out <<  "ERROR";
+        out << csvQuote;
+    }
+
+    return true;
 }

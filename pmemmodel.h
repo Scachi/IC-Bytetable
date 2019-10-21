@@ -3,15 +3,16 @@
 
 #include <QAbstractTableModel>
 #include "pmem.h"
+#include "pmemd.h"
 
 class PMEMModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    QList<PMEM> pmemData;
+    PMEMD *pmemData = nullptr;
     PMEMModel(QObject *parent = nullptr);
-    int rowCount(const QModelIndex &) const override { return pmemData.count(); }
-    int columnCount(const QModelIndex &) const override { return iRowCount; }
+    int rowCount(const QModelIndex &) const override { return pmemData->data.count(); }
+    int columnCount(const QModelIndex &) const override { return iColCount; }
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
@@ -22,7 +23,7 @@ public:
     bool exportCSV(QString filename);
 
 private:
-    int iRowCount=8;
+    int iColCount=8;
 };
 
 #endif // PMEMMODEL_H
