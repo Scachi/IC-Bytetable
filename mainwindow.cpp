@@ -407,6 +407,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::tableViewCreateCtxMenu()
 {
+    tvCtxFieldCopy = new QAction(tr("Copy Field Text"), this);
+    connect(tvCtxFieldCopy, &QAction::triggered, this, &MainWindow::tableViewFieldCopy);
     tvCtxSelCopy = new QAction(tr("Copy Values (selected)"), this);
     connect(tvCtxSelCopy, &QAction::triggered, this, &MainWindow::tableViewSelectedCopy);
     tvCtxChkCopy = new QAction(tr("Copy Values (checked)"), this);
@@ -439,6 +441,7 @@ void MainWindow::tableViewCreateCtxMenu()
     //tvCtxExportCSV->setEnabled(false);
 
     tvCtxMenu = new QMenu;
+    tvCtxMenu->addAction(tvCtxFieldCopy);
     tvCtxMenu->addAction(tvCtxSelCopy);
     tvCtxMenu->addAction(tvCtxChkCopy);
     tvCtxMenu->addAction(tvCtxPaste);
@@ -457,11 +460,37 @@ void MainWindow::tableViewCreateCtxMenu()
     tvCtxMenu->addAction(tvCtxExportCSV);
 }
 
+void MainWindow::tableViewFieldCopy()
+{
+    tvCtxCopyIdx->clear();
+    tvCtxCopyData->clear();
+    tvCtxCopyDataHex->clear();
+
+    QPoint pos = ui->tableView->viewport()->mapFromGlobal(tvCtxCursorLocation);
+    QModelIndex mindex = icProxy->mapToSource(ui->tableView->indexAt(pos));
+    //qDebug() << " Cursor Location: " << mindex.row() << " " << mindex.column();
+    QString fieldText = icModel->index( mindex.row(), mindex.column() ).data( Qt::DisplayRole ).toString();
+
+    tvCtxCopyIdx->append(QString::number(mindex.row()));
+    tvCtxCopyData->append(fieldText);
+
+    QString clipText = "Row|Col|Text\n";
+    clipText.append(QString::number(mindex.row())).append("|");
+    clipText.append(QString::number(mindex.column())).append("|");
+    clipText.append(fieldText).append("\n");
+
+    QClipboard *p_Clipboard = QApplication::clipboard();
+    p_Clipboard->setText(clipText);
+}
+
 void MainWindow::tableViewSelectedCopy()
 {
     tvCtxCopyIdx->clear();
     tvCtxCopyData->clear();
     tvCtxCopyDataHex->clear();
+
+    QString clipText = "Row|Val|Hex\n";
+    int idx=0;
 
     foreach(const QModelIndex &index,
             ui->tableView->selectionModel()->selectedRows())
@@ -477,7 +506,14 @@ void MainWindow::tableViewSelectedCopy()
             tvCtxCopyData->append(ic.getDefaultVal());
             tvCtxCopyDataHex->append(ic.getDefaultValHex());
         }
+        clipText.append(tvCtxCopyIdx->at(idx)).append("|");
+        clipText.append(tvCtxCopyData->at(idx)).append("|");
+        clipText.append(tvCtxCopyDataHex->at(idx)).append("\n");
+        idx++;
     }
+
+    QClipboard *p_Clipboard = QApplication::clipboard();
+    p_Clipboard->setText(clipText);
 }
 
 void MainWindow::tableViewCheckedCopy()
@@ -485,6 +521,9 @@ void MainWindow::tableViewCheckedCopy()
     tvCtxCopyIdx->clear();
     tvCtxCopyData->clear();
     tvCtxCopyDataHex->clear();
+
+    QString clipText = "Row|Val|Hex\n";
+    int idx=0;
 
     for(int index = 0; index < icModel->icData->data.size(); index++)
     {
@@ -501,6 +540,10 @@ void MainWindow::tableViewCheckedCopy()
                 tvCtxCopyData->append(ic.getDefaultVal());
                 tvCtxCopyDataHex->append(ic.getDefaultValHex());
             }
+            clipText.append(tvCtxCopyIdx->at(idx)).append("|");
+            clipText.append(tvCtxCopyData->at(idx)).append("|");
+            clipText.append(tvCtxCopyDataHex->at(idx)).append("\n");
+            idx++;
         }
     }
 }
@@ -523,8 +566,8 @@ void MainWindow::tableViewPaste()
         //qDebug() << "indexT: " << indexT.row();
         IC *ic = &icModel->icData->data[icProxy->mapToSource(indexT).row()];
         //qDebug() << "Paste at: " << ic->getName();
-        ic->newVal=tvCtxCopyData->at(idx);
-        ic->newValHex=tvCtxCopyDataHex->at(idx);
+        if (tvCtxCopyData->size() >= idx+1) ic->newVal=tvCtxCopyData->at(idx);
+        if (tvCtxCopyDataHex->size() >= idx+1) ic->newValHex=tvCtxCopyDataHex->at(idx);
     }
 }
 
@@ -645,6 +688,7 @@ void MainWindow::csvExport()
 void MainWindow::on_tableView_customContextMenuRequested(const QPoint &pos)
 {
     if (ui->tableView->selectionModel()==nullptr) return;
+    tvCtxCursorLocation = QCursor::pos();
     tvCtxMenu->exec(QCursor::pos());
 }
 

@@ -85,12 +85,14 @@ private:
     ICModel     *icModel;            // tableview model
     ICProxy     *icProxy;            // QSortFilterProxyModel for sorting
 
+    QPoint      tvCtxCursorLocation;
     QStringList *tvCtxCopyIdx;
     QStringList *tvCtxCopyData;
     QStringList *tvCtxCopyDataHex;
 
     void tableViewCreateCtxMenu();
     QMenu *tvCtxMenu;
+    QAction *tvCtxFieldCopy;
     QAction *tvCtxSelCopy;
     QAction *tvCtxChkCopy;
     QAction *tvCtxPaste;
@@ -105,6 +107,7 @@ private:
     QAction *tvCtxChkSumSize;
     QAction *tvCtxExportCSV;
 
+    void tableViewFieldCopy();
     void tableViewSelectedCopy();
     void tableViewCheckedCopy();
     void tableViewPaste();
