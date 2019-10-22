@@ -4,8 +4,6 @@
 
 PMEM::PMEM()
 {
-    this->filename = "";
-    this->line = -1;
     this->byByte=0;
     this->byByteSize=0;
     this->valid=true;
@@ -23,37 +21,29 @@ PMEM::~PMEM()
 
 }
 
-bool PMEM::setByteByOffset(QString filename, QString line)
+bool PMEM::setByteByOffset()
 {
-    this->filename=filename;
-    this->line=line;
     this->byByte+=1;
     for (uint8_t i=0;i<8;i++) this->bits[i]+=1;
     return true;
 }
 
-bool PMEM::setByteBySize(QString filename, QString line)
+bool PMEM::setByteBySize()
 {
-    this->filename=filename;
-    this->line=line;
     this->byByteSize+=1;
     for (uint8_t i=0;i<8;i++) this->bits[i]+=1;
     return true;
 }
 
-bool PMEM::setBitByOffset(QString filename, QString line, int bitoffset)
+bool PMEM::setBitByOffset(int bitoffset)
 {
-    this->filename=filename;
-    this->line=line;
     this->byBit[bitoffset]+=1;
     this->bits[bitoffset]+=1;
     return true;
 }
 
-bool PMEM::setBitBySize(QString filename, QString line, int bitoffset)
+bool PMEM::setBitBySize(int bitoffset)
 {
-    this->filename=filename;
-    this->line=line;
     this->byBitSize[bitoffset]+=1;
     this->bits[bitoffset]+=1;
     return true;

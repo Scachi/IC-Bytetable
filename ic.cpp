@@ -8,8 +8,8 @@
 IC::IC(QStringList slRawSection, QString sFileName, QString sLineNo, QString sName, QString sControl)
 {
     rawSection = slRawSection;
-    fileName = sFileName;
-    lineNo = sLineNo;
+    fileName.append(sFileName);
+    lineNo.append(sLineNo);
     name = sName;
     control = sControl;
     valid = 0;
@@ -17,8 +17,8 @@ IC::IC(QStringList slRawSection, QString sFileName, QString sLineNo, QString sNa
 
 IC::IC(QString sFileName, QString sLineNo, QString sName, QString sControl)
 {
-    fileName = sFileName;
-    lineNo = sLineNo;
+    fileName.append(sFileName);
+    lineNo.append(sLineNo);
     name = sName;
     control = sControl;
     valid = 0;
@@ -63,16 +63,60 @@ void IC::debug() {
     qDebug() << "error: "       << this->err;
 }
 
+QString IC::getFileNameFirst() const {
+     return QFileInfo(this->fileName[0]).fileName();
+}
+
 QString IC::getFileName() const {
-    return QFileInfo(this->fileName).fileName();
+    QString filenames;
+    for (int i=0; i < this->fileName.size();i++)
+    {
+        if (i > 0) filenames.append("\n");
+        filenames.append(QFileInfo(this->fileName[i]).fileName());
+    }
+    return filenames;
 }
 
 QString IC::getFileNameFull() const {
-    return this->fileName;
+    return this->fileName.join("\n");
+}
+
+QString IC::getFileNameLineNo() const {
+    QString filenames;
+
+    for (int i=0; i < this->fileName.size();i++)
+    {
+        if (i > 0) filenames.append("\n");
+        filenames.append(QFileInfo(this->fileName[i]).fileName());
+        filenames.append(":").append(this->lineNo[i]);
+    }
+    return filenames;
+
+}
+
+QString IC::getFileNameFullLineNo() const {
+    QString filenames;
+
+    for (int i=0; i < this->fileName.size();i++)
+    {
+        if (i > 0) filenames.append("\n");
+        filenames.append(this->fileName[i]);
+        filenames.append(":").append(this->lineNo[i]);
+    }
+    return filenames;
+
+}
+
+QString IC::getLineNoFirst() const {
+     return this->lineNo[0];
 }
 
 QString IC::getLineNo() const {
-    return this->lineNo;
+    return this->lineNo.join("\n");
+}
+
+QString IC::getLineNoCount() const {
+    return QString::number(this->lineNo.size());
 }
 
 QString IC::getName() const {
@@ -147,18 +191,20 @@ QString IC::getInfoToolTip() const {
     QString tmp;
     if (this->err.size() > 0)
     {
-        tmp.append("<font color='#c70202'>Error:</font><br>");
-        tmp.append(this->err.join("<br>"));
+        tmp.append("<font color='#c70202'>Error:</font>\n");
+        tmp.append(this->err.join("\n"));
     }
     if (this->warn.size() > 0)
     {
-        tmp.append("<font color='#f79a05'>Warn:</font><br>");
-        tmp.append(this->warn.join("<br>"));
+        if (tmp.size()>0) tmp.append("\n");
+        tmp.append("<font color='#f79a05'>Warn:</font>\n");
+        tmp.append(this->warn.join("\n"));
     }
     if (this->info.size() > 0)
     {
-        tmp.append("<font color='#02a1db'>Info:</font><br>");
-        tmp.append(this->info.join("<br>"));
+        if (tmp.size()>0) tmp.append("\n");
+        tmp.append("<font color='#02a1db'>Info:</font>\n");
+        tmp.append(this->info.join("\n"));
     }
     if (tmp.length()>0) return XTRA::xNoAutoLinebreaks(tmp);
     return {};
@@ -321,7 +367,17 @@ bool IC::containsBRTags(QString source) const {
     return false;
 }
 
-qint8 IC::validate() {
+qint8 IC::reValidate()
+{
+    this->err.clear();
+    this->warn.clear();
+    this->info.clear();
+    this->valid=0;
+    return validate();
+}
+
+qint8 IC::validate()
+{
     validateControl();
 
     if (this->group.length() > 0 || this->groupCol.length() > 0)
@@ -332,7 +388,8 @@ qint8 IC::validate() {
     return this->valid;
 }
 
-qint8 IC::validateControl() {
+qint8 IC::validateControl()
+{
     if (this->control.length() == 0) return false;
     if (this->control == "info" ) return true;
     if (this->control == "space" )
@@ -366,14 +423,16 @@ qint8 IC::validateControl() {
     return false;
 }
 
-qint8 IC::validateControlDefault() {
+qint8 IC::validateControlDefault()
+{
     // default
     if (this->defaultVal.length() > 0) return this->valid;
     this->warnAdd("'default' missing");
     return this->valid;
 }
 
-qint8 IC::validateControlCommon() {
+qint8 IC::validateControlCommon()
+{
     // byteoffset, "bitsize", "bitoffset"
     validateByteOffset();
     validateBitSize();
@@ -382,7 +441,8 @@ qint8 IC::validateControlCommon() {
     return this->valid;
 }
 
-qint8 IC::validateControlItem(bool checkdefault) {
+qint8 IC::validateControlItem(bool checkdefault)
+{
     if (this->item.size()==0) errAdd("'item's missing");
     if (checkdefault) {
         if (this->defaultVal.length() == 0) this->warnAdd("'default' missing");
@@ -392,7 +452,8 @@ qint8 IC::validateControlItem(bool checkdefault) {
     return this->valid;
 }
 
-qint8 IC::validateControlValue() {
+qint8 IC::validateControlValue()
+{
     // mimimum, maximum, step
     if (this->minVal.length()==0) errAdd("'minimum' missing");
     if (this->maxVal.length()==0) errAdd("'maximum' missing");
@@ -410,7 +471,8 @@ qint8 IC::validateControlValue() {
     return this->valid;
 }
 
-qint8 IC::validateByteOffset() {
+qint8 IC::validateByteOffset()
+{
     if (this->byteOffset.length() >0 ) {
         if (this->byteOffset.toInt() < 0 ||
             this->byteOffset.toInt() > 127 ||
@@ -424,7 +486,8 @@ qint8 IC::validateByteOffset() {
     return this->valid;
 }
 
-qint8 IC::validateBitSize() {
+qint8 IC::validateBitSize()
+{
     if (this->bitSize.length() >0 ) {
         qint32 bs = this->bitSize.toInt();
         if (bs < 0 || bs > 32 ||
@@ -438,7 +501,8 @@ qint8 IC::validateBitSize() {
     return this->valid;
 }
 
-qint8 IC::validateBitOffset() {
+qint8 IC::validateBitOffset()
+{
     if (this->bitOffset.length() >0 ) {
         if (this->bitOffset.toInt() < 0 ||
             this->bitOffset.toInt() > 8
@@ -451,28 +515,32 @@ qint8 IC::validateBitOffset() {
     return this->valid;
 }
 
-qint8 IC::infoAdd(QString msg) {
+qint8 IC::infoAdd(QString msg)
+{
     //qDebug() << "info!!!";
     this->info.append(msg);
     if (this->valid < 2) this->valid=2;
     return this->valid;
 }
 
-qint8 IC::warnAdd(QString msg) {
+qint8 IC::warnAdd(QString msg)
+{
     //qDebug() << "warn!!!";
     this->warn.append(msg);
     if (this->valid < 4) this->valid=4;
     return this->valid;
 }
 
-qint8 IC::errAdd(QString msg) {
+qint8 IC::errAdd(QString msg)
+{
     //qDebug() << "err!!!";
     this->err.append(msg);
     if (this->valid < 8) this->valid=8;
     return this->valid;
 }
 
-qint8 IC::errAdd(QStringList msg) {
+qint8 IC::errAdd(QStringList msg)
+{
     //qDebug() << "err!!!";
     this->err.append(msg);
     if (this->valid < 8) this->valid=8;
@@ -480,7 +548,8 @@ qint8 IC::errAdd(QStringList msg) {
 }
 
 
-qint8 IC::msgAdd(QString msg, qint8 severity) {
+qint8 IC::msgAdd(QString msg, qint8 severity)
+{
     switch(severity)
     {
         case 2 : return infoAdd(msg);
@@ -512,4 +581,57 @@ bool IC::getSize(int *bytes, int *bits)
         return true;
     }
     return false;
+}
+
+int IC::canMerge(IC ic)
+{
+    if ( this->control.length() > 0 && ic.control.length() > 0 ) return 1;
+    if ( this->minVal.length() > 0 && ic.minVal.length() > 0 ) return 2;
+    if ( this->maxVal.length() > 0 && ic.maxVal.length() > 0 ) return 3;
+    if ( this->step.length() > 0 && ic.step.length() > 0 ) return 4;
+    if ( this->decimals.length() > 0 && ic.decimals.length() > 0 ) return 5;
+
+    if ( this->collapsible.length() > 0 && ic.collapsible.length() > 0 ) return 6;
+    if ( this->group.length() > 0 && ic.group.length() > 0 ) return 7;
+    if ( this->groupCol.length() > 0 && ic.groupCol.length() > 0 ) return 8;
+    if ( this->color.length() > 0 && ic.color.length() > 0 ) return 9;
+    if ( this->border.length() > 0 && ic.border.length() > 0 ) return 10;
+
+    if ( this->shortDesc.join("").length() > 0 && ic.shortDesc.join("").length() > 0 ) return 11;
+    if ( this->byteOffset.length() > 0 && ic.byteOffset.length() > 0 ) return 12;
+    if ( this->byteOffsetHex.length() > 0 && ic.byteOffsetHex.length() > 0 ) return 13;
+    if ( this->bitSize.length() > 0 && ic.bitSize.length() > 0 ) return 14;
+    if ( this->bitOffset.length() > 0 && ic.bitOffset.length() > 0 ) return 15;
+    if ( this->defaultVal.length() > 0 && ic.defaultVal.length() > 0 ) return 16;
+    if ( this->defaultValHex.length() > 0 && ic.defaultValHex.length() > 0 ) return 17;
+
+    return 0;
+}
+
+bool IC::merge(IC ic)
+{
+    this->lineNo.append(ic.lineNo);
+    this->fileName.append(ic.fileName);
+    if ( this->control.length() == 0) this->control=ic.control;
+    if (ic.item.join("").length() > 0) this->item.append(ic.item);
+    if ( this->minVal.length() == 0) this->minVal=ic.minVal;
+    if ( this->maxVal.length() == 0) this->maxVal=ic.maxVal;
+    if ( this->step.length() == 0) this->step=ic.step;
+    if ( this->decimals.length() == 0) this->decimals=ic.decimals;
+
+    if ( this->collapsible.length() == 0) this->collapsible=ic.collapsible;
+    if ( this->group.length() == 0) this->group=ic.group;
+    if ( this->groupCol.length() == 0) this->groupCol=ic.groupCol;
+    if ( this->color.length() == 0) this->color=ic.color;
+    if ( this->border.length() == 0) this->border=ic.border;
+
+    if ( this->shortDesc.join("").length() == 0) this->shortDesc=ic.shortDesc;
+    if ( this->byteOffset.length() == 0) this->byteOffset=ic.byteOffset;
+    if ( this->byteOffsetHex.length() == 0) this->byteOffsetHex=ic.byteOffsetHex;
+    if ( this->bitSize.length() == 0) this->bitSize=ic.bitSize;
+    if ( this->bitOffset.length() == 0) this->bitOffset=ic.bitOffset;
+    if ( this->defaultVal.length() == 0) this->defaultVal=ic.defaultVal;
+    if ( this->defaultValHex.length() == 0) this->defaultValHex=ic.defaultValHex;
+
+    return true;
 }

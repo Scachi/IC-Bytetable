@@ -64,6 +64,7 @@ RESOURCES += \
     resource.qrc
 
 DISTFILES += \
+    resources/ToDo.txt \
     resources/ic_info.xml
 
 RC_FILE = IC-Bt.rc

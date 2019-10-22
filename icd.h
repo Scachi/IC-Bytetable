@@ -19,13 +19,17 @@ public:
     void debug(qint32 iLineNo);
 
     void clear();
+    bool add(IC ic);
+    int getIndexOfName(QString name, int startindex=0);
+
     bool validateUniqueNames();
+    bool isValid();
+
     void bits2Hex();
     QString bits2ByteHex(QString byteoffset);
     bool setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly=false, bool setdefval=true);
     int getBitsizeFromByteoffset(int byteoffset);
     QString getValHexFromByteoffset(bool *ok, int byteoffset);
-    bool isValid();
 
     bool exportCSV(QString filename);
     int getDataCount();

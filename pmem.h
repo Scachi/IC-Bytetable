@@ -11,8 +11,6 @@ public:
     ~PMEM();
 
 private:
-    QString filename;   // for pointing back to the main listview entry
-    QString line;       // for pointing back to the main listview entry
     uint8_t byByte;
     uint8_t byByteSize;
     bool    valid;
@@ -22,10 +20,10 @@ private:
     bool    validBit[8];
 
 public:
-    bool    setByteByOffset(QString filename, QString line);
-    bool    setByteBySize(QString filename, QString line);
-    bool    setBitByOffset(QString filename, QString line, int bitoffset);
-    bool    setBitBySize(QString filename, QString line, int bitoffset);
+    bool    setByteByOffset();
+    bool    setByteBySize();
+    bool    setBitByOffset(int bitoffset);
+    bool    setBitBySize(int bitoffset);
     void    setInvalid();
 
     bool    validate();

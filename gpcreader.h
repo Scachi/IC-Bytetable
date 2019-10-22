@@ -43,7 +43,7 @@ private:
 
     QString     icFileName;         // file that contained the current parsed keywords
 
-    QString     icLineNo;           // line no in files where the keyword was found
+    QString     icLineNo;           // line no in file where the keyword was found
     QString     icName;             // keywords found
     QString     icControl;
 

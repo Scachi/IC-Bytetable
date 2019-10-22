@@ -22,7 +22,7 @@ bool PMEMD::update(ICD *icData)
     for(int idx = 0; idx < icData->data.size(); idx++)
     {
         IC ic = icData->data[idx];
-        this->byteSet(ic.fileName,ic.lineNo,ic.byteOffset,ic.bitSize,ic.bitOffset);
+        this->byteSet(ic.byteOffset,ic.bitSize,ic.bitOffset);
     }
     this->validate();
     for(int idx = 0; idx < icData->data.size(); idx++)
@@ -36,25 +36,28 @@ bool PMEMD::update(ICD *icData)
     return true;
 }
 
-bool PMEMD::byteSet (QString filename, QString line, QString byteoffset, QString bitsize, QString bitoffset)
+bool PMEMD::byteSet (QString byteoffset, QString bitsize, QString bitoffset)
 {
     // skip entries without byteoffset or bitsize
     if (byteoffset.length() == 0 || bitsize.length() == 0) return false;
 
     // bytes
     if (bitsize.toInt()%8 == 0) {
-        data[byteoffset.toInt()].setByteByOffset(filename,line);
+        data[byteoffset.toInt()].setByteByOffset();
         for (int i=1;i<bitsize.toInt()/8;i++)
         {
-            data[byteoffset.toInt()+i].setByteBySize(filename,line);
+            data[byteoffset.toInt()+i].setByteBySize();
         }
     // bits
     } else {
-        data[byteoffset.toInt()].setBitByOffset(filename,line,bitoffset.toInt());
+        data[byteoffset.toInt()].setBitByOffset(bitoffset.toInt());
         if (bitsize.toInt()>1) {
-            for (int i=bitoffset.toInt()+1;i<bitsize.toInt();i++)
+            //qDebug() << "byte: " << byteoffset.toInt();
+            //for (int i=bitoffset.toInt()+1;i<bitsize.toInt();i++)
+            for (int i=1;i<bitsize.toInt();i++)
             {
-                data[byteoffset.toInt()].setBitBySize(filename,line,i%8);
+                //qDebug() << "Setting " << byteoffset.toInt() << " size: " << i%8;
+                data[byteoffset.toInt()].setBitBySize(bitoffset.toInt()+i);
             }
         }
     }

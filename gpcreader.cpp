@@ -168,11 +168,11 @@ void GPCReader::findHeaderFiles(QStringList source) {
 
 bool GPCReader::gpcRawHasIC() {
     QRegularExpression re;
-    re.setPattern("<cfgdesc>");
+    re.setPattern(".*<cfgdesc>.*");
     gpcICBegin = gpcRawList.indexOf(re);
-    re.setPattern("</cfgdesc>");
+    re.setPattern(".*</cfgdesc>.*");
     gpcICEnd = gpcRawList.indexOf(re);
-    //qDebug() << "Interactive Configuration: begins at line:" << GPCICBegin << " and ends at line:" << GPCICEnd;
+    //qDebug() << "Interactive Configuration: begins at line:" << gpcICBegin << " and ends at line:" << gpcICEnd;
     if (gpcICBegin == -1 || gpcICEnd == -1)
     {
         //qDebug() << "No Interactive Configuration in file " << gpcCurrentFilePath;
@@ -191,7 +191,9 @@ void GPCReader::parseICRawList() {
     }
     else // regular .gpc .gph files
     {
-        if (!gpcRawHasIC()) return;
+        if (!gpcRawHasIC()) {
+            return;
+        }
         //qDebug() << "Interactive Configuration found in file " << gpcCurrentFilePath;
         gpcICFound = true;
         icRawList = gpcRawList.mid(gpcICBegin, gpcICEnd-gpcICBegin);
@@ -230,27 +232,26 @@ void GPCReader::parseICSection(qint32 line) {
     IC newIC = IC(icRawSection, icFileName, icLineNo, icName, icControl);
 
     newIC.item          = getList("^\\s*item\\s*=(.*)");
-    newIC.maxVal        = getVal("^\\s*maximum\\s*=(.*)");
-    newIC.minVal        = getVal("^\\s*minimum\\s*=(.*)");
-    newIC.step          = getVal("^\\s*step\\s*=(.*)");
-    newIC.decimals      = getVal("^\\s*decimals\\s*=(.*)");
+    newIC.maxVal        = getVal("^\\s*maximum\\s*=\\s*(-*[0-9]*).*");
+    newIC.minVal        = getVal("^\\s*minimum\\s*=\\s*(-*[0-9]*).*");
+    newIC.step          = getVal("^\\s*step\\s*=\\s*([0-9]*).*");
+    newIC.decimals      = getVal("^\\s*decimals\\s*=\\s*([0-9]*).*");
 
-
-    newIC.collapsible   = getVal("^\\s*collapsible\\s*=(.*)");
-    newIC.group         = getVal("^\\s*group\\s*=(.*)");
-    newIC.groupCol      = getVal("^\\s*groupcol\\s*=(.*)");
+    newIC.collapsible   = getVal("^\\s*collapsible\\s*=\\s*([0-9]*).*");
+    newIC.group         = getVal("^\\s*group\\s*=\\s*([0-9]*).*");
+    newIC.groupCol      = getVal("^\\s*groupcol\\s*=\\s*([0-9]*).*");
     newIC.color         = getVal("^\\s*color\\s*=(.*)");
-    newIC.border        = getVal("^\\s*border\\s*=(.*)");
+    newIC.border        = getVal("^\\s*border\\s*=\\s*([0-9]*).*");
 /*
     newIC.varType       = getVal("^\\s*vartype\\s*=(.*)");
     newIC.varName       = getVal("^\\s*varname\\s*=(.*)");
     newIC.comment       = getVal("^\\s*comment\\s*=(.*)");
 */
     newIC.shortDesc     = getShortDesc();
-    newIC.byteOffset    = getVal("^\\s*byteoffset\\s*=(.*)");
-    newIC.bitSize       = getVal("^\\s*bitsize\\s*=(.*)");
-    newIC.bitOffset     = getVal("^\\s*bitoffset\\s*=(.*)");
-    newIC.defaultVal    = getVal("^\\s*default\\s*=(.*)");
+    newIC.byteOffset    = getVal("^\\s*byteoffset\\s*=\\s*([0-9]*).*");
+    newIC.bitSize       = getVal("^\\s*bitsize\\s*=\\s*([0-9]*).*");
+    newIC.bitOffset     = getVal("^\\s*bitoffset\\s*=\\s*([0-9]*).*");
+    newIC.defaultVal    = getVal("^\\s*default\\s*=\\s*(-*[0-9]*).*");
 
     // insert dot at decimal position
     if (newIC.control.indexOf("spinboxf") > -1)
@@ -272,7 +273,8 @@ void GPCReader::parseICSection(qint32 line) {
     newIC.validate();
 
     //qDebug() << "Size of List: " << icData->data.size();
-    icData->data.append(newIC);
+    //icData->data.append(newIC);
+    icData->add(newIC); // append or merge entry
     icData->bitsUsed += newIC.bitSize.toInt();
 
     //qDebug() << "Size of List: " << icData->data.size();

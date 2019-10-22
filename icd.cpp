@@ -45,7 +45,7 @@ void ICD::debug(qint32 iLineNo)
 {
     for(int idx = 0; idx < data.size(); idx++)
     {
-        if(data[idx].lineNo.toInt() == iLineNo)
+        if(data[idx].lineNo[0].toInt() == iLineNo)
             data[idx].debug();
     }
 }
@@ -53,6 +53,27 @@ void ICD::debug(qint32 iLineNo)
 void ICD::clear()
 {
     this->data.clear();
+}
+
+bool ICD::add(IC ic)
+{
+    int matchIdx = -1;
+    if ((matchIdx = getIndexOfName(ic.name)) == -1) data.append(ic); // name not found
+    else {  // name found, check if the new one defines unique keywords or if it collides
+        /*
+        qDebug() << "canmerge: " << data[matchIdx].canMerge(ic);
+        qDebug() << "shortdesc1:" << ic.shortDesc;
+        qDebug() << "shortdesc2:" << data[matchIdx].shortDesc;
+        */
+        if (data[matchIdx].canMerge(ic) == 0) {
+            data[matchIdx].merge(ic);
+            data[matchIdx].reValidate();
+        } else {
+            // add error notes and add it as new ? or let validate do it
+            data.append(ic);
+        }
+    }
+    return true;
 }
 
 // validate the names of all controls to be unique
@@ -87,6 +108,16 @@ bool ICD::searchForNames(int srcid, QString name, bool mark, QString msg, qint8 
     if (!unique && mark) data[srcid].msgAdd(msg,severity);
     return unique;
 }
+
+int ICD::getIndexOfName(QString name, int startindex)
+{
+    for(int idx = startindex; idx < data.size(); idx++)
+    {
+        if (data[idx].name.compare(name)==0) return idx;
+    }
+    return -1;
+}
+
 
 // the hex value is for the whole byte, so we need to look all bits up to create the correct hex value
 void ICD::bits2Hex()
@@ -220,8 +251,8 @@ bool ICD::exportCSV(QString filename)
     {
         if (row>0) out << "\n";
         out << csvQuote << row << csvQuote << csvDelimiter;
-        out << csvQuote << data[row].getFileName() << csvQuote << csvDelimiter;
-        out << csvQuote << data[row].getLineNo() << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getFileName().replace("\n"," ") << csvQuote << csvDelimiter;
+        out << csvQuote << data[row].getLineNo().replace("\n"," ") << csvQuote << csvDelimiter;
         out << csvQuote << data[row].getName() << csvQuote << csvDelimiter;
 
         out << csvQuote << data[row].getByteOffset() << csvQuote << csvDelimiter;

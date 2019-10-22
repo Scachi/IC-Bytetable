@@ -51,6 +51,8 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
     {
         switch(index.column())
         {
+            case  1: if (ic.getLineNoCount().toInt() > 1) return QColor("#02a1db"); // split ic
+                        return {};
             case  2: if (ic.group.length() > 0 || ic.groupCol.length() >0)
                         return {};
                      return QColor(ic.getColor()); // color the [Name] of ungrouped controls
@@ -68,7 +70,8 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
     if (role == Qt::ToolTipRole) {
         switch (index.column())
         {
-            case  0: return ic.getFileNameFull();
+            case  0: return ic.getFileNameFullLineNo();
+            case  1: return ic.getFileNameLineNo();
             case  2: return ic.getNameToolTip();
             case  8: return ic.getInfoToolTip();
             case 14: return ic.getItemNamesToolTip();
@@ -92,8 +95,8 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole) {
         switch (index.column())
         {    // toInt for correct number ordering
-            case  0: return ic.getFileName();
-            case  1: return ic.getLineNo().toInt();
+            case  0: return ic.getFileNameFirst();
+            case  1: return ic.getLineNoFirst().toInt();
             case  2: return ic.getName();
 
             case  3: if (ic.getByteOffset().length() > 0) return ic.getByteOffset().toInt(); else return {};

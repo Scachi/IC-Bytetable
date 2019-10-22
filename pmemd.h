@@ -17,7 +17,7 @@ public:
     bool update(ICD *icData);
     void validate();
     bool isValid();
-    bool byteSet (QString filename, QString line, QString byteoffset, QString bitsize, QString bitoffset);
+    bool byteSet (QString byteoffset, QString bitsize, QString bitoffset);
     QStringList byteCheck (QString byteoffset, QString bitsize, QString bitoffset);
     bool exportCSV(QString filename);
 

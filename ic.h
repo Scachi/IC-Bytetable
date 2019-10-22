@@ -12,9 +12,14 @@ public:
     IC(QString sFileName, QString sLineNo, QString sName, QString sControl);   
     void debug();
 
+    QString getFileNameFirst() const;
     QString getFileName() const;
     QString getFileNameFull() const;
+    QString getFileNameLineNo() const;
+    QString getFileNameFullLineNo() const;
+    QString getLineNoFirst() const;
     QString getLineNo() const;
+    QString getLineNoCount() const;
     QString getName() const;
     QString getNameToolTip() const;
 
@@ -56,6 +61,7 @@ public:
     QString getComment() const;
 */
     bool containsBRTags(QString source) const;
+    qint8 reValidate();
     qint8 validate();
     qint8 validateControl();
     qint8 validateControlCommon();
@@ -75,14 +81,15 @@ public:
     bool isChecked();
     bool isUsingPMEM();
     bool getSize(int *bytes, int *bits);
-
+    int canMerge(IC ic);
+    bool merge(IC ic);
 
 public:
     QStringList rawSection; // complete raw data of the section
 
-    QString     fileName;   // filename this section was found in
+    QStringList fileName;   // filename this section was found in
 
-    QString     lineNo;     // line number the [section] tag was found in
+    QStringList lineNo;     // line number the [section] tag was found in
     QString     name;       // name of the [section]
     QString     control;
     QStringList item;
