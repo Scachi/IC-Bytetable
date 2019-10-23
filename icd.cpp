@@ -135,7 +135,7 @@ void ICD::bits2Hex()
     }
 }
 
-QString ICD::bits2ByteHex(QString byteoffset)
+QString ICD::bits2ByteHex(QString byteoffset, bool defonly)
 {
     QStringList bits={"0","0","0","0","0","0","0","0"};
     for(int idx = 0; idx < data.size(); idx++)
@@ -144,8 +144,11 @@ QString ICD::bits2ByteHex(QString byteoffset)
         if (data[idx].bitSize.toInt()>=8) continue;
         if (data[idx].byteOffset.compare(byteoffset)==0)
         {
-            //ToDo: convert bitsize bits to bitmask and use it to fill bits[]
+            // default: defaultVal
             QString sHex = XTRA::x2Hex(data[idx].defaultVal,data[idx].bitSize);
+            // newVal only when allowed and found
+            if (!defonly && data[idx].newVal.length() >0 )
+                sHex = XTRA::x2Hex(data[idx].newVal,data[idx].bitSize);
             QString sBin = XTRA::xHex2Bin(sHex,"8");
             //qDebug() << "sHex:" << sHex << " , sBin:" << sBin;
             int inbit=7;

@@ -351,6 +351,16 @@ QString IC::getComment() const {
 }
 */
 
+bool IC::setNewVal(QString newval)
+{
+    this->newVal=newval;
+    if (this->newVal.length() > 0 && this->decimals.length() > 0 && !newval.contains("."))
+    {
+        this->newVal.append(".").append(QString("%1").arg(0,this->decimals.toInt(),16,QLatin1Char('0')));
+    }
+    return true;
+}
+
 bool IC::containsBRTags(QString source) const {
     QRegularExpression re;
     QRegularExpressionMatch match;
@@ -515,6 +525,22 @@ qint8 IC::validateBitOffset()
     return this->valid;
 }
 
+qint8 IC::validateNewValue()
+{
+    if (this->newVal.length()==0) return true;
+    if (this->newVal.toFloat() < this->minVal.toFloat())
+    {
+        errAdd("value is lower than minimum value");
+        return this->valid;
+    }
+    if (this->newVal.toFloat() > this->maxVal.toFloat())
+    {
+        errAdd("value exceeds maximum value");
+        return this->valid;
+    }
+    return this->valid;
+}
+
 qint8 IC::infoAdd(QString msg)
 {
     //qDebug() << "info!!!";
@@ -634,4 +660,18 @@ bool IC::merge(IC ic)
     if ( this->defaultValHex.length() == 0) this->defaultValHex=ic.defaultValHex;
 
     return true;
+}
+
+void IC::newValToHex()
+{
+    this->newValHex = XTRA::x2Hex(this->newVal,this->bitSize);
+    this->reValidate();
+    this->validateNewValue();
+}
+
+void IC::newHexToVal()
+{
+    this->newVal = XTRA::xHex2Val(this->newValHex,this->bitSize,this->bitOffset,this->minVal,this->decimals);
+    this->reValidate();
+    this->validateNewValue();
 }

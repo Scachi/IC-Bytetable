@@ -34,6 +34,32 @@ void ICProxy::colSortNow() {
     if (colSort[0][0] > -1) sort(colSort[0][0], Qt::SortOrder(colSort[0][1]));
 }
 
+Qt::ItemFlags ICProxy::flags(const QModelIndex &index) const {
+ // if the column alignment was set-up for all columns
+ if(flagMap.isEmpty()) return flagMap.value(Qt::NoItemFlags);
+ // searches if the column alignment was set-up and returns the flag
+ if(flagMap.contains(index.column())) return flagMap.value(index.column());
+ return (Qt::NoItemFlags | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled);
+ //return QSortFilterProxyModel::flags(index);
+}
+
+void ICProxy::setEditable(int index, bool FLAG) {
+ if(FLAG)
+ setFlag(index, Qt::NoItemFlags | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled);
+ else
+ setFlag(index, Qt::NoItemFlags | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled);
+}
+
+void ICProxy::setFlag(const int index, Qt::ItemFlags flag) {
+    // checks if setFlagToAll() was called and, if so, rests flagMap
+    // if(flagMap.contains(Qt::ItemIsEditable)) flagMap.clear();
+    // inserts flag
+    //qDebug() << "Flagmap:" << flagMap;
+    flagMap.insert(index, flag);
+    //qDebug() << "Flagmap:" << flagMap;
+}
+
+
 bool ICProxy::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     static int sortLast = -1;

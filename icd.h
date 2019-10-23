@@ -25,8 +25,9 @@ public:
     bool validateUniqueNames();
     bool isValid();
 
+    // the hex value is for the whole byte, so we need to look all bits up to create the correct hex value
     void bits2Hex();
-    QString bits2ByteHex(QString byteoffset);
+    QString bits2ByteHex(QString byteoffset, bool defonly=true);
     bool setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly=false, bool setdefval=true);
     int getBitsizeFromByteoffset(int byteoffset);
     QString getValHexFromByteoffset(bool *ok, int byteoffset);

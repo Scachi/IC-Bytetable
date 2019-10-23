@@ -82,6 +82,8 @@ void MainWindow::readSource(QString sFilePath) {
             ui->tableView->setModel(icProxy);
             icProxy->invalidate();
             icProxy->colSortNow();
+            icProxy->setEditable(11, true);
+            icProxy->setEditable(12, true);
             ui->tableView->resizeColumnsToContents();
             ui->tableView->setColumnWidth(0,100);
             ui->tableView->setColumnWidth(8,100);
@@ -409,17 +411,17 @@ void MainWindow::tableViewCreateCtxMenu()
 {
     tvCtxFieldCopy = new QAction(tr("Copy Field Text"), this);
     connect(tvCtxFieldCopy, &QAction::triggered, this, &MainWindow::tableViewFieldCopy);
-    tvCtxSelCopy = new QAction(tr("Copy Values (selected)"), this);
+    tvCtxSelCopy = new QAction(tr("Copy New/Def (selected)"), this);
     connect(tvCtxSelCopy, &QAction::triggered, this, &MainWindow::tableViewSelectedCopy);
-    tvCtxChkCopy = new QAction(tr("Copy Values (checked)"), this);
+    tvCtxChkCopy = new QAction(tr("Copy New/Def (checked)"), this);
     connect(tvCtxChkCopy, &QAction::triggered, this, &MainWindow::tableViewCheckedCopy);
-    tvCtxPaste = new QAction(tr("Paste Values"), this);
+    tvCtxPaste = new QAction(tr("Paste into New"), this);
     connect(tvCtxPaste, &QAction::triggered, this, &MainWindow::tableViewPaste);
-    tvCtxSelDelete = new QAction(tr("Delete Values (selected)"), this);
+    tvCtxSelDelete = new QAction(tr("Clear New (selected)"), this);
     connect(tvCtxSelDelete, &QAction::triggered, this, &MainWindow::tableViewSelectedDelete);
-    tvCtxChkDelete = new QAction(tr("Delete Values (checked)"), this);
+    tvCtxChkDelete = new QAction(tr("Clear New (checked)"), this);
     connect(tvCtxChkDelete, &QAction::triggered, this, &MainWindow::tableViewCheckedDelete);
-    tvCtxAllDelete = new QAction(tr("Delete Values (all)"), this);
+    tvCtxAllDelete = new QAction(tr("Clear New (all)"), this);
     connect(tvCtxAllDelete, &QAction::triggered, this, &MainWindow::tableViewAllDelete);
     //--------------------------------------------------------------------
     tvCtxSelCheck = new QAction(tr("Check (selected)"), this);

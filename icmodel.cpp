@@ -134,11 +134,15 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
          }
     }
 
-    /*
-    if (role == Qt::EditRole) {
 
+    if (role == Qt::EditRole) {
+        switch (index.column()) {
+            case 11: return ic.getNewVal();
+            case 12: return ic.getNewValHex();
+            default: return {};
+        }
     }
-    */
+
     return QVariant();
 }
 
@@ -153,22 +157,33 @@ bool ICModel::setData(const QModelIndex &index,
     auto & ic = icData->data[index.row()]; // access to data
 
     if (role == Qt::EditRole) {
-        /*
-        if (!checkIndex(index)) return false;
-        ic.checked = value.toBool();
-        qDebug() << "checked: " << ic.checked;
-        QString result="result";
+        switch(index.column()) {
+            case 11:
+                icData->data[index.row()].setNewVal(value.toString());
+                if (ic.bitSize.toInt() >= 8) icData->data[index.row()].newValToHex();
+                else
+                {
+                    QString byteHex = icData->bits2ByteHex(ic.byteOffset, false);
+                    icData->setByteoffset2Hex(ic.byteOffset.toInt(),byteHex,true,false);
+                }
+                break;
+            case 12:
+                icData->data[index.row()].newValHex = value.toString();
+                if (ic.bitSize.toInt() >= 8) icData->data[index.row()].newHexToVal();
+                else
+                {
+                    icData->setByteoffset2Hex(ic.byteOffset.toInt(),value.toString(),true,false);
+                }
+                break;
+            default : return {};
+        }
         //emit dataChanged(index, index, {role});
-        emit editCompleted(result);
-        return true;
-        */
+        //emit editCompleted(value.toString());
     }
     if (role == Qt::CheckStateRole) {
         //QModelIndexList indexes = MainWindow().getSelectionTableView();
         //qDebug() << "selected: " << indexes;
-
         ic.checked = value.toBool();
-        //qDebug() << "checked: " << ic.checked;
         return true;
     }
     return false;

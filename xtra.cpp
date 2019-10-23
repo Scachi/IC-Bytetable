@@ -59,7 +59,7 @@ QString XTRA::xHex2Val(QString value, QString bitsize, QString bitoffset, QStrin
         if (bitSize == 32) sNumber = QString::number(number / 65536, 'f', decimal);
     }
 
-    qDebug() << "hex2val hex: " << value << " | number: " << sNumber;
+    //qDebug() << "hex2val hex: " << value << " | number: " << sNumber;
     return sNumber;
 }
 

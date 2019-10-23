@@ -60,6 +60,8 @@ public:
     QString getVarName() const;
     QString getComment() const;
 */
+    bool setNewVal(QString newval);
+
     bool containsBRTags(QString source) const;
     qint8 reValidate();
     qint8 validate();
@@ -71,6 +73,7 @@ public:
     qint8 validateByteOffset();
     qint8 validateBitSize();
     qint8 validateBitOffset();
+    qint8 validateNewValue();
 
     qint8 infoAdd(QString msg);
     qint8 warnAdd(QString msg);
@@ -83,6 +86,9 @@ public:
     bool getSize(int *bytes, int *bits);
     int canMerge(IC ic);
     bool merge(IC ic);
+
+    void newValToHex();
+    void newHexToVal();
 
 public:
     QStringList rawSection; // complete raw data of the section

@@ -1,1 +1,4 @@
++ editing values in listview:
+        test if the result is correct for bitsize > 1 and < 8
+
 + make bit AND + OR work on configstring import
