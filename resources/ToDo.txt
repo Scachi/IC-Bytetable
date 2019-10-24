@@ -1,6 +1,3 @@
 + implement exportstring
 
-+ editing values in listview:
-        test if the result is correct for bitsize > 1 and < 8
-
-+ add binary creator to gui (calculator) to set or clear specific bits
++ add binary creator to gui (calculator) to set or clear specific bits with AND + OR

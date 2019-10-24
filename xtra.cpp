@@ -56,7 +56,9 @@ QString XTRA::xHex2Val(QString value, QString bitsize, QString bitoffset, QStrin
     if (bitOffset >= 0 || bitSize < 8) // only return bits of the number
     {
         QString sBin = xHex2Bin(value,bitsize);
-        sNumber = sBin.mid(8 - (bitOffset+1), bitSize);
+        QString sBinBits = sBin.mid(8 - (bitOffset+bitSize), bitSize);
+        sNumber = xBin2Byte(sBinBits);
+        qDebug() << "sBin: " << sBin << " , boff: " << bitOffset << " , bsize: " << bitSize << " , sBinBits: " << sBinBits << " , sNumber: "<<  sNumber;
     }
     else if (decimal)
     {
