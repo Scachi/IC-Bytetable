@@ -61,11 +61,11 @@ void GPCReader::parse() {
     if (!icData->validateUniqueNames())
     {
         this->gpcValid=false;
-        //qDebug("Not unique!");
+        qDebug("Not unique!");
     }
     if (!pmemData->update(icData)) { // fill PMEM data (filename,lineno,bytes,bits,offsets)
         this->gpcValid=false;
-        //qDebug("pmemData not valid");
+        qDebug("pmemData not valid");
     }
 }
 

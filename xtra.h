@@ -2,6 +2,7 @@
 #define XTRA_H
 
 #include <QString>
+#include <QBitArray>
 
 // tools for formatting, conversions, ...
 
@@ -19,6 +20,16 @@ public:
     static QString xHex2Val(QString value, QString bitsize, QString bitoffset, QString minimum, QString decimals);
     // convert bin 00000000 to byte
     static QString xBin2Byte(QString value);
+    // convert bin 00000000 to hex
+    static QString xBin2Hex(QString value);
+    // bin OR
+    static QString xBinOR(QString value,QString value2);
+    // bin AND
+    static QString xBinAND(QString value,QString value2);
+    // bitarray to string
+    static QString xBitArrayToString(QBitArray arr);
+    // string to bitarray
+    static QBitArray xStringToBitArray(QString str);
     // stop tooltip / richtext from adding automatic linebreaks
     static QString xNoAutoLinebreaks (QString qs);
 };

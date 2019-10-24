@@ -182,10 +182,13 @@ bool ICD::setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly, boo
             else
             {
                 data[idx].newValHex = hexvalue;
+                data[idx].newHexToVal();
+                /*
                 data[idx].newVal = XTRA::xHex2Val(hexvalue,data[idx].bitSize,
                                                     data[idx].bitOffset,
                                                     data[idx].minVal,
                                                     data[idx].decimals);
+                */
             }
             found = true;
         }
@@ -308,7 +311,7 @@ bool ICD::importConfigString(QString cfgstring)
     //qDebug() << "Import";
     if (cfgstring.startsWith("GIVICFG:"))
         cfgstring = cfgstring.mid(8);
-    qDebug() << "cfgstring: " << cfgstring;
+    //qDebug() << "cfgstring: " << cfgstring;
 
     //parse the string - all values are hex
     int hexIndex;
@@ -353,10 +356,16 @@ bool ICD::importConfigString(QString cfgstring)
             QString hexSrc = getValHexFromByteoffset(&ok, byteOffset);
             //QString binSrc = QString("%1").arg(hexSrc.toULongLong(&ok, 16), 8, 2, QChar('0'));
             QString binSrc = XTRA::xHex2Bin(hexSrc,QString::number(bitSize));
+            QString binRes = XTRA::xBinOR(binSrc,binOR);
+            hexValue = XTRA::xBin2Hex(binRes);
+            /*
             qDebug() << "BINARY OR: ";
             qDebug() << binSrc << " <- src mask";
             qDebug() << binOR << " <- mod mask";
-            //setByteoffset2Hex(byteOffset,hexValue);
+            qDebug() << binRes << " <- result";
+            qDebug() << hexValue << " <- hex result";
+            */
+            setByteoffset2Hex(byteOffset,hexValue,false,false);
             //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
             hexIndex += (bitSize / 4) - 1;  // update hex index position
             byteOffset += (bitSize / 8);    // update byteoffet position
@@ -373,10 +382,16 @@ bool ICD::importConfigString(QString cfgstring)
             QString hexSrc = getValHexFromByteoffset(&ok, byteOffset);
             //QString binSrc = QString("%1").arg(hexSrc.toULongLong(&ok, 16), 8, 2, QChar('0'));
             QString binSrc = XTRA::xHex2Bin(hexSrc,QString::number(bitSize));
+            QString binRes = XTRA::xBinAND(binSrc,binAND);
+            hexValue = XTRA::xBin2Hex(binRes);
+            /*
             qDebug() << "BINARY AND: ";
             qDebug() << binSrc << " <- src mask";
             qDebug() << binAND << " <- mod mask";
-            //setByteoffset2Hex(byteOffset,hexValue);
+            qDebug() << binRes << " <- result";
+            qDebug() << hexValue << " <- hex result";
+            */
+            setByteoffset2Hex(byteOffset,hexValue,false,false);
             //qDebug() << "byteOffset: " << byteOffset << " (size:"<< bitSize <<") | Parsing string pos " << hexIndex << " - hex: " << hexValue;
             hexIndex += (bitSize / 4) - 1;  // update hex index position
             byteOffset += (bitSize / 8);    // update byteoffet position
@@ -397,6 +412,6 @@ bool ICD::importConfigString(QString cfgstring)
 
 QString ICD::exportConfigString() const
 {
-    QString exportString="none";
+    QString exportString="not working yet";
     return exportString;
 }

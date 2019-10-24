@@ -478,8 +478,20 @@ qint8 IC::validateControlValue()
         errAdd("'minimum' value exceeds maximum value");
     if (this->maxVal.toFloat() < this->minVal.toFloat())
         errAdd("'maximum' value is lower than minimum value");
+
+    if (this->newVal.length()==0) return this->valid;
+
+    if (this->newVal.toFloat() < this->minVal.toFloat())
+    {
+        errAdd("value is lower than minimum value");
+    }
+    if (this->newVal.toFloat() > this->maxVal.toFloat())
+    {
+        errAdd("value exceeds maximum value");
+    }
     return this->valid;
 }
+
 
 qint8 IC::validateByteOffset()
 {
@@ -515,29 +527,17 @@ qint8 IC::validateBitOffset()
 {
     if (this->bitOffset.length() >0 ) {
         if (this->bitOffset.toInt() < 0 ||
-            this->bitOffset.toInt() > 8
-        ) {
+            this->bitOffset.toInt() > 7)
+        {
             this->errAdd("'bitoffset' value invalid");
+        }
+        if (this->bitOffset.toInt() + this->bitSize.toInt() > 8)
+        {
+            this->errAdd("'bitoffset+bitsize' > 7");
         }
         return this->valid;
     }
     this->errAdd("'bitoffset' missing");
-    return this->valid;
-}
-
-qint8 IC::validateNewValue()
-{
-    if (this->newVal.length()==0) return true;
-    if (this->newVal.toFloat() < this->minVal.toFloat())
-    {
-        errAdd("value is lower than minimum value");
-        return this->valid;
-    }
-    if (this->newVal.toFloat() > this->maxVal.toFloat())
-    {
-        errAdd("value exceeds maximum value");
-        return this->valid;
-    }
     return this->valid;
 }
 
@@ -666,12 +666,10 @@ void IC::newValToHex()
 {
     this->newValHex = XTRA::x2Hex(this->newVal,this->bitSize);
     this->reValidate();
-    this->validateNewValue();
 }
 
 void IC::newHexToVal()
 {
     this->newVal = XTRA::xHex2Val(this->newValHex,this->bitSize,this->bitOffset,this->minVal,this->decimals);
     this->reValidate();
-    this->validateNewValue();
 }

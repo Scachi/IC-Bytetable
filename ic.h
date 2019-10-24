@@ -73,7 +73,6 @@ public:
     qint8 validateByteOffset();
     qint8 validateBitSize();
     qint8 validateBitOffset();
-    qint8 validateNewValue();
 
     qint8 infoAdd(QString msg);
     qint8 warnAdd(QString msg);

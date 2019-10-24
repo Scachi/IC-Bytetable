@@ -57,7 +57,7 @@ bool PMEMD::byteSet (QString byteoffset, QString bitsize, QString bitoffset)
             for (int i=1;i<bitsize.toInt();i++)
             {
                 //qDebug() << "Setting " << byteoffset.toInt() << " size: " << i%8;
-                data[byteoffset.toInt()].setBitBySize(bitoffset.toInt()+i);
+                    data[byteoffset.toInt()+((bitoffset.toInt()+i)/8)].setBitBySize((bitoffset.toInt()+i)%8);
             }
         }
     }
