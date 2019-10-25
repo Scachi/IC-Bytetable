@@ -6,7 +6,10 @@
 
 int main(int argc, char *argv[])
 {
+    QApplication::setStyle("fusion");
+    //QApplication::setStyle("windowsvista");
     QApplication a(argc, argv);
+
     QCoreApplication::setOrganizationName("Scachi");
     QCoreApplication::setApplicationName("IC-Bytetable");
     QCoreApplication::setApplicationVersion("1.0.0.0");

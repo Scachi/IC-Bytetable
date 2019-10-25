@@ -35,6 +35,11 @@ QString XTRA::x2Hex(QString value, QString bitsize)
     return value.toUpper();
 }
 
+QString XTRA::x2Hex(int value, int bitsize)
+{
+    return x2Hex(QString::number(value),QString::number(bitsize));
+}
+
 // convert to hex, automatically selects decimal or integer
 QString XTRA::xHex2Val(QString value, QString bitsize, QString bitoffset, QString minimum, QString decimals)
 {
@@ -58,7 +63,7 @@ QString XTRA::xHex2Val(QString value, QString bitsize, QString bitoffset, QStrin
         QString sBin = xHex2Bin(value,bitsize);
         QString sBinBits = sBin.mid(8 - (bitOffset+bitSize), bitSize);
         sNumber = xBin2Byte(sBinBits);
-        qDebug() << "sBin: " << sBin << " , boff: " << bitOffset << " , bsize: " << bitSize << " , sBinBits: " << sBinBits << " , sNumber: "<<  sNumber;
+        //qDebug() << "sBin: " << sBin << " , boff: " << bitOffset << " , bsize: " << bitSize << " , sBinBits: " << sBinBits << " , sNumber: "<<  sNumber;
     }
     else if (decimal)
     {

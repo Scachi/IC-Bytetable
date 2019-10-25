@@ -37,7 +37,7 @@ public:
     int getFieldCount();
     QString getFieldName(int index) const;
     bool importConfigString(QString cfgstring);
-    QString exportConfigString() const;
+    QString createConfigString(bool all=false) const;
 
 private:
     int fieldCount; // count of important IC data variables used by listview and csvexport

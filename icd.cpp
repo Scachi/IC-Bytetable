@@ -1,5 +1,6 @@
 #include <QtDebug>
 #include <QFile>
+#include <QTranslator>
 #include "icd.h"
 #include "ic.h"
 #include "xtra.h"
@@ -183,12 +184,6 @@ bool ICD::setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly, boo
             {
                 data[idx].newValHex = hexvalue;
                 data[idx].newHexToVal();
-                /*
-                data[idx].newVal = XTRA::xHex2Val(hexvalue,data[idx].bitSize,
-                                                    data[idx].bitOffset,
-                                                    data[idx].minVal,
-                                                    data[idx].decimals);
-                */
             }
             found = true;
         }
@@ -410,8 +405,81 @@ bool ICD::importConfigString(QString cfgstring)
     return true;
 }
 
-QString ICD::exportConfigString() const
+QString ICD::createConfigString(bool all) const
 {
-    QString exportString="not working yet";
+    QString exportStrA[128];
+    int iChecked=0;
+    int iNewValHex=0;
+
+    // count checked items and items with new hex value
+    for(int idx = 0; idx < data.size(); idx++)
+    {
+        IC ic = data[idx];
+        if (ic.getByteOffset().length() == 0) continue;
+        if (ic.isChecked()) iChecked++;
+        if (ic.getNewValHex().length()>0) iNewValHex++;
+    }
+
+    if (iChecked == 0 && iNewValHex == 0) return ("Error: Nothing selected and no New Values set.");
+
+    // fill exportStrA array
+    for(int idx = 0; idx < data.size(); idx++)
+    {
+        IC ic = data[idx];
+        if (ic.getByteOffset().length() == 0) continue;
+        if (iChecked == 0) // no checked items, export all items with new hex value
+        {
+            if (ic.getNewValHex().length()>0) exportStrA[ic.getByteOffset().toInt()] = ic.getNewValHex();
+        }
+        else if (ic.isChecked()) // only export checked items
+        {
+            exportStrA[ic.getByteOffset().toInt()] = ic.getDefaultValHex();
+            if (ic.getNewValHex().length()>0) exportStrA[ic.getByteOffset().toInt()] = ic.getNewValHex();
+        }
+    }
+
+    // created GVICFG string in correct syntax
+    QString exportString = "GVICFG:";
+    bool first = true;
+    for(int idx = 0; idx < 128; idx++)
+    {
+        if (!all && exportStrA[idx].length() == 0) continue;
+        if (all && exportStrA[idx].length() == 0) exportStrA[idx]="00";
+
+        if (first and idx > 0) exportString += "#" + XTRA::x2Hex(idx,8) + ":";
+        first = false;
+        exportString += exportStrA[idx];
+        if (!all && exportStrA[idx+1].length() == 0) first = true;
+    }
     return exportString;
+
+    /*
+        For $iIndex = 0 To UBound($exportstring) - 1
+            If StringLen($exportstring[$iIndex]) > 0 Then
+                ; first or sperate byteoffset entry needs a new #offset string
+                If $first = 1 And $iIndex > 0 Then
+                    $export &= "#" & Hex($iIndex, 2) & ":"
+                    $first = 0
+                Else
+                    $first = 0
+                EndIf
+                $export &= $exportstring[$iIndex]
+
+                ; check if the next value is directly after this one or we need a new #offset string
+                Local $size = StringLen($exportstring[$iIndex]) * 0.5
+                ;ConsoleWrite("size + index : " & $size & " + " & $iIndex & " = " & $iIndex + $size & @CRLF)
+                If $iIndex + $size > 128 Or $iIndex + $size < 0 Then ContinueLoop
+                if StringLen($exportstring[$iIndex + $size]) = 0 then $first = 1
+
+            EndIf
+        Next
+        ; output the string
+        ;ConsoleWrite("Exportstring:" & $export & @CRLF) ;4debug
+        If StringLen($export) > 0 Then
+            GUICtrlSetData($hiCreate, "GIVICFG:" & $export)
+        Else
+            GUICtrlSetData($hiCreate, $hiCreateDefaultText)
+            If $iItemCount > 0 Then MsgBox($MB_TOPMOST,"Export String","No data to export selected / found",4)
+        EndIf
+    */
 }

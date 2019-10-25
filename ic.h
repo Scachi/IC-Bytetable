@@ -80,7 +80,7 @@ public:
     qint8 errAdd(QStringList msg);
     qint8 msgAdd(QString msg, qint8 severity=8);
 
-    bool isChecked();
+    bool isChecked() const;
     bool isUsingPMEM();
     bool getSize(int *bytes, int *bits);
     int canMerge(IC ic);

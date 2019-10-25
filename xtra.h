@@ -14,6 +14,7 @@ public:
     static QString xDecDot (QString value, QString decimals);
     // convert to hex, automatically selects decimal or integer
     static QString x2Hex (QString value, QString bitsize);
+    static QString x2Hex (int value, int bitsize);
     // convert hex hh to bin 00000000, bitsize <= 8 only
     static QString xHex2Bin(QString value, QString bitsize);
     // convert hex to value, automatically selects decimal or integer

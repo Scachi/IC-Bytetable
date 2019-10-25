@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
+#include <QMenu>
 
 #include "gpcreader.h"
 #include "mainwindow.h"
@@ -29,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     modifyStatusBar(); // set resizing policy
     modifyToolBar();
     tableViewCreateCtxMenu();
+    configstringCreateButtonMenu();
+    ui->Create->setMenu(cfgstrBtnMenu);
     icModel = new ICModel;
     icProxy = new ICProxy;
 
@@ -476,9 +479,7 @@ void MainWindow::tableViewFieldCopy()
     tvCtxCopyIdx->append(QString::number(mindex.row()));
     tvCtxCopyData->append(fieldText);
 
-    QString clipText = "Row|Col|Text\n";
-    clipText.append(QString::number(mindex.row())).append("|");
-    clipText.append(QString::number(mindex.column())).append("|");
+    QString clipText = "";
     clipText.append(fieldText).append("\n");
 
     QClipboard *p_Clipboard = QApplication::clipboard();
@@ -694,6 +695,33 @@ void MainWindow::on_tableView_customContextMenuRequested(const QPoint &pos)
     tvCtxMenu->exec(QCursor::pos());
 }
 
+void MainWindow::configstringCreateButtonMenu()
+{
+    cfgstrBtnCreateShort = new QAction(tr("Create Short String (Default)"), this);
+    cfgstrBtnCreateShort->setToolTip(tr("String will only contain selected values used by the IC"));
+    connect(cfgstrBtnCreateShort, &QAction::triggered, this, &MainWindow::configstringCreateShort);
+    cfgstrBtnCreateFull = new QAction(tr("Create Full String"), this);
+    cfgstrBtnCreateFull->setToolTip(tr("String will contain all 128 bytes."));
+    connect(cfgstrBtnCreateFull, &QAction::triggered, this, &MainWindow::configstringCreateFull);
+
+    cfgstrBtnMenu = new QMenu;
+    cfgstrBtnMenu->setToolTipsVisible(true);
+    cfgstrBtnMenu->addAction(cfgstrBtnCreateShort);
+    cfgstrBtnMenu->addAction(cfgstrBtnCreateFull);
+}
+
+void MainWindow::configstringCreateShort()
+{
+    if (ui->tableView->selectionModel()==nullptr) return;
+    ui->lineEdit_Create->setText(icModel->createConfigString(false));
+}
+
+void MainWindow::configstringCreateFull()
+{
+    if (ui->tableView->selectionModel()==nullptr) return;
+    ui->lineEdit_Create->setText(icModel->createConfigString(true));
+}
+
 void MainWindow::on_Import_clicked()
 {
     if (icModel->icData == nullptr) return;
@@ -703,7 +731,8 @@ void MainWindow::on_Import_clicked()
     icProxy->colSortNow();
 }
 
-void MainWindow::on_Export_clicked()
+void MainWindow::on_Create_clicked()
 {
-    ui->lineEdit_Export->setText(icModel->exportConfigString());
+    if (ui->tableView->selectionModel()==nullptr) return;
+    ui->lineEdit_Create->setText(icModel->createConfigString(false));
 }

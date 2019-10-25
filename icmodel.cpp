@@ -157,8 +157,16 @@ bool ICModel::setData(const QModelIndex &index,
     auto & ic = icData->data[index.row()]; // access to data
 
     if (role == Qt::EditRole) {
+        if (ic.byteOffset.length()==0) return {};
+
         switch(index.column()) {
             case 11:
+                if (value.toString().length() == 0 )
+                {
+                    icData->data[index.row()].newVal = "";
+                    icData->data[index.row()].newValHex = "";
+                    return {};
+                }
                 icData->data[index.row()].setNewVal(value.toString());
                 if (ic.bitSize.toInt() >= 8) icData->data[index.row()].newValToHex();
                 else
@@ -181,8 +189,6 @@ bool ICModel::setData(const QModelIndex &index,
         //emit editCompleted(value.toString());
     }
     if (role == Qt::CheckStateRole) {
-        //QModelIndexList indexes = MainWindow().getSelectionTableView();
-        //qDebug() << "selected: " << indexes;
         ic.checked = value.toBool();
         return true;
     }
@@ -202,7 +208,7 @@ bool ICModel::importConfigString(QString cfgstring)
     return true;
 }
 
-QString ICModel::exportConfigString() const
+QString ICModel::createConfigString(bool all) const
 {
-    return icData->exportConfigString();
+    return icData->createConfigString(all);
 }

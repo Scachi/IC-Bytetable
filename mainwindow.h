@@ -56,7 +56,7 @@ private slots:
 
     void on_Import_clicked();
 
-    void on_Export_clicked();
+    void on_Create_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -124,6 +124,14 @@ private:
     void tableViewSelectedSumSize();
     void tableViewCheckedSumSize();
     void csvExport();
+
+    void configstringCreateButtonMenu();
+    QMenu *cfgstrBtnMenu;
+    QAction *cfgstrBtnCreateShort;
+    QAction *cfgstrBtnCreateFull;
+
+    void configstringCreateShort();
+    void configstringCreateFull();
 
 private:
     void modifyStatusBar();

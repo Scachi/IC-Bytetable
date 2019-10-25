@@ -591,7 +591,7 @@ bool IC::isUsingPMEM()
     return false;
 }
 
-bool IC::isChecked()
+bool IC::isChecked() const
 {
     return this->checked;
 }

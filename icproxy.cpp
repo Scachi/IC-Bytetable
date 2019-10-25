@@ -36,10 +36,12 @@ void ICProxy::colSortNow() {
 
 Qt::ItemFlags ICProxy::flags(const QModelIndex &index) const {
  // if the column alignment was set-up for all columns
- if(flagMap.isEmpty()) return flagMap.value(Qt::NoItemFlags);
+ //if(flagMap.isEmpty()) return flagMap.value(Qt::NoItemFlags);
  // searches if the column alignment was set-up and returns the flag
  if(flagMap.contains(index.column())) return flagMap.value(index.column());
- return (Qt::NoItemFlags | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled);
+ return (Qt::NoItemFlags | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled);
+ //qDebug() << "flags: " << QSortFilterProxyModel::flags(index);
+ // ItemIsSelectable|ItemIsEditable|ItemIsUserCheckable|ItemIsEnabled|ItemNeverHasChildren
  //return QSortFilterProxyModel::flags(index);
 }
 

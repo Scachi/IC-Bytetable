@@ -20,7 +20,7 @@ public:
     void clear(void);
 
     bool importConfigString(QString cfgstring);
-    QString exportConfigString() const;
+    QString createConfigString(bool all=false) const;
 
 private:
 
