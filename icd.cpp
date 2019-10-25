@@ -408,19 +408,12 @@ bool ICD::importConfigString(QString cfgstring)
 QString ICD::createConfigString(bool all) const
 {
     QString exportStrA[128];
-    int iChecked=0;
-    int iNewValHex=0;
 
     // count checked items and items with new hex value
-    for(int idx = 0; idx < data.size(); idx++)
-    {
-        IC ic = data[idx];
-        if (ic.getByteOffset().length() == 0) continue;
-        if (ic.isChecked()) iChecked++;
-        if (ic.getNewValHex().length()>0) iNewValHex++;
-    }
+    int iChecked = countEntriesChecked();
+    int iNewValHex = countEntriesNewValHex();
 
-    if (iChecked == 0 && iNewValHex == 0) return ("Error: Nothing selected and no New Values set.");
+    if (iChecked == 0 && iNewValHex == 0) return ("Info: Nothing selected and no New Values set.");
 
     // fill exportStrA array
     for(int idx = 0; idx < data.size(); idx++)
@@ -439,7 +432,7 @@ QString ICD::createConfigString(bool all) const
     }
 
     // created GVICFG string in correct syntax
-    QString exportString = "GVICFG:";
+    QString exportString = "GIVICFG:";
     bool first = true;
     for(int idx = 0; idx < 128; idx++)
     {
@@ -452,34 +445,86 @@ QString ICD::createConfigString(bool all) const
         if (!all && exportStrA[idx+1].length() == 0) first = true;
     }
     return exportString;
-
-    /*
-        For $iIndex = 0 To UBound($exportstring) - 1
-            If StringLen($exportstring[$iIndex]) > 0 Then
-                ; first or sperate byteoffset entry needs a new #offset string
-                If $first = 1 And $iIndex > 0 Then
-                    $export &= "#" & Hex($iIndex, 2) & ":"
-                    $first = 0
-                Else
-                    $first = 0
-                EndIf
-                $export &= $exportstring[$iIndex]
-
-                ; check if the next value is directly after this one or we need a new #offset string
-                Local $size = StringLen($exportstring[$iIndex]) * 0.5
-                ;ConsoleWrite("size + index : " & $size & " + " & $iIndex & " = " & $iIndex + $size & @CRLF)
-                If $iIndex + $size > 128 Or $iIndex + $size < 0 Then ContinueLoop
-                if StringLen($exportstring[$iIndex + $size]) = 0 then $first = 1
-
-            EndIf
-        Next
-        ; output the string
-        ;ConsoleWrite("Exportstring:" & $export & @CRLF) ;4debug
-        If StringLen($export) > 0 Then
-            GUICtrlSetData($hiCreate, "GIVICFG:" & $export)
-        Else
-            GUICtrlSetData($hiCreate, $hiCreateDefaultText)
-            If $iItemCount > 0 Then MsgBox($MB_TOPMOST,"Export String","No data to export selected / found",4)
-        EndIf
-    */
 }
+
+QString ICD::createConfigStringBits() const
+{
+    // count checked items and items with new hex value
+    int iChecked = countEntriesChecked();
+    int iNewValHex = countEntriesNewValHex();
+
+    QString exportString = "GIVICFG:";
+
+    if (iChecked == 0 && iNewValHex == 0) return ("Info: No entries selected.");
+    for(int idx = 0; idx < data.size(); idx++)
+    {
+        IC ic = data[idx];
+        if (ic.getByteOffset().length() == 0) continue;
+        if (ic.getBitOffset().length() == 0) continue;
+        if (ic.isChecked())
+        {
+            // convert hex to bitmask
+            QString sBin = XTRA::xHex2Bin(ic.getDefaultValHex(),ic.getBitSize());
+            if (ic.getNewValHex().length()>0)
+                sBin = XTRA::xHex2Bin(ic.getNewValHex(),ic.getBitSize());
+            // prepare bitarrays
+            QBitArray bARAnd4Clear(8,true); // 1 by default, 0 will clear the bit
+            QBitArray bAROr4Set(8,false);   // 0 by default, 1 will set the bit
+            QBitArray bARCurrent = XTRA::xStringToBitArray(sBin);
+            /*
+            qDebug() << "binand: " << bARAnd4Clear;
+            qDebug() << "binor_: " << bAROr4Set;
+            qDebug() << "binary: " << bARCurrent;
+            */
+            // use this ICs bits only, do not touch the other bits of the byte
+            // create AND + OR string to set the bits of the current byte to their state
+            for (int i=7-ic.bitOffset.toInt();i>7-ic.bitOffset.toInt()-ic.bitSize.toInt();i--)
+            {
+                if (bARCurrent[i]==0) bARAnd4Clear[i]=bARCurrent[i];
+                else bAROr4Set[i]=bARCurrent[i];
+                //qDebug() << "off: " << i << " , val: " << bARCurrent[i];
+            }
+            /*
+            qDebug() << "new: binand: " << bARAnd4Clear;
+            qDebug() << "new: binor_: " << bAROr4Set;
+            */
+            QString sHexAnd = XTRA::xBin2Hex(bARAnd4Clear);
+            QString sHexOr = XTRA::xBin2Hex(bAROr4Set);
+            exportString += "#" + ic.byteOffsetHex + "&" + sHexAnd;
+            exportString += "#" + ic.byteOffsetHex + "|" + sHexOr;
+        }
+    }
+
+    return exportString;
+}
+
+int ICD::countEntriesChecked() const
+{
+    int iChecked=0;
+
+    // count checked items and items with new hex value
+    for(int idx = 0; idx < data.size(); idx++)
+    {
+        IC ic = data[idx];
+        if (ic.getByteOffset().length() == 0) continue;
+        if (ic.isChecked()) iChecked++;
+    }
+
+    return iChecked;
+}
+
+int ICD::countEntriesNewValHex() const
+{
+    int iNewValHex=0;
+
+    // count checked items and items with new hex value
+    for(int idx = 0; idx < data.size(); idx++)
+    {
+        IC ic = data[idx];
+        if (ic.getByteOffset().length() == 0) continue;
+        if (ic.getNewValHex().length()>0) iNewValHex++;
+    }
+
+    return iNewValHex;
+}
+

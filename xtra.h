@@ -23,6 +23,7 @@ public:
     static QString xBin2Byte(QString value);
     // convert bin 00000000 to hex
     static QString xBin2Hex(QString value);
+    static QString xBin2Hex(QBitArray bitarray);
     // bin OR
     static QString xBinOR(QString value,QString value2);
     // bin AND

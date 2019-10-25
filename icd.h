@@ -38,6 +38,10 @@ public:
     QString getFieldName(int index) const;
     bool importConfigString(QString cfgstring);
     QString createConfigString(bool all=false) const;
+    QString createConfigStringBits() const;
+
+    int countEntriesChecked() const;
+    int countEntriesNewValHex() const;
 
 private:
     int fieldCount; // count of important IC data variables used by listview and csvexport

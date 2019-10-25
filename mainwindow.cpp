@@ -704,10 +704,15 @@ void MainWindow::configstringCreateButtonMenu()
     cfgstrBtnCreateFull->setToolTip(tr("String will contain all 128 bytes."));
     connect(cfgstrBtnCreateFull, &QAction::triggered, this, &MainWindow::configstringCreateFull);
 
+    cfgstrBtnCreateBitoffset = new QAction(tr("Create Bit String"), this);
+    cfgstrBtnCreateBitoffset->setToolTip(tr("String will set selected bits of bytes only."));
+    connect(cfgstrBtnCreateBitoffset, &QAction::triggered, this, &MainWindow::configstringCreateBits);
+
     cfgstrBtnMenu = new QMenu;
     cfgstrBtnMenu->setToolTipsVisible(true);
     cfgstrBtnMenu->addAction(cfgstrBtnCreateShort);
     cfgstrBtnMenu->addAction(cfgstrBtnCreateFull);
+    cfgstrBtnMenu->addAction(cfgstrBtnCreateBitoffset);
 }
 
 void MainWindow::configstringCreateShort()
@@ -720,6 +725,12 @@ void MainWindow::configstringCreateFull()
 {
     if (ui->tableView->selectionModel()==nullptr) return;
     ui->lineEdit_Create->setText(icModel->createConfigString(true));
+}
+
+void MainWindow::configstringCreateBits()
+{
+    if (ui->tableView->selectionModel()==nullptr) return;
+    ui->lineEdit_Create->setText(icModel->createConfigStringBits());
 }
 
 void MainWindow::on_Import_clicked()

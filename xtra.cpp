@@ -108,6 +108,13 @@ QString XTRA::xBin2Hex(QString value)
     return sHex;
 }
 
+QString XTRA::xBin2Hex(QBitArray bitarray)
+{
+    QString sHex= xBin2Byte(xBitArrayToString(bitarray));
+    sHex = x2Hex(sHex,"8");
+    return sHex;
+}
+
 // convert bin to byte
 QString XTRA::xBin2Byte(QString value)
 {

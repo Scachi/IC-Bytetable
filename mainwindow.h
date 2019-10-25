@@ -129,9 +129,11 @@ private:
     QMenu *cfgstrBtnMenu;
     QAction *cfgstrBtnCreateShort;
     QAction *cfgstrBtnCreateFull;
+    QAction *cfgstrBtnCreateBitoffset;
 
     void configstringCreateShort();
     void configstringCreateFull();
+    void configstringCreateBits();
 
 private:
     void modifyStatusBar();

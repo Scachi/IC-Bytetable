@@ -21,6 +21,7 @@ public:
 
     bool importConfigString(QString cfgstring);
     QString createConfigString(bool all=false) const;
+    QString createConfigStringBits() const;
 
 private:
 

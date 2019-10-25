@@ -212,3 +212,8 @@ QString ICModel::createConfigString(bool all) const
 {
     return icData->createConfigString(all);
 }
+
+QString ICModel::createConfigStringBits() const
+{
+    return icData->createConfigStringBits();
+}

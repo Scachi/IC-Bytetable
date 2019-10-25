@@ -1,6 +1,5 @@
 + using QApplication::setStyle("windowsvista"); not working
     ! will not use the correct style when started via gtuner external tools
-    works: QApplication::setStyle("fusion");
+    this works: QApplication::setStyle("fusion");
 
-+ add binary creator to gui (calculator) to set or clear specific bits with AND + OR
-    + support creation of exportstring for single bit of multi bit byteoffsets
++ check handling of negtive values for bitsize > 8
