@@ -670,6 +670,6 @@ void IC::newValToHex()
 
 void IC::newHexToVal()
 {
-    this->newVal = XTRA::xHex2Val(this->newValHex,this->bitSize,this->bitOffset,this->minVal,this->decimals);
+    this->newVal = XTRA::xHex2Val(this->newValHex,this->bitSize,this->bitOffset,this->minVal,this->decimals,this->control);
     this->reValidate();
 }

@@ -4,6 +4,8 @@
 #include <QString>
 #include <QBitArray>
 
+#include "ic.h"
+
 // tools for formatting, conversions, ...
 
 class XTRA
@@ -17,8 +19,9 @@ public:
     static QString x2Hex (int value, int bitsize);
     // convert hex hh to bin 00000000, bitsize <= 8 only
     static QString xHex2Bin(QString value, QString bitsize);
+    static QString xHex2Bin(QString value, int bitsize);
     // convert hex to value, automatically selects decimal or integer
-    static QString xHex2Val(QString value, QString bitsize, QString bitoffset, QString minimum, QString decimals);
+    static QString xHex2Val(QString value, QString bitsize, QString bitoffset, QString minimum, QString decimals, QString control);
     // convert bin 00000000 to byte
     static QString xBin2Byte(QString value);
     // convert bin 00000000 to hex

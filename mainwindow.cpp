@@ -314,7 +314,7 @@ void MainWindow::on_actionAbout_triggered()
     msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
     msgBox.setText(tr("IC-Bytetable, Version: %1<br><br>"
        "-= by %2 =-  <a href='https://github.com/Scachi'>https://github.com/Scachi</a><br>"
-       "<br>A special shout out to consoletuner.com<br>"
+       "<br>All rights reserved.<br>"
        "<br>The program is provided AS IS with NO WARRANTY OF ANY KIND \
        INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY, AND FITNESS \
        FOR A PARTICULAR PURPOSE.").arg(QCoreApplication::applicationVersion()).arg(QCoreApplication::organizationName())

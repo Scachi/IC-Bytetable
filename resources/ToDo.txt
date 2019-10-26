@@ -1,5 +1,3 @@
 + using QApplication::setStyle("windowsvista"); not working
     ! will not use the correct style when started via gtuner external tools
     this works: QApplication::setStyle("fusion");
-
-+ check handling of negtive values for bitsize > 8

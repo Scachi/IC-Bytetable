@@ -138,6 +138,7 @@ void ICD::bits2Hex()
 
 QString ICD::bits2ByteHex(QString byteoffset, bool defonly)
 {
+    //qDebug() << "Searching for bits of byteoffset " << byteoffset;
     QStringList bits={"0","0","0","0","0","0","0","0"};
     for(int idx = 0; idx < data.size(); idx++)
     {
@@ -451,11 +452,11 @@ QString ICD::createConfigStringBits() const
 {
     // count checked items and items with new hex value
     int iChecked = countEntriesChecked();
-    int iNewValHex = countEntriesNewValHex();
+    //int iNewValHex = countEntriesNewValHex();
 
     QString exportString = "GIVICFG:";
 
-    if (iChecked == 0 && iNewValHex == 0) return ("Info: No entries selected.");
+    if (iChecked == 0) return ("Info: No entries selected.");
     for(int idx = 0; idx < data.size(); idx++)
     {
         IC ic = data[idx];
