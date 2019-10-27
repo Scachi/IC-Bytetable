@@ -11,5 +11,4 @@ This tool helps Titan Two script creators:
 
 It does parse a gpc script from file or clipboard, searching for Interactive Configuration declaration, showing the result in a table.
 
-
-![Screenshot_20191027](/screenshots/20191027.jpg?raw=true "Screenshot20191027")
+![Screenshot_20191027](/screenshots/20191027.jpg?raw=true "Screenshot-20191027")
