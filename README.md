@@ -1,4 +1,4 @@
-# Not working yet
+# Already working , not tested much
 QT rewrite of my autoit script -> https://github.com/J2Kbr/GtunerIV/issues/171
 
 # IC-Bytetable
