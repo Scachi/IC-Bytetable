@@ -2,13 +2,16 @@
 #include <QCommandLineParser>
 #include <QMessageBox>
 #include <QDebug>
+
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
+
+
+    QApplication a(argc, argv);
     QApplication::setStyle("fusion");
     //QApplication::setStyle("windowsvista");
-    QApplication a(argc, argv);
 
     QCoreApplication::setOrganizationName("Scachi");
     QCoreApplication::setApplicationName("IC-Bytetable");

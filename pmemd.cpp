@@ -38,8 +38,10 @@ bool PMEMD::update(ICD *icData)
 
 bool PMEMD::byteSet (QString byteoffset, QString bitsize, QString bitoffset)
 {
-    // skip entries without byteoffset or bitsize
+    // skip entries without byteoffset or bitsize and invalid offsets
     if (byteoffset.length() == 0 || bitsize.length() == 0) return false;
+    if (byteoffset.toInt() < 0 || byteoffset.toInt() > 127 ) return false;
+    if (bitoffset.toInt() < 0 || byteoffset.toInt() > 7 ) return false;
 
     // bytes
     if (bitsize.toInt()%8 == 0) {
@@ -70,6 +72,8 @@ QStringList PMEMD::byteCheck (QString byteoffset, QString bitsize, QString bitof
     QStringList errmsg;
     // skip entries without byteoffset or bitsize
     if (byteoffset.length() == 0 || bitsize.length() == 0) return errmsg;
+    if (byteoffset.toInt() < 0 || byteoffset.toInt() > 127 ) return errmsg;
+    if (bitoffset.toInt() < 0 || byteoffset.toInt() > 7 ) return errmsg;
 
     // bytes
     if (bitsize.toInt()%8 == 0) {

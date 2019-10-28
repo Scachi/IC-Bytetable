@@ -382,15 +382,15 @@ void MainWindow::on_actionPMEM_Usage_triggered()
     if (first) {
         first=false;
         QScreen *screenactive=QGuiApplication::screenAt(this->pos());
-
-        if (screenactive->geometry().width() - (this->geometry().x() + this->geometry().width()) >= pmemWindow->width())
-        {
-            pmemWindow->move(this->x()+this->width(),this->y());
-        } else {
-            pmemWindow->move(screenactive->geometry().width()-pmemWindow->width(),this->y());
+        if (screenactive!=nullptr) {
+            if (screenactive->geometry().width() - (this->geometry().x() + this->geometry().width()) >= pmemWindow->width())
+            {
+                pmemWindow->move(this->x()+this->width(),this->y());
+            } else {
+                pmemWindow->move(screenactive->geometry().width()-pmemWindow->width(),this->y());
+            }
+            pmemWindow->resize(pmemWindow->width(),this->height());
         }
-        pmemWindow->resize(pmemWindow->width(),this->height());
-
     }
     else if (pmemWindow->isHidden())
     {

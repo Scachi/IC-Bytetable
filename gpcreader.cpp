@@ -63,10 +63,12 @@ void GPCReader::parse() {
         this->gpcValid=false;
         qDebug("Not unique!");
     }
+
     if (!pmemData->update(icData)) { // fill PMEM data (filename,lineno,bytes,bits,offsets)
         this->gpcValid=false;
         qDebug("pmemData not valid");
     }
+
 }
 
 void GPCReader::readFile(QString path) {
