@@ -7,13 +7,13 @@
 #include "pmemmodel.h"
 #include "pmem.h"
 #include "pmemd.h"
+#include "mainwindow.h"
 
 PMEMWindow::PMEMWindow(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PMEMWindow)
 {
     ui->setupUi(this);
-
     pmemModel = new PMEMModel;
 }
 

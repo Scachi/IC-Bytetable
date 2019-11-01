@@ -9,5 +9,6 @@
         <file>resources/icon.ico</file>
         <file>resources/view-refresh.ico</file>
         <file>resources/applications-table.ico</file>
+        <file>resources/go-top.ico</file>
     </qresource>
 </RCC>

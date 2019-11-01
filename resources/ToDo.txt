@@ -1,3 +1,5 @@
 + using QApplication::setStyle("windowsvista"); not working
     ! will not use the correct style when started via gtuner external tools
     this works: QApplication::setStyle("fusion");
+
+DONE: added "stay on top"

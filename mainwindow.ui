@@ -48,6 +48,9 @@
       <property name="autoFillBackground">
        <bool>true</bool>
       </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <property name="autoScroll">
        <bool>true</bool>
       </property>
@@ -281,6 +284,8 @@
      <string>Tools</string>
     </property>
     <addaction name="actionPMEM_Usage"/>
+    <addaction name="separator"/>
+    <addaction name="actionStay_On_Top"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuTools"/>
@@ -500,6 +505,18 @@
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionStay_On_Top">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/resources/go-top.ico</normaloff>:/resources/go-top.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Stay On Top</string>
    </property>
   </action>
  </widget>

@@ -22,10 +22,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
 
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
-    restoreGeometry(settings.value("main/geometry").toByteArray());
-    restoreState(settings.value("main/state").toByteArray());
+    qDebug() << "ontop: " << settings->value("main/ontop").toInt();
+    if (settings->value("main/ontop").toInt()) onTop(1);
+
+    restoreGeometry(settings->value("main/geometry").toByteArray());
+    restoreState(settings->value("main/state").toByteArray());
     readRecentFiles();
     modifyStatusBar(); // set resizing policy
     modifyToolBar();
@@ -91,6 +94,7 @@ void MainWindow::readSource(QString sFilePath) {
             ui->tableView->setColumnWidth(0,100);
             ui->tableView->setColumnWidth(8,100);
             ui->tableView->setColumnWidth(19,100);
+
             QString tmp;
             tmp = tr("%1 Bits used by Interactive Configuration<br>Click for more information").arg(gpc->icData->bitsUsed);
             tmp=XTRA::xNoAutoLinebreaks(tmp);
@@ -208,31 +212,29 @@ static inline QString fileKey() { return QStringLiteral("file"); }
 
 void MainWindow::readRecentFiles()
 {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
-    const int count = settings.beginReadArray(recentFilesKey());
+    const int count = settings->beginReadArray(recentFilesKey());
     recentFilesList.clear();
     for (int i = 0; i < count; ++i)
     {
-        settings.setArrayIndex(i);
-        recentFilesList.append(settings.value(fileKey()).toString());
+        settings->setArrayIndex(i);
+        recentFilesList.append(settings->value(fileKey()).toString());
     }
-    settings.endArray();
+    settings->endArray();
     //qDebug() << "readRecentFiles() found recent files : " << count;
     showRecentFiles();
 }
 
 void MainWindow::writeRecentFiles()
 {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
     const int count = recentFilesList.count();
-    settings.beginWriteArray(recentFilesKey());
+    settings->beginWriteArray(recentFilesKey());
     for (int i = 0; i < count; ++i)
     {
-        settings.setArrayIndex(i);
-        settings.setValue(fileKey(), recentFilesList.at(i));
+        settings->setArrayIndex(i);
+        settings->setValue(fileKey(), recentFilesList.at(i));
         //qDebug() << " Recent file " << i << " : " << recentFilesList.at(i);
     }
-    settings.endArray();
+    settings->endArray();
 }
 
 void MainWindow::addRecentFile(QString s) {
@@ -299,28 +301,42 @@ void MainWindow::on_actionReadClipboard_triggered()
     readSource("clipboard");
 }
 
+void MainWindow::onTop(int value)
+{
+    Qt::WindowFlags flags = this->windowFlags();
+    ui->actionStay_On_Top->setChecked(value);
+
+    if (value)
+    {
+        qDebug() << "ONTOP TRUE";
+        this->setWindowFlags(flags | Qt::WindowStaysOnTopHint);
+        this->show();
+    }
+    else
+    {
+        qDebug() << "ONTOP FALSE";
+        this->setWindowFlags(flags ^ Qt::WindowStaysOnTopHint);
+        this->show();
+    }
+    settings->setValue("main/ontop", value);
+    qDebug() << " Output: " << value;
+    qDebug() << " flags: " << this->windowFlags();
+}
+
 void MainWindow::on_actionExit_triggered()
 {
     close();
 }
 
-
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox msgBox;
-    msgBox.setWindowIcon(QPixmap(":/resources/icon.ico"));
-    msgBox.setWindowTitle(tr("About IC-Bytetable"));
-    msgBox.setIconPixmap(QPixmap(":/resources/icon.ico"));
-    msgBox.setTextFormat(Qt::RichText);   //this is what makes the links clickable
-    msgBox.setText(tr("IC-Bytetable, Version: %1<br><br>"
-       "-= by %2 =-  <a href='https://github.com/Scachi'>https://github.com/Scachi</a><br>"
-       "<br>All rights reserved.<br>"
-       "<br>The program is provided AS IS with NO WARRANTY OF ANY KIND \
-       INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY, AND FITNESS \
-       FOR A PARTICULAR PURPOSE.").arg(QCoreApplication::applicationVersion()).arg(QCoreApplication::organizationName())
-       );
-    msgBox.setStandardButtons(QMessageBox::Close);
-    msgBox.exec();
+    QMessageBox::about(this, tr("About IC-Bytetable"),tr("IC-Bytetable, Version: %1<br><br>"
+                                                         "-= by %2 =-  <a href='https://github.com/Scachi'>https://github.com/Scachi</a><br>"
+                                                         "<br>All rights reserved.<br>"
+                                                         "<br>The program is provided AS IS with NO WARRANTY OF ANY KIND \
+                                                         INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY, AND FITNESS \
+                                                         FOR A PARTICULAR PURPOSE.").arg(QCoreApplication::applicationVersion()).arg(QCoreApplication::organizationName()));
+
 }
 
 void MainWindow::addRecentFileTrigger(QAction *a) {
@@ -394,8 +410,7 @@ void MainWindow::on_actionPMEM_Usage_triggered()
     }
     else if (pmemWindow->isHidden())
     {
-        QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
-        pmemWindow->restoreGeometry(settings.value("pmem/geometry").toByteArray());
+        pmemWindow->restoreGeometry(settings->value("pmem/geometry").toByteArray());
     }
     pmemWindow->show();
 
@@ -746,4 +761,9 @@ void MainWindow::on_Create_clicked()
 {
     if (ui->tableView->selectionModel()==nullptr) return;
     ui->lineEdit_Create->setText(icModel->createConfigString(false));
+}
+
+void MainWindow::on_actionStay_On_Top_triggered()
+{
+    onTop(ui->actionStay_On_Top->isChecked());
 }

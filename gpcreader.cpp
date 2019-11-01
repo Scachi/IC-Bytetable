@@ -68,7 +68,6 @@ void GPCReader::parse() {
         this->gpcValid=false;
         qDebug("pmemData not valid");
     }
-
 }
 
 void GPCReader::readFile(QString path) {

@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QSortFilterProxyModel>
 #include <QItemSelectionModel>
+#include <QtWidgets>
 
 #include "ic.h"
 #include "icmodel.h"
@@ -58,10 +59,13 @@ private slots:
 
     void on_Create_clicked();
 
+    void on_actionStay_On_Top_triggered();
+
 private:
     Ui::MainWindow *ui;
 
 public:
+    QSettings *settings;
     void readSource(QString sFilePath);
     void addRecentFile(QString s);
     void enableReloadBtn();
@@ -73,9 +77,11 @@ public:
     void msgboxCSVExport(bool data, bool chart);
     void msgboxProblemsFound();
     void msgboxSumSize(int entries, int usingpmem, int bytes, int bits);
+    void onTop(int value);
 
 private:
     PMEMWindow *pmemWindow;
+
     enum { MAX_RECENT_FILES = 6 };
     QStringList recentFilesList;
     QString     gpcSelectedDir;     // the path part of the file that was initially opened
