@@ -23,7 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    //settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    settings = new QSettings(QCoreApplication::organizationName(),QCoreApplication::applicationName());
 
     //qDebug() << "ontop: " << settings->value("main/ontop").toInt();
     if (settings->value("main/ontop").toInt()) onTop(1);
@@ -44,9 +45,9 @@ MainWindow::MainWindow(QWidget *parent) :
     tvCtxCopyDataHex = new QStringList;
 
     pmemWindow = new PMEMWindow(this,this,settings); //<- single window shown in taskbar
-    //pmemWindow = new PMEMWindow(nullptr,settings); //<- separate windows shown in taskbar
-    Qt::WindowFlags flags(Qt::Dialog|Qt::WindowCloseButtonHint);
-    pmemWindow->setWindowFlags(flags);
+    //pmemWindow = new PMEMWindow(nullptr,this,settings); //<- separate windows shown in taskbar
+    //Qt::WindowFlags flags(Qt::Dialog|Qt::WindowCloseButtonHint);
+    //pmemWindow->setWindowFlags(flags);
 }
 
 MainWindow::~MainWindow()
@@ -309,13 +310,13 @@ void MainWindow::onTop(int value)
 
     if (value)
     {
-        qDebug() << "ONTOP TRUE";
+        //qDebug() << "ONTOP TRUE";
         this->setWindowFlags(flags | Qt::WindowStaysOnTopHint);
         this->show();
     }
     else
     {
-        qDebug() << "ONTOP FALSE";
+        //qDebug() << "ONTOP FALSE";
         this->setWindowFlags(flags ^ Qt::WindowStaysOnTopHint);
         this->show();
     }
@@ -433,9 +434,9 @@ void MainWindow::on_actionPMEM_Usage_triggered()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
-    settings.setValue("main/geometry", saveGeometry());
-    settings.setValue("main/state", saveState());
+    event->ignore();
+    settings->setValue("main/geometry", saveGeometry());
+    settings->setValue("main/state", saveState());
     pmemWindow->closeIt(); // <- required to close both windows when pmemwindow is created without parent
     QMainWindow::closeEvent(event);
 }

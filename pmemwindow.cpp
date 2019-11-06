@@ -19,6 +19,7 @@ PMEMWindow::PMEMWindow(QWidget *parent, class::MainWindow *mainwindow, QSettings
     pmemModel = new PMEMModel;
     mainWindow = mainwindow;
     this->settings = settings;
+    //if (this->settings != nullptr) restoreGeometry(settings->value("pmem/geometry").toByteArray());
 }
 
 PMEMWindow::~PMEMWindow()
@@ -33,6 +34,7 @@ void PMEMWindow::updateModelData(PMEMD *pmemd)
     pmemModel->pmemData=pmemd;
     ui->tableView->setModel(nullptr);
     ui->tableView->setModel(pmemModel);
+    ui->tableView->resizeColumnsToContents();
 }
 
 void PMEMWindow::updateStats(PMEMD *pmemd)
@@ -78,7 +80,9 @@ bool PMEMWindow::exportCSV(QString filename)
 void PMEMWindow::closeEvent(QCloseEvent *event)
 {
     event->ignore();
-    if (settings != nullptr) settings->setValue("pmem/geometry", saveGeometry());
+    if (settings != nullptr) {
+        settings->setValue("pmem/geometry", saveGeometry());
+    }
     this->hide();
 }
 
