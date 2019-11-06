@@ -28,24 +28,26 @@ QVariant PMEMModel::data(const QModelIndex &index, int role) const
     }
 
 
-    /*
+
     // font style
-    if (role == Qt::FontRole && index.column() == 0)
-    { // First column items are bold.
+    /*
+    if (role == Qt::FontRole && index.column() == 0) // First column items.
+    {
             QFont font;
             font.setBold(true);
             return font;
     }
     */
 
+
     if (role == Qt::BackgroundColorRole)
     {
-        if (pmem.getBits()==0) return QColor("#02a1db");
+        if (pmem.getBits()==0) return QColor("#32CD32"); // #02a1db
         else
         {
             if (!pmem.isByte()) {
                 if (pmem.getByBit(index.column())==0 &&
-                    pmem.getByBitSize(index.column())==0) return QColor("#daed4b");
+                    pmem.getByBitSize(index.column())==0) return QColor("#FFFF00"); // #daed4b
             }
         }
     }

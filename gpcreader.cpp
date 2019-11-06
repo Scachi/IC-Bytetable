@@ -7,7 +7,6 @@
 #include "ic.h"
 #include "icd.h"
 #include "gpcreader.h"
-#include "mainwindow.h"
 #include "xtra.h"
 #include "pmem.h"
 #include "pmemd.h"

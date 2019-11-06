@@ -12,7 +12,7 @@
 #include "icmodel.h"
 #include "icproxy.h"
 #include "pmemwindow.h"
-#include "pmemmodel.h"
+//#include "pmemmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -61,6 +61,8 @@ private slots:
 
     void on_actionStay_On_Top_triggered();
 
+    void on_tableView_doubleClicked(const QModelIndex &index);
+
 private:
     Ui::MainWindow *ui;
 
@@ -78,6 +80,7 @@ public:
     void msgboxProblemsFound();
     void msgboxSumSize(int entries, int usingpmem, int bytes, int bits);
     void onTop(int value);
+    void scrollTo(int byteoffset, int bitoffset, QString tablemark);
 
 private:
     PMEMWindow *pmemWindow;

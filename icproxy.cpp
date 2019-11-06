@@ -1,5 +1,4 @@
 #include "icproxy.h"
-#include "mainwindow.h"
 
 ICProxy::ICProxy(QObject *parent)
     : QSortFilterProxyModel(parent)

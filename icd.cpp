@@ -226,6 +226,21 @@ bool ICD::isValid()
     return valid;
 }
 
+int ICD::find(int byteoffset, QString bitoffset) const
+{
+    for (int row=0; row<this->data.count(); row++)
+    {
+        if (data[row].byteOffset.length() > 0 && data[row].byteOffset.toInt()==byteoffset) {
+            if (bitoffset.length()==0) return row; // byte
+
+            if (data[row].bitOffset.length()==0) continue;
+            if (data[row].bitSize.length()==0) continue;
+            if (bitoffset.toInt() == data[row].bitOffset.toInt()) return row; // bit
+        }
+    }
+    return -1;
+}
+
 bool ICD::exportCSV(QString filename)
 {
     QString csvQuote="\"";

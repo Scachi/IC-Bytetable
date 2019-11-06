@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QMenu>
+#include <QTime>
 
 #include "gpcreader.h"
 #include "mainwindow.h"
@@ -15,7 +16,7 @@
 #include "icmodel.h"
 #include "xtra.h"
 #include "pmemwindow.h"
-#include "pmemmodel.h"
+//#include "pmemmodel.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
 
-    qDebug() << "ontop: " << settings->value("main/ontop").toInt();
+    //qDebug() << "ontop: " << settings->value("main/ontop").toInt();
     if (settings->value("main/ontop").toInt()) onTop(1);
 
     restoreGeometry(settings->value("main/geometry").toByteArray());
@@ -42,8 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
     tvCtxCopyData = new QStringList;
     tvCtxCopyDataHex = new QStringList;
 
-    pmemWindow = new PMEMWindow(this); //<- single window shown in taskbar
-    //pmemWindow = new PMEMWindow(); //<- separate windows shown in taskbar
+    pmemWindow = new PMEMWindow(this,this,settings); //<- single window shown in taskbar
+    //pmemWindow = new PMEMWindow(nullptr,settings); //<- separate windows shown in taskbar
     Qt::WindowFlags flags(Qt::Dialog|Qt::WindowCloseButtonHint);
     pmemWindow->setWindowFlags(flags);
 }
@@ -319,8 +320,26 @@ void MainWindow::onTop(int value)
         this->show();
     }
     settings->setValue("main/ontop", value);
+    /*
     qDebug() << " Output: " << value;
     qDebug() << " flags: " << this->windowFlags();
+    */
+}
+
+void MainWindow::scrollTo(int byteoffset, int bitoffset, QString tablemark)
+{
+    QString sBitOffset = "";
+    if (tablemark == "B") sBitOffset = QString::number(bitoffset);
+    int idx = icModel->icData->find(byteoffset, sBitOffset);
+    /*
+    qDebug() << " Scroll to: " << byteoffset << " " << bitoffset << " " << tablemark <<
+                " Index: " << idx;
+    */
+
+    QModelIndex index = icProxy->mapFromSource(icModel->index(idx,0));
+    ui->tableView->setCurrentIndex(index);
+    ui->tableView->selectionModel()->select(index,QItemSelectionModel::ClearAndSelect|QItemSelectionModel::Rows);
+    ui->tableView->scrollTo(index,QAbstractItemView::PositionAtCenter);
 }
 
 void MainWindow::on_actionExit_triggered()
@@ -388,15 +407,12 @@ void MainWindow::on_actionContextMenuToolbar_triggered()
 
 void MainWindow::on_actionPMEM_Usage_triggered()
 {
-    static bool first=true;
-    static QByteArray mwGeometry = this->saveGeometry();
-    QByteArray mwGeoNow = this->saveGeometry();
-    if (mwGeoNow != mwGeometry) {
-        mwGeometry = mwGeoNow;
-        first=true;
-    }
-    if (first) {
-        first=false;
+    // on doubleclick to reposition & resize the window
+    static QTime t;
+    t.start();
+    static int tLast = 0;
+    int tNow = t.msecsSinceStartOfDay();
+    if (tNow-tLast < 200) {
         QScreen *screenactive=QGuiApplication::screenAt(this->pos());
         if (screenactive!=nullptr) {
             if (screenactive->geometry().width() - (this->geometry().x() + this->geometry().width()) >= pmemWindow->width())
@@ -407,11 +423,10 @@ void MainWindow::on_actionPMEM_Usage_triggered()
             }
             pmemWindow->resize(pmemWindow->width(),this->height());
         }
+
     }
-    else if (pmemWindow->isHidden())
-    {
-        pmemWindow->restoreGeometry(settings->value("pmem/geometry").toByteArray());
-    }
+    if (tLast == 0) pmemWindow->restoreGeometry(settings->value("pmem/geometry").toByteArray());
+    tLast = tNow;
     pmemWindow->show();
 
 }
@@ -766,4 +781,10 @@ void MainWindow::on_Create_clicked()
 void MainWindow::on_actionStay_On_Top_triggered()
 {
     onTop(ui->actionStay_On_Top->isChecked());
+}
+
+void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
+{
+    IC ic = icModel->icData->data[icProxy->mapToSource(index).row()];
+    pmemWindow->scrollTo(ic.byteOffset, ic.bitSize, ic.bitOffset);
 }

@@ -2,4 +2,5 @@
     ! will not use the correct style when started via gtuner external tools
     this works: QApplication::setStyle("fusion");
 
+DONE: link doubleclick of entry in one list should jump to correct entry in the other list
 DONE: added "stay on top"

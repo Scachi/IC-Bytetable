@@ -31,6 +31,7 @@ public:
     bool setByteoffset2Hex(int byteoffset, QString hexvalue, bool bitsonly=false, bool setdefval=true);
     int getBitsizeFromByteoffset(int byteoffset);
     QString getValHexFromByteoffset(bool *ok, int byteoffset);
+    int find(int byteoffset, QString bitoffset) const;
 
     bool exportCSV(QString filename);
     int getDataCount();

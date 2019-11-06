@@ -3,7 +3,6 @@
 #include <QColor>
 #include <QItemSelectionModel>
 #include "icmodel.h"
-#include "mainwindow.h"
 #include "xtra.h"
 
 ICModel::ICModel(QObject *parent)
