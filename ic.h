@@ -81,6 +81,7 @@ public:
     qint8 msgAdd(QString msg, qint8 severity=8);
 
     bool isChecked() const;
+    bool isGrouped() const;
     bool isUsingPMEM();
     bool getSize(int *bytes, int *bits);
     int canMerge(IC ic);

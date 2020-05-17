@@ -52,8 +52,7 @@ QVariant ICModel::data(const QModelIndex &index, int role) const
         {
             case  1: if (ic.getLineNoCount().toInt() > 1) return QColor("#02a1db"); // split ic
                         return {};
-            case  2: if (ic.group.length() > 0 || ic.groupCol.length() >0)
-                        return {};
+            case  2: if (ic.isGrouped()) return {};
                      return QColor(ic.getColor()); // color the [Name] of ungrouped controls
             case  7: if (ic.valid == 2) return QColor("#02a1db"); // info
                      if (ic.valid == 4) return QColor("#f79a05"); // warn

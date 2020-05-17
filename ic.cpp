@@ -127,9 +127,9 @@ QString IC::getName() const {
 QString IC::getNameToolTip() const {
     QString tmp=this->name;
     tmp=tmp.mid(1,tmp.length()-2);
-    tmp.prepend(QString("<font color=%1>").arg(this->color)).append("</font>");
+    if (!this->isGrouped()) tmp.prepend(QString("<font color=%1>").arg(this->color)).append("</font>");
     if (getCollapsible().toInt()==3) tmp.prepend("<i>hidden: ").append("</i>");
-    if (getGroup().length() || getGroupCol().length()) tmp.prepend("<i>grouped: ").append("</i>");
+    if (this->isGrouped()) tmp.prepend("<i>grouped: ").append("</i>");
     tmp.prepend("<p style='white-space:pre'>").append("</p>"); // linebreaks as in text
     return tmp;
 }
@@ -390,10 +390,7 @@ qint8 IC::validate()
 {
     validateControl();
 
-    if (this->group.length() > 0 || this->groupCol.length() > 0)
-    {
-        if (this->color.length()>0) this->infoAdd("'color' has no effect on grouped controls");
-    }
+    if (this->isGrouped() && this->color.length() > 0) this->infoAdd("'color' has no effect on grouped controls");
 
     return this->valid;
 }
@@ -594,6 +591,16 @@ bool IC::isUsingPMEM()
 bool IC::isChecked() const
 {
     return this->checked;
+}
+
+bool IC::isGrouped() const
+{
+    if (this->group.length() > 0 || this->groupCol.length() > 0)
+    {
+        if (this->group.toInt() == 1 || this->group.toLower() == "true" || this->groupCol.toInt() == 1 || this->groupCol.toLower() == "true")
+            return true;
+    }
+    return false;
 }
 
 bool IC::getSize(int *bytes, int *bits)

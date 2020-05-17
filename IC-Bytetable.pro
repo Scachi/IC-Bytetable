@@ -64,6 +64,7 @@ RESOURCES += \
     resource.qrc
 
 DISTFILES += \
+    resources/Notes.txt \
     resources/ToDo.txt \
     resources/ic_info.xml
 

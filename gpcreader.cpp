@@ -238,8 +238,8 @@ void GPCReader::parseICSection(qint32 line) {
     newIC.decimals      = getVal("^\\s*decimals\\s*=\\s*([0-9]*).*");
 
     newIC.collapsible   = getVal("^\\s*collapsible\\s*=\\s*([0-9]*).*");
-    newIC.group         = getVal("^\\s*group\\s*=\\s*([0-9]*).*");
-    newIC.groupCol      = getVal("^\\s*groupcol\\s*=\\s*([0-9]*).*");
+    newIC.group         = getVal("^\\s*group\\s*=\\s*([01]|true|false).*");
+    newIC.groupCol      = getVal("^\\s*groupcol\\s*=\\s*([01]|true|false).*");
     newIC.color         = getVal("^\\s*color\\s*=(.*)");
     newIC.border        = getVal("^\\s*border\\s*=\\s*([0-9]*).*");
 /*

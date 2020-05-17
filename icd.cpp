@@ -458,7 +458,11 @@ QString ICD::createConfigString(bool all) const
         if (first and idx > 0) exportString += "#" + XTRA::x2Hex(idx,8) + ":";
         first = false;
         exportString += exportStrA[idx];
+        idx += exportStrA[idx].length()/2 - 1; // skip index that are part of the current entry size
         if (!all && exportStrA[idx+1].length() == 0) first = true;
+        //int idxlen = exportStrA[idx].length();
+        //if (!all && exportStrA[idx+idxlen/2].length() == 0) first = true;
+        //qDebug() << "id:" << idx << " , length:" << exportStrA[idx].length();
     }
     return exportString;
 }

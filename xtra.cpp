@@ -42,7 +42,7 @@ QString XTRA::x2Hex(QString value, QString bitsize)
 
 QString XTRA::x2Hex(int value, int bitsize)
 {
-    qDebug() << "x2Hex " << value << " " << bitsize;
+    //qDebug() << "x2Hex " << value << " " << bitsize;
     return x2Hex(QString::number(value),QString::number(bitsize));
 }
 

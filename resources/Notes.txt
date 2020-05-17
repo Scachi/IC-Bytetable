@@ -1,0 +1,92 @@
+After checking the Gtuner IV, I remembered how I fixed the styling issue. There is no needed to add any styling code before creating the Qt application. Just be sure the file "qwindowsvistastyle.dll" is included in your deployment files. It must be in the "styles" sub-directory.
+
+wrote:
+How did you manage to have your lib files and other stuff in the subdirectory "lib/" ?
+
+This requires both Windows and Qt configurations.
+
+In the cpp file you have the main() function add the following pragma.
+CODE: SELECT ALL
+#pragma comment(linker, "/manifestDependency:\"type='win32' name='lib' version='25.8.0.32' processorArchitecture='amd64' \"")
+
+in the main(), before create the Qt application, add the following:
+CODE: SELECT ALL
+qputenv("QT_PLUGIN_PATH", cDir.filePath("lib").toLatin1());
+qputenv("QT_QPA_PLATFORM_PLUGIN_PATH", cDir.filePath("lib").toLatin1());
+Note cDir is a QDir object that points to the Gtuner.exe directory, cDir.filePath("lib").toLatin1() returns the "lib" sub-directory.
+
+The qt.conf file must be configured as the following:
+CODE: SELECT ALL
+[Paths]
+Prefix = lib
+
+And, finally, in the"lib" sub-directory you must have the "lib.manifest" listing all Windows managed dll files. For Gtuner it looks like this:
+CODE: SELECT ALL
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+    <assemblyIdentity type="win32" name="lib" version="25.8.0.32" processorArchitecture="amd64" />
+    <file name="concrt140.dll" />
+    <file name="msvcp140.dll" />
+    <file name="msvcp140_1.dll" />
+    <file name="msvcp140_2.dll" />
+    <file name="vccorlib140.dll" />
+    <file name="vcruntime140.dll" />
+    <file name="api-ms-win-core-console-l1-1-0.dll" />
+    <file name="api-ms-win-core-datetime-l1-1-0.dll" />
+    <file name="api-ms-win-core-debug-l1-1-0.dll" />
+    <file name="api-ms-win-core-errorhandling-l1-1-0.dll" />
+    <file name="api-ms-win-core-file-l1-1-0.dll" />
+    <file name="api-ms-win-core-file-l1-2-0.dll" />
+    <file name="api-ms-win-core-file-l2-1-0.dll" />
+    <file name="api-ms-win-core-handle-l1-1-0.dll" />
+    <file name="api-ms-win-core-heap-l1-1-0.dll" />
+    <file name="api-ms-win-core-interlocked-l1-1-0.dll" />
+    <file name="api-ms-win-core-libraryloader-l1-1-0.dll" />
+    <file name="api-ms-win-core-localization-l1-2-0.dll" />
+    <file name="api-ms-win-core-memory-l1-1-0.dll" />
+    <file name="api-ms-win-core-namedpipe-l1-1-0.dll" />
+    <file name="api-ms-win-core-processenvironment-l1-1-0.dll" />
+    <file name="api-ms-win-core-processthreads-l1-1-0.dll" />
+    <file name="api-ms-win-core-processthreads-l1-1-1.dll" />
+    <file name="api-ms-win-core-profile-l1-1-0.dll" />
+    <file name="api-ms-win-core-rtlsupport-l1-1-0.dll" />
+    <file name="api-ms-win-core-string-l1-1-0.dll" />
+    <file name="api-ms-win-core-synch-l1-1-0.dll" />
+    <file name="api-ms-win-core-synch-l1-2-0.dll" />
+    <file name="api-ms-win-core-sysinfo-l1-1-0.dll" />
+    <file name="api-ms-win-core-timezone-l1-1-0.dll" />
+    <file name="api-ms-win-core-util-l1-1-0.dll" />
+    <file name="api-ms-win-crt-conio-l1-1-0.dll" />
+    <file name="api-ms-win-crt-convert-l1-1-0.dll" />
+    <file name="api-ms-win-crt-environment-l1-1-0.dll" />
+    <file name="api-ms-win-crt-filesystem-l1-1-0.dll" />
+    <file name="api-ms-win-crt-heap-l1-1-0.dll" />
+    <file name="api-ms-win-crt-locale-l1-1-0.dll" />
+    <file name="api-ms-win-crt-math-l1-1-0.dll" />
+    <file name="api-ms-win-crt-multibyte-l1-1-0.dll" />
+    <file name="api-ms-win-crt-private-l1-1-0.dll" />
+    <file name="api-ms-win-crt-process-l1-1-0.dll" />
+    <file name="api-ms-win-crt-runtime-l1-1-0.dll" />
+    <file name="api-ms-win-crt-stdio-l1-1-0.dll" />
+    <file name="api-ms-win-crt-string-l1-1-0.dll" />
+    <file name="api-ms-win-crt-time-l1-1-0.dll" />
+    <file name="api-ms-win-crt-utility-l1-1-0.dll" />
+    <file name="ucrtbase.dll" />
+    <file name="libEGL.dll" />
+    <file name="libGLESv2.dll" />
+    <file name="d3dcompiler_47.dll" />
+    <file name="opengl32sw.dll" />
+    <file name="Qt5Core.dll" />
+    <file name="Qt5Gui.dll" />
+    <file name="Qt5Network.dll" />
+    <file name="Qt5Positioning.dll" />
+    <file name="Qt5PrintSupport.dll" />
+    <file name="Qt5Qml.dll" />
+    <file name="Qt5Quick.dll" />
+    <file name="Qt5QuickWidgets.dll" />
+    <file name="Qt5WebChannel.dll" />
+    <file name="Qt5WebEngineCore.dll" />
+    <file name="Qt5WebEngineWidgets.dll" />
+    <file name="Qt5Widgets.dll" />
+    <file name="qscintilla2.dll" />
+</assembly>

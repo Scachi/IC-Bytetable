@@ -24,7 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //settings = new QSettings(QSettings::IniFormat, QSettings::UserScope,QCoreApplication::organizationName(), QCoreApplication::applicationName());
-    settings = new QSettings(QCoreApplication::organizationName(),QCoreApplication::applicationName());
+    //settings = new QSettings(QCoreApplication::organizationName(),QCoreApplication::applicationName());
+    settings = new QSettings(QCoreApplication::applicationName()+".ini",QSettings::IniFormat);
 
     //qDebug() << "ontop: " << settings->value("main/ontop").toInt();
     if (settings->value("main/ontop").toInt()) onTop(1);
@@ -97,13 +98,10 @@ void MainWindow::readSource(QString sFilePath) {
             ui->tableView->setColumnWidth(8,100);
             ui->tableView->setColumnWidth(19,100);
 
-            QString tmp;
-            tmp = tr("%1 Bits used by Interactive Configuration<br>Click for more information").arg(gpc->icData->bitsUsed);
-            tmp=XTRA::xNoAutoLinebreaks(tmp);
-            ui->actionPMEM_Usage->setToolTip(tmp);
             showMessageToolBar(tr("%1 of 1024 bits used<br>( %2 bytes + %3 bits )").arg(gpc->icData->bitsUsed).arg(gpc->pmemData->getBytes()).arg(gpc->pmemData->getBits()));
             pmemWindow->updateModelData(gpc->pmemData);
             pmemWindow->updateStats(gpc->pmemData);
+
 
             if (!gpc->isValid() || !gpc->icData->isValid()) msgboxProblemsFound();
 
@@ -428,7 +426,9 @@ void MainWindow::on_actionPMEM_Usage_triggered()
     }
     if (tLast == 0) pmemWindow->restoreGeometry(settings->value("pmem/geometry").toByteArray());
     tLast = tNow;
+    QString tmp;
     pmemWindow->show();
+
 
 }
 
